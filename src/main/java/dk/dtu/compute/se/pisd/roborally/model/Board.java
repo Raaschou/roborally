@@ -215,4 +215,12 @@ public class Board extends Subject {
         return "Player = " + getCurrentPlayer().getName();
     }
 
+    /**
+     * Get the next player.
+     * @return the next player
+     */
+    public Player getNextPlayer() {
+        return getPlayer(getPlayerNumber(getCurrentPlayer()) + 1 % getPlayersNumber());
+    }
+
 }
