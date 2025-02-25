@@ -92,6 +92,10 @@ public class Player extends Subject {
         }
     }
 
+    /**
+     * Gets the player's current space
+     * @return Player's current space
+     */
     public Space getSpace() {
         return space;
     }

@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class GameController {
 
@@ -44,16 +43,15 @@ public class GameController {
      *
      * @param space the space to which the current player should move
      */
-    public void moveCurrentPlayerToSpace(@NotNull Space space)  {
-        // TODO V1: method should be implemented by the students:
-        //   - the current player should be moved to the given space
-        //     (if it is free())
-        //   - and the current player should be set to the player
-        //     following the current player
-        //   - the counter of moves in the game should be increased by one
-        //     if and when the player is moved (the counter and the status line
-        //     message needs to be implemented at another place)
+    public void moveCurrentPlayerToSpace(@NotNull Space space) {
+        Player currentPlayer = board.getCurrentPlayer();
 
+        if (space.getPlayer() == null) {
+            currentPlayer.getSpace().setPlayer(null);
+            space.setPlayer(currentPlayer);
+            board.setCounter(board.getCounter() + 1);
+            board.setCurrentPlayer(board.getNextPlayer());
+        }
     }
 
     // XXX V2

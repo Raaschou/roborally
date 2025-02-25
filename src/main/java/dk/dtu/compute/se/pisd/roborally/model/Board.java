@@ -121,10 +121,18 @@ public class Board extends Subject {
         }
     }
 
+    /**
+     * Gets the current player
+     * @return current player
+     */
     public Player getCurrentPlayer() {
         return current;
     }
 
+    /**
+     * Sets the current player
+     * @param player the param is the current and it is set
+     */
     public void setCurrentPlayer(Player player) {
         if (player != this.current && players.contains(player)) {
             this.current = player;
@@ -212,19 +220,27 @@ public class Board extends Subject {
         // the students, this method gives a string representation of the current
         // status of the game
 
-        // TODO V1: add the move count to the status message
         // TODO V2: changed the status so that it shows the phase, the current player, and the current register
         return "Player = " + getCurrentPlayer().getName() + "You've used: " + this.getCounter() + " steps!";
     }
 
-    public int getCounter(){
+    /**
+     * Gets the counter
+     * @return counter
+     */
+    public int getCounter() {
         return counter;
     }
 
-    public void setCounter(int getPlusOne){
-        this.counter = getPlusOne;
+    /**
+     * Sets the counter
+     * @param counter it is the counter to set.
+     */
+    public void setCounter(int counter) {
+        this.counter = counter;
         notifyChange();
     }
+
     /**
      * Get the next player.
      * @return the next player
