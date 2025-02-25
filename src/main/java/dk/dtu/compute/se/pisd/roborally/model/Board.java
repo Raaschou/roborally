@@ -59,6 +59,8 @@ public class Board extends Subject {
 
     private boolean stepMode;
 
+    private int counter = 0;
+
     public Board(int width, int height, @NotNull String boardName) {
         this.boardName = boardName;
         this.width = width;
@@ -212,9 +214,17 @@ public class Board extends Subject {
 
         // TODO V1: add the move count to the status message
         // TODO V2: changed the status so that it shows the phase, the current player, and the current register
-        return "Player = " + getCurrentPlayer().getName();
+        return "Player = " + getCurrentPlayer().getName() + "You've used: " + this.getCounter() + " steps!";
     }
 
+    public int getCounter(){
+        return counter;
+    }
+
+    public void setCounter(int getPlusOne){
+        this.counter = getPlusOne;
+        notifyChange();
+    }
     /**
      * Get the next player.
      * @return the next player
