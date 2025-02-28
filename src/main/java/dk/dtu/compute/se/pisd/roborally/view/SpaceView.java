@@ -22,12 +22,18 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
+import dk.dtu.compute.se.pisd.roborally.controller.Checkpoint;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * ...
@@ -60,12 +66,38 @@ public class SpaceView extends StackPane implements ViewObserver {
         } else {
             this.setStyle("-fx-background-color: black;");
         }
-
         // updatePlayer();
 
         // This space view should listen to changes of the space
         space.attach(this);
         update(space);
+    }
+    private void drawActions(){
+        List<FieldAction> action = space.getActions();
+        for(FieldAction tile : action){
+            if(tile != null){
+                switch(tile) {
+                    case ConveyorBelt ignored ->{
+                        Polygon belt = new Polygon(0.0, 0.0,
+                                15.0, 30.0,
+                                30.0, 0.0 );
+                        belt.setFill(Color.DIMGREY);
+                    }
+                    case Checkpoint ignored-> {
+                        Circle checkpoint = new Circle(30.0f, 30.0f, 20.0f);
+                        checkpoint.setFill(Color.YELLOW);
+                    }
+                    default -> {
+                        Polygon noshape = new Polygon(0.0, 0.0,
+                                15.0, 30.0,
+                                30.0, 15.0);
+                        noshape.setFill(Color.RED);
+
+                    }
+                }
+            }
+        }
+
     }
 
     private void updatePlayer() {
@@ -93,7 +125,7 @@ public class SpaceView extends StackPane implements ViewObserver {
             // XXX A3: drawing walls and action on the space (could be done
             //         here); it would be even better if fixed things on
             //         spaces  are only drawn once (and not on every update)
-
+            drawActions();
             updatePlayer();
         }
     }
