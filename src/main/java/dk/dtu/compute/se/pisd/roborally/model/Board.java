@@ -221,7 +221,7 @@ public class Board extends Subject {
         // status of the game
 
         // TODO V2: changed the status so that it shows the phase, the current player, and the current register
-        return "Player = " + getCurrentPlayer().getName() + "You've used: " + this.getCounter() + " steps!";
+        return "Player = " + getCurrentPlayer().getName() + ", you've used: " + this.getCounter() + " steps!";
     }
 
     /**
@@ -246,7 +246,7 @@ public class Board extends Subject {
      * @return the next player
      */
     public Player getNextPlayer() {
-        return getPlayer(getPlayerNumber(getCurrentPlayer()) + 1 % getPlayersNumber());
+        return getPlayer((getPlayerNumber(getCurrentPlayer()) + 1) % getPlayersNumber());
     }
 
 }
