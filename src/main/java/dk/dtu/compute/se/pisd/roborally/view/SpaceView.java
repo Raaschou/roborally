@@ -72,28 +72,20 @@ public class SpaceView extends StackPane implements ViewObserver {
         space.attach(this);
         update(space);
     }
+
     private void drawActions(){
         List<FieldAction> action = space.getActions();
         for(FieldAction tile : action){
             if(tile != null){
-                switch(tile) {
-                    case ConveyorBelt ignored ->{
-                        Polygon belt = new Polygon(0.0, 0.0,
-                                15.0, 30.0,
-                                30.0, 0.0 );
-                        belt.setFill(Color.DIMGREY);
-                    }
-                    case Checkpoint ignored-> {
+                if (tile instanceof ConveyorBelt){
+                    Polygon belt = new Polygon(0.0, 0.0,
+                            15.0, 30.0,
+                            30.0, 0.0 );
+                    belt.setFill(Color.DIMGREY);
+                }
+                if (tile instanceof Checkpoint){
                         Circle checkpoint = new Circle(30.0f, 30.0f, 20.0f);
                         checkpoint.setFill(Color.YELLOW);
-                    }
-                    default -> {
-                        Polygon noshape = new Polygon(0.0, 0.0,
-                                15.0, 30.0,
-                                30.0, 15.0);
-                        noshape.setFill(Color.RED);
-
-                    }
                 }
             }
         }
