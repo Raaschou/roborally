@@ -73,6 +73,13 @@ public class SpaceView extends StackPane implements ViewObserver {
         update(space);
     }
 
+
+    /**
+     * Method that draws action fields, conveyor belts and checkpoint.
+     * Draws conveyor belts as grey triangles.
+     * Draws checkpoints as yellow circles.
+     */
+
     private void drawActions(){
         List<FieldAction> action = space.getActions();
         for(FieldAction tile : action){
@@ -82,10 +89,18 @@ public class SpaceView extends StackPane implements ViewObserver {
                             15.0, 30.0,
                             30.0, 0.0 );
                     belt.setFill(Color.DIMGREY);
+
+                    /*
+                    Need to rotate belts correctly
+                    belt.setRotate((90*ConveyorBelt.getHeading().ordinal())%360);
+                    */
+
+                    this.getChildren().add(belt);
                 }
                 if (tile instanceof Checkpoint){
                         Circle checkpoint = new Circle(30.0f, 30.0f, 20.0f);
                         checkpoint.setFill(Color.YELLOW);
+                    this.getChildren().add(checkpoint);
                 }
             }
         }
@@ -117,6 +132,9 @@ public class SpaceView extends StackPane implements ViewObserver {
             // XXX A3: drawing walls and action on the space (could be done
             //         here); it would be even better if fixed things on
             //         spaces  are only drawn once (and not on every update)
+
+            // Not sure if drawActions() can be placed another place to not get updated every click,
+            // but haven't gotten it to draw elsewhere
             drawActions();
             updatePlayer();
         }
