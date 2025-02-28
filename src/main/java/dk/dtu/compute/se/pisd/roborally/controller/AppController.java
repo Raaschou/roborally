@@ -56,13 +56,22 @@ public class AppController implements Observer {
         this.roboRally = roboRally;
     }
 
+    /**
+     * TODO: Rune - make this docstring
+     */
     public void newGame() {
-        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
-        dialog.setTitle("Player number");
-        dialog.setHeaderText("Select number of players");
-        Optional<Integer> result = dialog.showAndWait();
+        ChoiceDialog<Integer> dialogPlayerCount = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.getFirst(), PLAYER_NUMBER_OPTIONS);
+        dialogPlayerCount.setTitle("Player number");
+        dialogPlayerCount.setHeaderText("Select number of players");
+        Optional<Integer> result = dialogPlayerCount.showAndWait();
+        // Add another dropdown menu to select board type.
+        List<String> boardNames = BoardFactory.getBoardNames();
+        ChoiceDialog<String> dialogBoardName = new ChoiceDialog<>(boardNames.getFirst(), boardNames);
+        dialogBoardName.setTitle("Board type");
+        dialogBoardName.setHeaderText("Select board type");
+        Optional<String> boardName = dialogBoardName.showAndWait();
 
-        if (result.isPresent()) {
+        if (result.isPresent() && boardName.isPresent()) {
             if (gameController != null) {
                 // The UI should not allow this, but in case this happens anyway.
                 // give the user the option to save the game or abort this operation!
@@ -73,7 +82,7 @@ public class AppController implements Observer {
 
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
-            Board board = new Board(8,8);
+            Board board = BoardFactory.getInstance().createBoard(boardName.get());
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {

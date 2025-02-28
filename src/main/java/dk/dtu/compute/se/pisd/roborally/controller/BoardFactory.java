@@ -4,6 +4,8 @@ import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 
+import java.util.List;
+
 /**
  * A factory for creating boards. The factory itself is implemented as a singleton.
  *
@@ -36,6 +38,20 @@ public class BoardFactory {
         return instance;
     }
 
+    private final static String SIMPLE_BOARD_NAME = "Simple board";
+    private final static String ADVANCED_BOARD_NAME = "Advanced board";
+    private static List<String> boardNames = List.of(
+            SIMPLE_BOARD_NAME,
+            ADVANCED_BOARD_NAME);
+    private final int SIMPLE_BOARD_WIDTH = 8;
+    private final int SIMPLE_BOARD_HEIGHT = 8;
+    private final int ADVANCED_BOARD_WIDTH = 10;
+    private final int ADVANCED_BOARD_HEIGHT = 10;
+
+    public static List<String> getBoardNames() {
+        return boardNames;
+    }
+
     /**
      * Creates a new board of given name of a board, which indicates
      * which type of board should be created. For now the name is ignored.
@@ -45,11 +61,34 @@ public class BoardFactory {
      */
     public Board createBoard(String name) {
         Board board;
-        if (name == null) {
-            board = new Board(8,8, "<none>");
-        } else {
-            board = new Board(8,8, name);
+        switch (name) {
+            case (SIMPLE_BOARD_NAME):
+                board = new Board(SIMPLE_BOARD_WIDTH, SIMPLE_BOARD_HEIGHT, SIMPLE_BOARD_NAME);
+                setupSimpleBoard(board);
+                break;
+            case (ADVANCED_BOARD_NAME):
+                board = new Board(ADVANCED_BOARD_WIDTH, ADVANCED_BOARD_HEIGHT, ADVANCED_BOARD_NAME);
+                setupAdvancedBoard(board);
+                break;
+            default:
+                throw new IllegalArgumentException("Unrecognized board name");
         }
+
+        return board;
+    }
+
+    /**
+     *      TODO Rune - make docstring
+      */
+    private void setupSimpleBoard(Board board) {
+        // This is just default bord
+        // No wall no conveyor belt, only a plain board with players.
+    }
+
+    /**
+     *      TODO Rune - make docstring
+     */
+    private void setupAdvancedBoard(Board board) {
 
         // add some walls, actions and checkpoints to some spaces
         Space space = board.getSpace(0,0);
@@ -81,7 +120,5 @@ public class BoardFactory {
         action.setHeading(Heading.WEST);
         space.getActions().add(action);
 
-        return board;
     }
-
 }
