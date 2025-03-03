@@ -22,10 +22,12 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,6 +70,36 @@ public class SpaceView extends StackPane implements ViewObserver {
         update(space);
     }
 
+    public void drawWalls() {
+        for (Heading heading : space.getWalls()) {
+            Line wall = null;
+            switch (heading) {
+                case NORTH ->{
+                    wall = new Line(0, 0, SPACE_WIDTH, 0);
+                    wall.setTranslateY(-SPACE_HEIGHT / 2);
+                }
+                case SOUTH ->{
+                    wall = new Line(0, SPACE_HEIGHT, SPACE_WIDTH, SPACE_HEIGHT);
+                    wall.setTranslateY(SPACE_HEIGHT / 2);
+                }
+                case EAST ->{
+                    wall = new Line(SPACE_WIDTH, 0, SPACE_WIDTH, SPACE_HEIGHT);
+                    wall.setTranslateX(SPACE_WIDTH / 2);
+                }
+                case WEST ->{
+                    wall = new Line(0, 0, 0, SPACE_HEIGHT);
+                    wall.setTranslateX(-SPACE_WIDTH / 2);
+                }
+            }
+            if (wall != null) {
+                wall.setStroke(Color.RED);
+                wall.setStrokeWidth(2);
+                this.getChildren().add(wall);
+
+            }
+        }
+    }
+
     private void updatePlayer() {
         Player player = space.getPlayer();
         if (player != null) {
@@ -89,6 +121,7 @@ public class SpaceView extends StackPane implements ViewObserver {
     public void updateView(Subject subject) {
         if (subject == this.space) {
             this.getChildren().clear();
+            drawWalls();
 
             // XXX A3: drawing walls and action on the space (could be done
             //         here); it would be even better if fixed things on
