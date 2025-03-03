@@ -1,13 +1,21 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
+
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import org.jetbrains.annotations.NotNull;
 
 public class Checkpoint extends FieldAction {
 
-    //TODO: needs to contain sequence of checkpoint.
+    //Sequence uses Integer wrapper, so it is able to use toString() method in SpaceView
+    private Integer sequence = 0;
 
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }   
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         // TODO A3: needs to be implemented

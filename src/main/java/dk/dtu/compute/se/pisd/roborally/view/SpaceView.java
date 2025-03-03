@@ -30,6 +30,7 @@ import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.scene.shape.Polygon;
 import org.jetbrains.annotations.NotNull;
 
@@ -84,23 +85,22 @@ public class SpaceView extends StackPane implements ViewObserver {
         List<FieldAction> action = space.getActions();
         for(FieldAction tile : action){
             if(tile != null){
-                if (tile instanceof ConveyorBelt){
+                if(tile instanceof ConveyorBelt){
                     Polygon belt = new Polygon(0.0, 0.0,
                             15.0, 30.0,
                             30.0, 0.0 );
                     belt.setFill(Color.DIMGREY);
-
-                    /*
-                    Need to rotate belts correctly
-                    belt.setRotate((90*ConveyorBelt.getHeading().ordinal())%360);
-                    */
-
+                    //Need to rotate belts correctly
+                    belt.setRotate((90*((ConveyorBelt) tile).getHeading().ordinal())%360);
                     this.getChildren().add(belt);
                 }
                 if (tile instanceof Checkpoint){
-                        Circle checkpoint = new Circle(30.0f, 30.0f, 20.0f);
-                        checkpoint.setFill(Color.YELLOW);
+                    Circle checkpoint = new Circle(30.0f, 30.0f, 20.0f);
+                    checkpoint.setFill(Color.YELLOW);
+                    Text sequence = new Text();
+                    sequence.setText(((Checkpoint) tile).getSequence().toString());
                     this.getChildren().add(checkpoint);
+                    this.getChildren().add(sequence);
                 }
             }
         }
