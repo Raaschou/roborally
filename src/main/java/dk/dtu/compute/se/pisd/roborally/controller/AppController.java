@@ -32,6 +32,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import org.jetbrains.annotations.NotNull;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
+import dk.dtu.compute.se.pisd.roborally.model.Space;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +43,6 @@ import java.util.Optional;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class AppController implements Observer {
 
@@ -56,13 +57,25 @@ public class AppController implements Observer {
         this.roboRally = roboRally;
     }
 
+    /**
+     * Creates a new game by prompting the user for the number
+     * of players and the board type.
+     */
     public void newGame() {
-        ChoiceDialog<Integer> dialog = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.get(0), PLAYER_NUMBER_OPTIONS);
-        dialog.setTitle("Player number");
-        dialog.setHeaderText("Select number of players");
-        Optional<Integer> result = dialog.showAndWait();
+        // player count dropdown
+        ChoiceDialog<Integer> dialogPlayerCount = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.getFirst(), PLAYER_NUMBER_OPTIONS);
+        dialogPlayerCount.setTitle("Player number");
+        dialogPlayerCount.setHeaderText("Select number of players");
+        Optional<Integer> result = dialogPlayerCount.showAndWait();
 
-        if (result.isPresent()) {
+        // board type dropdown
+        List<String> boardNames = BoardFactory.getBoardNames();
+        ChoiceDialog<String> dialogBoardName = new ChoiceDialog<>(boardNames.getFirst(), boardNames);
+        dialogBoardName.setTitle("Board type");
+        dialogBoardName.setHeaderText("Select board type");
+        Optional<String> boardName = dialogBoardName.showAndWait();
+
+        if (result.isPresent() && boardName.isPresent()) {
             if (gameController != null) {
                 // The UI should not allow this, but in case this happens anyway.
                 // give the user the option to save the game or abort this operation!
@@ -73,7 +86,7 @@ public class AppController implements Observer {
 
             // XXX the board should eventually be created programmatically or loaded from a file
             //     here we just create an empty board with the required number of players.
-            Board board = new Board(8,8);
+            Board board = BoardFactory.getInstance().createBoard(boardName.get());
             gameController = new GameController(board);
             int no = result.get();
             for (int i = 0; i < no; i++) {
@@ -130,7 +143,7 @@ public class AppController implements Observer {
             alert.setContentText("Are you sure you want to exit RoboRally?");
             Optional<ButtonType> result = alert.showAndWait();
 
-            if (!result.isPresent() || result.get() != ButtonType.OK) {
+            if (result.isEmpty() || result.get() != ButtonType.OK) {
                 return; // return without exiting the application
             }
         }
