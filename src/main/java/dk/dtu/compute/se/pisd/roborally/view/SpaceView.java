@@ -83,6 +83,7 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     private void drawActions(){
         List<FieldAction> action = space.getActions();
+        //Goes through all action tiles for the current space
         for(FieldAction tile : action){
             if(tile != null){
                 if(tile instanceof ConveyorBelt){
@@ -90,7 +91,7 @@ public class SpaceView extends StackPane implements ViewObserver {
                             15.0, 30.0,
                             30.0, 0.0 );
                     belt.setFill(Color.DIMGREY);
-                    //Need to rotate belts correctly
+                    //Type casting tile to ConveyorBelt to use getHeading()
                     belt.setRotate((90*((ConveyorBelt) tile).getHeading().ordinal())%360);
                     this.getChildren().add(belt);
                 }
