@@ -22,12 +22,19 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.ConveyorBelt;
+import dk.dtu.compute.se.pisd.roborally.controller.Checkpoint;
+import dk.dtu.compute.se.pisd.roborally.controller.FieldAction;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.scene.shape.Polygon;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * ...
@@ -60,12 +67,45 @@ public class SpaceView extends StackPane implements ViewObserver {
         } else {
             this.setStyle("-fx-background-color: black;");
         }
-
         // updatePlayer();
 
         // This space view should listen to changes of the space
         space.attach(this);
         update(space);
+    }
+
+
+    /**
+     * Method that draws action fields, conveyor belts and checkpoint.
+     * Draws conveyor belts as grey triangles.
+     * Draws checkpoints as yellow circles.
+     */
+
+    private void drawActions(){
+        List<FieldAction> action = space.getActions();
+        //Goes through all action tiles for the current space
+        for(FieldAction tile : action){
+            if(tile != null){
+                if(tile instanceof ConveyorBelt){
+                    Polygon belt = new Polygon(0.0, 0.0,
+                            15.0, 30.0,
+                            30.0, 0.0 );
+                    belt.setFill(Color.DIMGREY);
+                    //Type casting tile to ConveyorBelt to use getHeading()
+                    belt.setRotate((90*((ConveyorBelt) tile).getHeading().ordinal())%360);
+                    this.getChildren().add(belt);
+                }
+                if (tile instanceof Checkpoint){
+                    Circle checkpoint = new Circle(30.0f, 30.0f, 20.0f);
+                    checkpoint.setFill(Color.YELLOW);
+                    Text sequence = new Text();
+                    sequence.setText(((Checkpoint) tile).getSequence().toString());
+                    this.getChildren().add(checkpoint);
+                    this.getChildren().add(sequence);
+                }
+            }
+        }
+
     }
 
     private void updatePlayer() {
@@ -94,6 +134,9 @@ public class SpaceView extends StackPane implements ViewObserver {
             //         here); it would be even better if fixed things on
             //         spaces  are only drawn once (and not on every update)
 
+            // Not sure if drawActions() can be placed another place to not get updated every click,
+            // but haven't gotten it to draw elsewhere
+            drawActions();
             updatePlayer();
         }
     }
