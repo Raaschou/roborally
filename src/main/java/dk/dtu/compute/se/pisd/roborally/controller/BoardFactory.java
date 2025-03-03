@@ -23,8 +23,8 @@ public class BoardFactory {
     static private BoardFactory instance = null;
     private final int SIMPLE_BOARD_WIDTH = 8;
     private final int SIMPLE_BOARD_HEIGHT = 8;
-    private final int ADVANCED_BOARD_WIDTH = 10;
-    private final int ADVANCED_BOARD_HEIGHT = 10;
+    private final int ADVANCED_BOARD_WIDTH = 15;
+    private final int ADVANCED_BOARD_HEIGHT = 8;
     /**
      * Constructor for BoardFactory. It is private in order to make the factory a singleton.
      */
