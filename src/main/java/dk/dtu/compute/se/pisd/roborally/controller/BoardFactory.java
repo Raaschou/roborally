@@ -14,11 +14,17 @@ import java.util.List;
 // XXX A3: might be used for creating a first slightly more interesting board.
 public class BoardFactory {
 
+    private final static String SIMPLE_BOARD_NAME = "Simple board";
+    private final static String ADVANCED_BOARD_NAME = "Advanced board";
+    private static final List<String> boardNames = List.of(SIMPLE_BOARD_NAME, ADVANCED_BOARD_NAME);
     /**
      * The single instance of this class, which is lazily instantiated on demand.
      */
     static private BoardFactory instance = null;
-
+    private final int SIMPLE_BOARD_WIDTH = 8;
+    private final int SIMPLE_BOARD_HEIGHT = 8;
+    private final int ADVANCED_BOARD_WIDTH = 10;
+    private final int ADVANCED_BOARD_HEIGHT = 10;
     /**
      * Constructor for BoardFactory. It is private in order to make the factory a singleton.
      */
@@ -38,16 +44,11 @@ public class BoardFactory {
         return instance;
     }
 
-    private final static String SIMPLE_BOARD_NAME = "Simple board";
-    private final static String ADVANCED_BOARD_NAME = "Advanced board";
-    private static List<String> boardNames = List.of(
-            SIMPLE_BOARD_NAME,
-            ADVANCED_BOARD_NAME);
-    private final int SIMPLE_BOARD_WIDTH = 8;
-    private final int SIMPLE_BOARD_HEIGHT = 8;
-    private final int ADVANCED_BOARD_WIDTH = 10;
-    private final int ADVANCED_BOARD_HEIGHT = 10;
-
+    /**
+     * Get the list of possible board names.
+     *
+     * @return unmodifiable list of board names
+     */
     public static List<String> getBoardNames() {
         return boardNames;
     }
@@ -78,47 +79,49 @@ public class BoardFactory {
     }
 
     /**
-     *      TODO Rune - make docstring
-      */
+     * Set up board objects for the simple board type.
+     *
+     * @param board the board instance to modify
+     */
     private void setupSimpleBoard(Board board) {
-        // This is just default bord
-        // No wall no conveyor belt, only a plain board with players.
+        // Currently this is just an empty board.
+        // We might add some objects on the board later.
     }
 
     /**
-     *      TODO Rune - make docstring
+     * Set up board objects for the advanced board type.
+     *
+     * @param board the board instance to modify
      */
     private void setupAdvancedBoard(Board board) {
-
         // add some walls, actions and checkpoints to some spaces
-        Space space = board.getSpace(0,0);
+        Space space = board.getSpace(0, 0);
         space.getWalls().add(Heading.SOUTH);
-        ConveyorBelt action  = new ConveyorBelt();
+        ConveyorBelt action = new ConveyorBelt();
         action.setHeading(Heading.WEST);
         space.getActions().add(action);
 
-        space = board.getSpace(1,0);
+        space = board.getSpace(1, 0);
         space.getWalls().add(Heading.NORTH);
-        action  = new ConveyorBelt();
+        action = new ConveyorBelt();
         action.setHeading(Heading.WEST);
         space.getActions().add(action);
 
-        space = board.getSpace(1,1);
+        space = board.getSpace(1, 1);
         space.getWalls().add(Heading.WEST);
-        action  = new ConveyorBelt();
+        action = new ConveyorBelt();
         action.setHeading(Heading.NORTH);
         space.getActions().add(action);
 
-        space = board.getSpace(5,5);
+        space = board.getSpace(5, 5);
         space.getWalls().add(Heading.SOUTH);
-        action  = new ConveyorBelt();
+        action = new ConveyorBelt();
         action.setHeading(Heading.WEST);
         space.getActions().add(action);
 
-        space = board.getSpace(6,5);
-        action  = new ConveyorBelt();
+        space = board.getSpace(6, 5);
+        action = new ConveyorBelt();
         action.setHeading(Heading.WEST);
         space.getActions().add(action);
-
     }
 }

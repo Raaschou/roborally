@@ -41,7 +41,6 @@ import java.util.Optional;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class AppController implements Observer {
 
@@ -57,14 +56,17 @@ public class AppController implements Observer {
     }
 
     /**
-     * TODO: Rune - make this docstring
+     * Creates a new game by prompting the user for the number
+     * of players and the board type.
      */
     public void newGame() {
+        // player count dropdown
         ChoiceDialog<Integer> dialogPlayerCount = new ChoiceDialog<>(PLAYER_NUMBER_OPTIONS.getFirst(), PLAYER_NUMBER_OPTIONS);
         dialogPlayerCount.setTitle("Player number");
         dialogPlayerCount.setHeaderText("Select number of players");
         Optional<Integer> result = dialogPlayerCount.showAndWait();
-        // Add another dropdown menu to select board type.
+
+        // board type dropdown
         List<String> boardNames = BoardFactory.getBoardNames();
         ChoiceDialog<String> dialogBoardName = new ChoiceDialog<>(boardNames.getFirst(), boardNames);
         dialogBoardName.setTitle("Board type");
@@ -139,7 +141,7 @@ public class AppController implements Observer {
             alert.setContentText("Are you sure you want to exit RoboRally?");
             Optional<ButtonType> result = alert.showAndWait();
 
-            if (!result.isPresent() || result.get() != ButtonType.OK) {
+            if (result.isEmpty() || result.get() != ButtonType.OK) {
                 return; // return without exiting the application
             }
         }
