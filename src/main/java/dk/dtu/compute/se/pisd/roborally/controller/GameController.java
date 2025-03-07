@@ -54,7 +54,11 @@ public class GameController {
         }
     }
 
-    // XXX V2
+    /**
+     * Start the programming phase by clearing the programming fields
+     * for all players and generating random command cards in their
+     * card fields.
+     */
     public void startProgrammingPhase() {
         board.setPhase(Phase.PROGRAMMING);
         board.setCurrentPlayer(board.getPlayer(0));
@@ -77,14 +81,21 @@ public class GameController {
         }
     }
 
-    // XXX V2
+    /**
+     * Generate a random command card
+     *
+     * @return a random command card
+     */
     private CommandCard generateRandomCommandCard() {
         Command[] commands = Command.values();
         int random = (int) (Math.random() * commands.length);
         return new CommandCard(commands[random]);
     }
 
-    // XXX V2
+    /**
+     * Finish the programming phase, moving to the activation
+     * phase.
+     */
     public void finishProgrammingPhase() {
         makeProgramFieldsInvisible();
         makeProgramFieldsVisible(0);
@@ -93,7 +104,11 @@ public class GameController {
         board.setStep(0);
     }
 
-    // XXX V2
+    /**
+     * Make program fields visible for the given register
+     *
+     * @param register the register in which to make program fields visible
+     */
     private void makeProgramFieldsVisible(int register) {
         if (register >= 0 && register < Player.NO_REGISTERS) {
             for (int i = 0; i < board.getPlayersNumber(); i++) {
@@ -104,7 +119,9 @@ public class GameController {
         }
     }
 
-    // XXX V2
+    /**
+     * Make all program fields for all players invisible.
+     */
     private void makeProgramFieldsInvisible() {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
@@ -115,26 +132,34 @@ public class GameController {
         }
     }
 
-    // XXX V2
+    /**
+     *
+     */
     public void executePrograms() {
         board.setStepMode(false);
         continuePrograms();
     }
 
-    // XXX V2
+    /**
+     * Execute a step and continue programs.
+     */
     public void executeStep() {
         board.setStepMode(true);
         continuePrograms();
     }
 
-    // XXX V2
+    /**
+     * Continue execution of players' programs
+     */
     private void continuePrograms() {
         do {
             executeNextStep();
         } while (board.getPhase() == Phase.ACTIVATION && !board.isStepMode());
     }
 
-    // XXX V2
+    /**
+     * Execute the next command for the next player
+     */
     private void executeNextStep() {
         Player currentPlayer = board.getCurrentPlayer();
         if (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
@@ -168,7 +193,12 @@ public class GameController {
         }
     }
 
-    // XXX V2
+    /**
+     * Execute a command for a given player.
+     *
+     * @param player  player to execute command on
+     * @param command command to execute
+     */
     private void executeCommand(@NotNull Player player, Command command) {
         if (player != null && player.board == board && command != null) {
             // XXX This is a very simplistic way of dealing with some basic cards and
@@ -206,27 +236,38 @@ public class GameController {
         }
     }
 
-    // TODO V2
+    /**
+     * Move a player forward in the direction they're facing
+     *
+     * @param player player to move
+     */
     public void moveForward(@NotNull Player player) {
         Space neighbour = board.getNeighbour(player.getSpace(), player.getHeading());
         if (neighbour != null) {
             player.setSpace(neighbour);
-        } else{
+        } else {
             // Er det nødvendigt ?
             player.setSpace(player.getSpace());
             System.out.println("There is a wall in New Oreleans its called the rising sun....");
         }
     }
 
-    // TODO V2
+    /**
+     * Move a player two spaces forward in the direction they're facing
+     *
+     * @param player player to move
+     */
     public void moveFastForward(@NotNull Player player) {
-
         moveForward(player);
         // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
     }
 
-
+    /**
+     * Move a player three spaces forward in the direction they're facing
+     *
+     * @param player player to move
+     */
     public void moveFastFastForward(@NotNull Player player) {
         moveForward(player);
         // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
@@ -235,16 +276,29 @@ public class GameController {
         moveForward(player);
     }
 
-    // TODO V2
+    /**
+     * Turn a player to the right
+     *
+     * @param player player to turn
+     */
     public void turnRight(@NotNull Player player) {
         player.setHeading(player.getHeading().next());
     }
 
-    // TODO V2
+    /**
+     * Turn a player to the left
+     *
+     * @param player player to turn
+     */
     public void turnLeft(@NotNull Player player) {
         player.setHeading(player.getHeading().prev());
     }
 
+    /**
+     * Turn a player to the opposite heading
+     *
+     * @param player player to turn
+     */
     public void uTurn(@NotNull Player player) {
         player.setHeading(player.getHeading().opposite());
     }
@@ -254,19 +308,26 @@ public class GameController {
         Space neighbour = board.getNeighbour(player.getSpace(), player.getHeading().opposite());
         if (neighbour != null) {
             player.setSpace(neighbour);
-        } else{
+        } else {
             // Er det nødvendigt ?
             System.out.println("There is a wall in New Oreleans its called the rising sun....");
         }
     }
-    // TODO slet min kommentar...
-    // Den her venter vi lige med...
-    public void again(@NotNull Player player) {
 
+    /**
+     * not yet implemented
+     */
+    public void again(@NotNull Player player) {
+        // TODO implement this
     }
 
-
-
+    /**
+     * Moves a command card from one command card field to another.
+     *
+     * @param source command card field containing the card
+     * @param target command card field that the card is moved to
+     * @return true if successful, false otherwise
+     */
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
