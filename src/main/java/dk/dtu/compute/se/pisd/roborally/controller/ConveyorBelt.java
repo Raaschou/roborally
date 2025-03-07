@@ -23,6 +23,7 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -52,7 +53,24 @@ public class ConveyorBelt extends FieldAction {
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
 
         // TODO A3: needs to be implemented
-        // ...
+        // this is a bit tricky since the order of doing it matter eg.
+        // p1 p2 is on the same conveyor belt and p2 stands were p1 tries to
+        // move to then p1 can get moved before p2 has been moved but if for
+        // some reason p2 can't move p1 can't move either.
+        //
+        // So we should check if the space p1 are to be move to (if not occupied)
+        // Im pretty sure we can do it if we make a list of the players who have not
+        // been moved but might are to be moved by the conveyor belt and then iterate
+        // through the list and pop the players who are moved in later or if they
+        // cannot be moved
+        //
+        // i dont know how we can do it otherwise since we can bump players on belts
+        // and we can have multiple players on the same space even though its only
+        // for a period..
+
+        Player currentPlayer = space.getPlayer();
+        Heading heading = this.heading;
+        gameController.moveInDirection(currentPlayer, heading); // <- Not yet implemented.
 
         return false;
     }

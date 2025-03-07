@@ -177,7 +177,13 @@ public class GameController {
                         board.setCurrentPlayer(board.getPlayer(0));
                     } else {
                         //Add field action here
-
+                        for (int i = 0; i < board.getPlayersNumber(); i++) {
+                            currentPlayer = board.getPlayer(i);
+                            Space space = currentPlayer.getSpace();
+                            for (FieldAction action: space.getActions()) {
+                                action.doAction(this, space);
+                            }
+                        }
                         startProgrammingPhase();
                     }
                 }
@@ -318,6 +324,15 @@ public class GameController {
     public void notImplemented() {
         // XXX just for now to indicate that the actual method is not yet implemented
         assert false;
+    }
+
+    /**
+     * Move function for the conveyor belt to push a player in the direction of the conveyor belt.
+     * @param player player to be pushed by conveyor belt
+     * @param heading heading of the conveyor belt
+     */
+    public void moveInDirection(@NotNull Player player,@NotNull Heading heading) {
+        // Not yet implemented.
     }
 
 }
