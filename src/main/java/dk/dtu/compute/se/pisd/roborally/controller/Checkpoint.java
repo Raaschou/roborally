@@ -7,17 +7,20 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This class represents a checkpoint on a space
  */
-
 public class Checkpoint extends FieldAction {
 
-    private int sequence = 0;
+    private final int sequence;
 
-    public Integer getSequence() {
-        return sequence;
+    public Checkpoint(int sequence) {
+        this.sequence = sequence;
     }
 
-    public void setSequence(Integer sequence) {
-        this.sequence = sequence;
+    /**
+     * Get the sequence for this checkpoint
+     * @return the sequence
+     */
+    public int getSequence() {
+        return sequence;
     }
 
     @Override

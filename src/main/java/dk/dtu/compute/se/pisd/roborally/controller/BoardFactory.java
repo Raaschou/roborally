@@ -25,6 +25,7 @@ public class BoardFactory {
     private final int SIMPLE_BOARD_HEIGHT = 8;
     private final int ADVANCED_BOARD_WIDTH = 15;
     private final int ADVANCED_BOARD_HEIGHT = 8;
+
     /**
      * Constructor for BoardFactory. It is private in order to make the factory a singleton.
      */
@@ -125,14 +126,11 @@ public class BoardFactory {
         space.getActions().add(action);
 
         space = board.getSpace(7, 5);
-        Checkpoint act = new Checkpoint();
-        act.setSequence(1);
+        Checkpoint act = new Checkpoint(1);
         space.getActions().add(act);
 
-
         space = board.getSpace(4, 4);
-        act = new Checkpoint();
-        act.setSequence(2);
+        act = new Checkpoint(2);
         space.getActions().add(act);
     }
 }
