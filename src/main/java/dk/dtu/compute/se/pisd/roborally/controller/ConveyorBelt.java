@@ -26,6 +26,9 @@ import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class represents a conveyor belt on a space.
  *
@@ -37,6 +40,7 @@ public class ConveyorBelt extends FieldAction {
 
     private Heading heading;
 
+    public static List<Player> playersThatHaveNotMoved = new ArrayList<>();
 
     public Heading getHeading() {
         return heading;
@@ -54,8 +58,8 @@ public class ConveyorBelt extends FieldAction {
 
         // TODO A3: needs to be implemented
         // this is a bit tricky since the order of doing it matter eg.
-        // p1 p2 is on the same conveyor belt and p2 stands were p1 tries to
-        // move to then p1 can get moved before p2 has been moved but if for
+        // p1 p2 is on the same conveyor belt and p2 stands were p1 are to be
+        // pushed to then p1 can't get pushed before p2 has been pushed but if for
         // some reason p2 can't move p1 can't move either.
         //
         // So we should check if the space p1 are to be move to (if not occupied)
@@ -64,14 +68,19 @@ public class ConveyorBelt extends FieldAction {
         // through the list and pop the players who are moved in later or if they
         // cannot be moved
         //
-        // i dont know how we can do it otherwise since we can bump players on belts
-        // and we can have multiple players on the same space even though its only
-        // for a period..
+        // right now I can't see how we can do it otherwise since we can't bump players when
+        // pushed on belts and we can have multiple players on the same space even though it's
+        // only for a period..
 
+
+        // slet løs hvis du har en løsning :)
         Player currentPlayer = space.getPlayer();
         Heading heading = this.heading;
-        gameController.moveInDirection(currentPlayer, heading); // <- Not yet implemented.
-
+        boolean gotPushed = gameController.pushInDirection(currentPlayer, heading); // <- Not yet implemented.
+        if (!gotPushed) {
+            // check weather the space in the heading direction is conveyor belt and only add if so.
+            playersThatHaveNotMoved.addFirst(currentPlayer); // add first to get them in opposite order.
+        }
         return false;
     }
 

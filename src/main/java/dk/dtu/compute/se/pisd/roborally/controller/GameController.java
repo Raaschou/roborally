@@ -176,12 +176,29 @@ public class GameController {
                         board.setStep(step);
                         board.setCurrentPlayer(board.getPlayer(0));
                     } else {
-                        //Add field action here
+                        // Looping through the players to get the actions of the space they are on.
                         for (int i = 0; i < board.getPlayersNumber(); i++) {
                             currentPlayer = board.getPlayer(i);
                             Space space = currentPlayer.getSpace();
+                            // execute all the actions for the given space.
                             for (FieldAction action: space.getActions()) {
                                 action.doAction(this, space);
+                            }
+                        }
+                        // Slet løs hvis du har en løsning :)
+                        if (!ConveyorBelt.playersThatHaveNotMoved.isEmpty()) {
+                            // Jeg mangler at greje hvordan listen med players der ikke er blevet rykket skal
+                            // bladres i gennem til den er tom og samtidigt sikre at den Bliver tom på et tidspunkt!
+                            //
+                            // run through the list till it's empty.
+                            // not sure how to yet.
+                            for (int i = ConveyorBelt.playersThatHaveNotMoved.size() - 1; i >= 0; i--) {
+                                Player player = ConveyorBelt.playersThatHaveNotMoved.get(i);
+                                // TODO Heading is to be changed to the heading of the conveyor belt.
+                                boolean gotPushed = this.pushInDirection(player, Heading.WEST); // space.ConveyorBelt.heading??
+                                if (gotPushed) {
+                                    ConveyorBelt.playersThatHaveNotMoved.remove(i); // Now safe to remove during iteration
+                                }
                             }
                         }
                         startProgrammingPhase();
@@ -252,12 +269,10 @@ public class GameController {
 
     // TODO V2
     public void moveFastForward(@NotNull Player player) {
-
         moveForward(player);
         // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
     }
-
 
     public void moveFastFastForward(@NotNull Player player) {
         moveForward(player);
@@ -297,13 +312,12 @@ public class GameController {
             }
         }
     }
+
     // TODO slet min kommentar...
     // Den her venter vi lige med...
     public void again(@NotNull Player player) {
 
     }
-
-
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
@@ -327,12 +341,21 @@ public class GameController {
     }
 
     /**
-     * Move function for the conveyor belt to push a player in the direction of the conveyor belt.
+     * Push function for the conveyor belt to push a player in the direction of the conveyor belt.
      * @param player player to be pushed by conveyor belt
      * @param heading heading of the conveyor belt
+     * @return boolean true if moves was succes false otherwise
      */
-    public void moveInDirection(@NotNull Player player,@NotNull Heading heading) {
-        // Not yet implemented.
+    public boolean pushInDirection(@NotNull Player player,@NotNull Heading heading) {
+        Space neighbourSpace = board.getNeighbour(player.getSpace(), heading);
+        // Slet løs hvis du har en løsning :)
+        if (neighbourSpace.getPlayer() == null) {
+            player.getSpace().setPlayer(null);
+            neighbourSpace.setPlayer(player);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
