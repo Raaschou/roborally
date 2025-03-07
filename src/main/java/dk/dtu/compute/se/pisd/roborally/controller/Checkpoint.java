@@ -10,9 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Checkpoint extends FieldAction {
 
-    //Sequence uses Integer wrapper, so it is able to use toString() method in SpaceView
-    //Might be a better way to do this?
-    private Integer sequence = 0;
+    private int sequence = 0;
 
     public Integer getSequence() {
         return sequence;
@@ -20,7 +18,8 @@ public class Checkpoint extends FieldAction {
 
     public void setSequence(Integer sequence) {
         this.sequence = sequence;
-    }   
+    }
+
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         // TODO A3: needs to be implemented

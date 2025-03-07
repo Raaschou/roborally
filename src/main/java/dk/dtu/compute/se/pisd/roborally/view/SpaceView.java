@@ -139,7 +139,7 @@ public class SpaceView extends StackPane implements ViewObserver {
                     Circle checkpoint = new Circle(30.0f, 30.0f, 20.0f);
                     checkpoint.setFill(Color.YELLOW);
                     Text sequence = new Text();
-                    sequence.setText(((Checkpoint) tile).getSequence().toString());
+                    sequence.setText(Integer.toString(((Checkpoint) tile).getSequence()));
                     sequence.setFont(new Font(20));
                     sequence.setStyle("-fx-font-weight: bold ");
                     this.getChildren().add(checkpoint);
