@@ -11,6 +11,7 @@ module roborally {
     requires com.google.common;
     requires com.google.gson;
     requires jdk.xml.dom;
+    requires org.checkerframework.checker.qual;
 
     exports dk.dtu.compute.se.pisd.roborally;
 

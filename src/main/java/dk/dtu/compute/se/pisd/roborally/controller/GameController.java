@@ -21,7 +21,9 @@
  */
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import dk.dtu.compute.se.pisd.roborally.controller.exception.ImpossibleMoveException;
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -53,6 +55,25 @@ public class GameController {
             board.setCurrentPlayer(board.getNextPlayer());
         }
     }
+
+    /**
+     * Method for pushing player
+     */
+    private void moveToSpace(@NotNull Player pusher, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
+        assert board.getNeighbour(pusher.getSpace(), heading) == space;
+        Player pushed= space.getPlayer();
+        if (pushed!= null){
+            Space nextSpace= board.getNeighbour(space, heading);
+            if (nextSpace!= null) {
+                moveToSpace(pushed, nextSpace, heading);
+                assert space.getPlayer() == null : "the space the player wants isn't free!";
+            } else {
+                throw new ImpossibleMoveException(pusher, space, heading);
+            }
+        }
+        pusher.setSpace(space);
+    }
+
 
     // XXX V2
     public void startProgrammingPhase() {
@@ -208,13 +229,16 @@ public class GameController {
 
     // TODO V2
     public void moveForward(@NotNull Player player) {
-        Space neighbour = board.getNeighbour(player.getSpace(), player.getHeading());
-        if (neighbour != null) {
-            player.setSpace(neighbour);
-        } else{
-            // Er det nødvendigt ?
-            player.setSpace(player.getSpace());
-            System.out.println("There is a wall in New Oreleans its called the rising sun....");
+        if (player.board == board) {
+            Heading heading = player.getHeading();
+            Space neighbour = board.getNeighbour(player.getSpace(), heading);
+            if (neighbour != null) {
+                try {
+                    moveToSpace(player, neighbour, heading);
+                } catch (ImpossibleMoveException e) {
+                    //empty... Overstående bliver implementeret om lidt...
+                }
+            }
         }
     }
 
@@ -251,12 +275,14 @@ public class GameController {
 
     public void backward(@NotNull Player player) {
         // august siger ok, jeg siger for dovent.
-        Space neighbour = board.getNeighbour(player.getSpace(), player.getHeading().opposite());
+        Heading heading = player.getHeading().opposite();
+        Space neighbour = board.getNeighbour(player.getSpace(), heading);
         if (neighbour != null) {
-            player.setSpace(neighbour);
-        } else{
-            // Er det nødvendigt ?
-            System.out.println("There is a wall in New Oreleans its called the rising sun....");
+            try {
+                moveToSpace(player, neighbour, heading);
+            } catch (ImpossibleMoveException e) {
+                //empty
+            }
         }
     }
     // TODO slet min kommentar...
