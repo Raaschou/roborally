@@ -126,4 +126,11 @@ public class Space extends Subject {
         notifyChange();
     }
 
+    /**
+     * Get a string representation of this space
+     * @return a string representation of this space
+     */
+    public String toString() {
+        return String.format("(%d,%d)", x, y);
+    }
 }

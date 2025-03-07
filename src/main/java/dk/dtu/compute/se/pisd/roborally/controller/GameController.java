@@ -23,7 +23,6 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.controller.exception.ImpossibleMoveException;
 import dk.dtu.compute.se.pisd.roborally.model.*;
-import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -62,7 +61,7 @@ public class GameController {
     private void moveToSpace(@NotNull Player pusher, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(pusher.getSpace(), heading) == space;
         Player pushed= space.getPlayer();
-        if (pushed!= null){
+        if (pushed!= null) {
             Space nextSpace= board.getNeighbour(space, heading);
             if (nextSpace!= null) {
                 moveToSpace(pushed, nextSpace, heading);
@@ -71,8 +70,9 @@ public class GameController {
                 throw new ImpossibleMoveException(pusher, space, heading);
             }
         }
-        pusher.setSpace(space);
+       pusher.setSpace(space);
     }
+
 
 
     // XXX V2
@@ -273,6 +273,10 @@ public class GameController {
         player.setHeading(player.getHeading().opposite());
     }
 
+    /**
+     * Moves the player backwards
+     * @param player is moved backwards
+     */
     public void backward(@NotNull Player player) {
         // august siger ok, jeg siger for dovent.
         Heading heading = player.getHeading().opposite();
