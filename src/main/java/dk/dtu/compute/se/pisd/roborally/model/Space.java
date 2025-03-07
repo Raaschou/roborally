@@ -44,10 +44,10 @@ public class Space extends Subject {
 
 
     // XXX A3
-    private List<Heading> walls = new ArrayList<>();
+    private final List<Heading> walls = new ArrayList<>();
 
     // XXX A3
-    private List<FieldAction> actions = new ArrayList<>();
+    private final List<FieldAction> actions = new ArrayList<>();
 
     public Space(Board board, int x, int y) {
         this.board = board;
@@ -95,6 +95,15 @@ public class Space extends Subject {
     // XXX A3
     public List<Heading> getWalls() {
         return walls;
+    }
+
+    /**
+     * Evaluates whether this space has a wall in a given direction
+     * @param heading the direction to check
+     * @return true if this space has a wall in the given direction, false otherwise
+     */
+    public boolean hasWallInDirection(Heading heading) {
+        return getWalls().contains(heading);
     }
 
     /**

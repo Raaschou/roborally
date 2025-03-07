@@ -186,7 +186,19 @@ public class GameController {
                     this.turnLeft(player);
                     break;
                 case FAST_FORWARD:
-                    this.fastForward(player);
+                    this.moveFastForward(player);
+                    break;
+                case FAST_FAST_FORWARD:
+                    this.moveFastFastForward(player);
+                    break;
+                case U_TURN:
+                    this.uTurn(player);
+                    break;
+                case BACKWARD:
+                    this.backward(player);
+                    break;
+                case AGAIN:
+                    this.again(player);
                     break;
                 default:
                     // DO NOTHING (for now)
@@ -196,23 +208,64 @@ public class GameController {
 
     // TODO V2
     public void moveForward(@NotNull Player player) {
-
+        Space neighbour = board.getNeighbour(player.getSpace(), player.getHeading());
+        if (neighbour != null) {
+            player.setSpace(neighbour);
+        } else{
+            // Er det nødvendigt ?
+            player.setSpace(player.getSpace());
+            System.out.println("There is a wall in New Oreleans its called the rising sun....");
+        }
     }
 
     // TODO V2
-    public void fastForward(@NotNull Player player) {
+    public void moveFastForward(@NotNull Player player) {
 
+        moveForward(player);
+        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
+        moveForward(player);
+    }
+
+
+    public void moveFastFastForward(@NotNull Player player) {
+        moveForward(player);
+        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
+        moveForward(player);
+        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
+        moveForward(player);
     }
 
     // TODO V2
     public void turnRight(@NotNull Player player) {
-
+        player.setHeading(player.getHeading().next());
     }
 
     // TODO V2
     public void turnLeft(@NotNull Player player) {
+        player.setHeading(player.getHeading().prev());
+    }
+
+    public void uTurn(@NotNull Player player) {
+        player.setHeading(player.getHeading().opposite());
+    }
+
+    public void backward(@NotNull Player player) {
+        // august siger ok, jeg siger for dovent.
+        Space neighbour = board.getNeighbour(player.getSpace(), player.getHeading().opposite());
+        if (neighbour != null) {
+            player.setSpace(neighbour);
+        } else{
+            // Er det nødvendigt ?
+            System.out.println("There is a wall in New Oreleans its called the rising sun....");
+        }
+    }
+    // TODO slet min kommentar...
+    // Den her venter vi lige med...
+    public void again(@NotNull Player player) {
 
     }
+
+
 
     public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();

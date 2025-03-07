@@ -33,6 +33,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
 
@@ -139,6 +140,8 @@ public class SpaceView extends StackPane implements ViewObserver {
                     checkpoint.setFill(Color.YELLOW);
                     Text sequence = new Text();
                     sequence.setText(((Checkpoint) tile).getSequence().toString());
+                    sequence.setFont(new Font(20));
+                    sequence.setStyle("-fx-font-weight: bold ");
                     this.getChildren().add(checkpoint);
                     this.getChildren().add(sequence);
                 }

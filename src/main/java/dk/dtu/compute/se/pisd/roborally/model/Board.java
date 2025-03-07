@@ -35,7 +35,6 @@ import static dk.dtu.compute.se.pisd.roborally.model.Phase.INITIALISATION;
  * the terms board and game are used almost interchangeably.
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class Board extends Subject {
 
@@ -44,13 +43,9 @@ public class Board extends Subject {
     public final int height;
 
     public final String boardName;
-
-    private Integer gameId;
-
     private final Space[][] spaces;
-
     private final List<Player> players = new ArrayList<>();
-
+    private Integer gameId;
     private Player current;
 
     private Phase phase = INITIALISATION;
@@ -74,7 +69,7 @@ public class Board extends Subject {
             }
         }
         this.stepMode = false;
-        }
+    }
 
     public Board(int width, int height) {
         this(width, height, "defaultboard");
@@ -95,8 +90,7 @@ public class Board extends Subject {
     }
 
     public Space getSpace(int x, int y) {
-        if (x >= 0 && x < width &&
-                y >= 0 && y < height) {
+        if (x >= 0 && x < width && y >= 0 && y < height) {
             return spaces[x][y];
         } else {
             return null;
@@ -124,6 +118,7 @@ public class Board extends Subject {
 
     /**
      * Gets the current player
+     *
      * @return current player
      */
     public Player getCurrentPlayer() {
@@ -132,6 +127,7 @@ public class Board extends Subject {
 
     /**
      * Sets the current player
+     *
      * @param player the param is the current and it is set
      */
     public void setCurrentPlayer(Player player) {
@@ -188,32 +184,42 @@ public class Board extends Subject {
      * (no walls or obstacles in either of the involved spaces); otherwise,
      * null will be returned.
      *
-     * @param space the space for which the neighbour should be computed
+     * @param space   the space for which the neighbour should be computed
      * @param heading the heading of the neighbour
      * @return the space in the given direction; null if there is no (reachable) neighbour
      */
     public Space getNeighbour(@NotNull Space space, @NotNull Heading heading) {
-        // TODO A3: This implementation needs to be adjusted so that walls on
-        //          spaces (and maybe other obstacles) are taken into account
-        //          (see above JavaDoc comment for this method).
         int x = space.x;
         int y = space.y;
+        Space neighbour;
         switch (heading) {
             case SOUTH:
-                y = (y + 1) % height;
+                neighbour = getSpace(x, (y + 1) % height);
+                if (!space.hasWallInDirection(Heading.SOUTH) && !neighbour.hasWallInDirection(Heading.NORTH)) {
+                    return neighbour;
+                }
                 break;
             case WEST:
-                x = (x + width - 1) % width;
+                neighbour = getSpace((x + width - 1) % width, y);
+                if (!space.hasWallInDirection(Heading.WEST) && !neighbour.hasWallInDirection(Heading.EAST)) {
+                    return neighbour;
+                }
                 break;
             case NORTH:
-                y = (y + height - 1) % height;
+                neighbour = getSpace(x, (y + height - 1) % height);
+                if (!space.hasWallInDirection(Heading.NORTH) && !neighbour.hasWallInDirection(Heading.SOUTH)) {
+                    return neighbour;
+                }
                 break;
             case EAST:
-                x = (x + 1) % width;
+                neighbour = getSpace((x + 1) % width, y);
+                if (!space.hasWallInDirection(Heading.EAST) && !neighbour.hasWallInDirection(Heading.WEST)) {
+                    return neighbour;
+                }
                 break;
         }
 
-        return getSpace(x, y);
+        return null;
     }
 
     public String getStatusMessage() {
@@ -227,6 +233,7 @@ public class Board extends Subject {
 
     /**
      * Gets the counter
+     *
      * @return counter
      */
     public int getCounter() {
@@ -235,6 +242,7 @@ public class Board extends Subject {
 
     /**
      * Sets the counter
+     *
      * @param counter it is the counter to set.
      */
     public void setCounter(int counter) {
@@ -244,6 +252,7 @@ public class Board extends Subject {
 
     /**
      * Get the next player.
+     *
      * @return the next player
      */
     public Player getNextPlayer() {
