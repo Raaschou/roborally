@@ -40,7 +40,10 @@ public class ConveyorBelt extends FieldAction {
 
     private Heading heading;
 
+    // arrays containing players that are on conveyor belts but could not be pushed right away
     public static List<Player> playersThatHaveNotMoved = new ArrayList<>();
+    public static ArrayList<Player> copyPlayersThatHaveNotMoved = new ArrayList<>();
+
 
     public Heading getHeading() {
         return heading;
@@ -51,12 +54,12 @@ public class ConveyorBelt extends FieldAction {
     }
 
     /**
-     * Implementation of the action of a conveyor belt. Needs to be implemented for A3.
+     * Implementation of the action of a conveyor belt.
+     * Pushes players on the conveyor belt one space in the heading of the belt.
      */
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
 
-        // TODO A3: needs to be implemented
         // this is a bit tricky since the order of doing it matter eg.
         // p1 p2 is on the same conveyor belt and p2 stands were p1 are to be
         // pushed to then p1 can't get pushed before p2 has been pushed but if for
@@ -72,16 +75,12 @@ public class ConveyorBelt extends FieldAction {
         // pushed on belts and we can have multiple players on the same space even though it's
         // only for a period..
 
-
-        // slet løs hvis du har en løsning :)
         Player currentPlayer = space.getPlayer();
         Heading heading = this.heading;
-        boolean gotPushed = gameController.pushInDirection(currentPlayer, heading); // <- Not yet implemented.
+        boolean gotPushed = gameController.moveInDirection(currentPlayer, heading);
         if (!gotPushed) {
-            // check weather the space in the heading direction is conveyor belt and only add if so.
-            playersThatHaveNotMoved.addFirst(currentPlayer); // add first to get them in opposite order.
+            playersThatHaveNotMoved.add(currentPlayer);
         }
         return false;
     }
-
 }

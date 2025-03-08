@@ -25,6 +25,8 @@ import dk.dtu.compute.se.pisd.roborally.controller.exception.ImpossibleMoveExcep
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 /**
  * ...
  *
@@ -72,8 +74,6 @@ public class GameController {
         }
        pusher.setSpace(space);
     }
-
-
 
     // XXX V2
     public void startProgrammingPhase() {
@@ -176,6 +176,8 @@ public class GameController {
                         board.setStep(step);
                         board.setCurrentPlayer(board.getPlayer(0));
                     } else {
+                        ConveyorBelt.playersThatHaveNotMoved.clear(); //
+                        ConveyorBelt.copyPlayersThatHaveNotMoved.clear();
                         // Looping through the players to get the actions of the space they are on.
                         for (int i = 0; i < board.getPlayersNumber(); i++) {
                             currentPlayer = board.getPlayer(i);
@@ -185,19 +187,45 @@ public class GameController {
                                 action.doAction(this, space);
                             }
                         }
-                        // Slet løs hvis du har en løsning :)
-                        if (!ConveyorBelt.playersThatHaveNotMoved.isEmpty()) {
-                            // Jeg mangler at greje hvordan listen med players der ikke er blevet rykket skal
-                            // bladres i gennem til den er tom og samtidigt sikre at den Bliver tom på et tidspunkt!
-                            //
-                            // run through the list till it's empty.
-                            // not sure how to yet.
-                            for (int i = ConveyorBelt.playersThatHaveNotMoved.size() - 1; i >= 0; i--) {
-                                Player player = ConveyorBelt.playersThatHaveNotMoved.get(i);
-                                // TODO Heading is to be changed to the heading of the conveyor belt.
-                                boolean gotPushed = this.pushInDirection(player, Heading.WEST); // space.ConveyorBelt.heading??
-                                if (gotPushed) {
-                                    ConveyorBelt.playersThatHaveNotMoved.remove(i); // Now safe to remove during iteration
+
+//                        int iter = 0; // til test slet har ikke slettet endnu skal måske bruges igen.
+                        while (!ConveyorBelt.playersThatHaveNotMoved.isEmpty()) {
+                            /*
+                             * This loop makes sure that players that were initially blocked while conveyor belt tried
+                             * to move them get another chance to be moved.
+                             * The ConveyorBelt class creates a list of the players that couldn't be moved along with
+                             * a copy that is used to check loop conditions.
+                             * If the list of player that hasn't been moved is unchanged the loop terminates,
+                             * otherwise it keeps running till there is no more players on conveyor belts
+                             *
+                             * We should consider outsourcing to helper functions
+                             */
+
+//                            // til test kan bare slettes hvis det virker.
+//                            iter++;
+//                            for (Player player: ConveyorBelt.playersThatHaveNotMoved) {
+//                                System.out.print(player.getName() + " ");
+//                                System.out.print(" iteration: " + iter);
+//                            }
+//                            System.out.println();  // test slut
+                            boolean listUnchanged = ConveyorBelt.playersThatHaveNotMoved.containsAll(ConveyorBelt.copyPlayersThatHaveNotMoved) && ConveyorBelt.copyPlayersThatHaveNotMoved.containsAll(ConveyorBelt.playersThatHaveNotMoved);
+                            // if the list is of players is the same as in last iteration terminate loop.
+                            if (listUnchanged) {
+                                break;
+                            }
+                            ConveyorBelt.copyPlayersThatHaveNotMoved = new ArrayList<>(ConveyorBelt.playersThatHaveNotMoved);
+                            ConveyorBelt.playersThatHaveNotMoved.clear();
+
+                            // loop through the list of player that have not performed conveyor belt action.
+                            for (int i = ConveyorBelt.copyPlayersThatHaveNotMoved.size() - 1; i >= 0; i--) {
+                                Player player = ConveyorBelt.copyPlayersThatHaveNotMoved.get(i);
+                                Space space = player.getSpace();
+
+                                // TODO figure a way to only do conveyor belt action.
+                                // I don't think it's a problem for now since the space is the same as executed
+                                // earlier and we dont have actions that 'stack' - yet.
+                                for (FieldAction action: space.getActions()) {
+                                    action.doAction(this, space);
                                 }
                             }
                         }
@@ -341,12 +369,14 @@ public class GameController {
     }
 
     /**
-     * Push function for the conveyor belt to push a player in the direction of the conveyor belt.
-     * @param player player to be pushed by conveyor belt
+     * Move function for the conveyor belt to moves a player in the direction of the conveyor belt.
+     * @param player player to be moved by conveyor belt
      * @param heading heading of the conveyor belt
      * @return boolean true if moves was succes false otherwise
      */
-    public boolean pushInDirection(@NotNull Player player,@NotNull Heading heading) {
+    public boolean moveInDirection(@NotNull Player player,@NotNull Heading heading) {
+        // TODO fix so that it handles walls blocking conveyor belts!
+        // TODO needs testing.
         Space neighbourSpace = board.getNeighbour(player.getSpace(), heading);
         // Slet løs hvis du har en løsning :)
         if (neighbourSpace.getPlayer() == null) {
