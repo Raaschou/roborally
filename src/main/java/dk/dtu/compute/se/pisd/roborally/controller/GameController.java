@@ -62,20 +62,21 @@ public class GameController {
      */
     private void moveToSpace(@NotNull Player pusher, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(pusher.getSpace(), heading) == space;
-        Player pushed= space.getPlayer();
-        if (pushed!= null) {
-            Space nextSpace= board.getNeighbour(space, heading);
-            if (nextSpace!= null) {
+        Player pushed = space.getPlayer();
+        if (pushed != null) {
+            Space nextSpace = board.getNeighbour(space, heading);
+            if (nextSpace != null) {
                 moveToSpace(pushed, nextSpace, heading);
                 assert space.getPlayer() == null : "the space the player wants isn't free!";
             } else {
                 throw new ImpossibleMoveException(pusher, space, heading);
             }
         }
-       pusher.setSpace(space);
+        pusher.setSpace(space);
     }
 
     // XXX V2
+
     /**
      * Start the programming phase by clearing the programming fields
      * for all players and generating random command cards in their
@@ -209,7 +210,7 @@ public class GameController {
                             currentPlayer = board.getPlayer(i);
                             Space space = currentPlayer.getSpace();
                             // execute all the actions for the given space.
-                            for (FieldAction action: space.getActions()) {
+                            for (FieldAction action : space.getActions()) {
                                 action.doAction(this, space);
                             }
                         }
@@ -250,7 +251,7 @@ public class GameController {
                                 // TODO figure a way to only do conveyor belt action.
                                 // I don't think it's a problem for now since the space is the same as executed
                                 // earlier and we dont have actions that 'stack' - yet.
-                                for (FieldAction action: space.getActions()) {
+                                for (FieldAction action : space.getActions()) {
                                     action.doAction(this, space);
                                 }
                             }
@@ -327,13 +328,14 @@ public class GameController {
                     //empty... Overstående bliver implementeret om lidt...
                 }
             }
-        Space neighbour = board.getNeighbour(player.getSpace(), player.getHeading());
-        if (neighbour != null) {
-            player.setSpace(neighbour);
-        } else {
-            // Er det nødvendigt ?
-            player.setSpace(player.getSpace());
-            System.out.println("There is a wall in New Oreleans its called the rising sun....");
+            neighbour = board.getNeighbour(player.getSpace(), player.getHeading());
+            if (neighbour != null) {
+                player.setSpace(neighbour);
+            } else {
+                // Er det nødvendigt ?
+                player.setSpace(player.getSpace());
+                System.out.println("There is a wall in New Oreleans its called the rising sun....");
+            }
         }
     }
 
@@ -342,7 +344,7 @@ public class GameController {
      *
      * @param player player to move
      */
-    public void moveFastForward(@NotNull Player player) {
+    public void moveFastForward (@NotNull Player player){
         moveForward(player);
         // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
@@ -353,7 +355,7 @@ public class GameController {
      *
      * @param player player to move
      */
-    public void moveFastFastForward(@NotNull Player player) {
+    public void moveFastFastForward (@NotNull Player player){
         moveForward(player);
         // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
@@ -366,7 +368,7 @@ public class GameController {
      *
      * @param player player to turn
      */
-    public void turnRight(@NotNull Player player) {
+    public void turnRight (@NotNull Player player){
         player.setHeading(player.getHeading().next());
     }
 
@@ -375,7 +377,7 @@ public class GameController {
      *
      * @param player player to turn
      */
-    public void turnLeft(@NotNull Player player) {
+    public void turnLeft (@NotNull Player player){
         player.setHeading(player.getHeading().prev());
     }
 
@@ -384,7 +386,7 @@ public class GameController {
      *
      * @param player player to turn
      */
-    public void uTurn(@NotNull Player player) {
+    public void uTurn (@NotNull Player player){
         player.setHeading(player.getHeading().opposite());
     }
 
@@ -392,7 +394,7 @@ public class GameController {
      * Moves the player backwards
      * @param player is moved backwards
      */
-    public void backward(@NotNull Player player) {
+    public void backward (@NotNull Player player){
         // august siger ok, jeg siger for dovent.
         Heading heading = player.getHeading().opposite();
         Space neighbour = board.getNeighbour(player.getSpace(), heading);
@@ -415,7 +417,7 @@ public class GameController {
     /**
      * not yet implemented
      */
-    public void again(@NotNull Player player) {
+    public void again (@NotNull Player player){
         // TODO implement this
     }
 
@@ -426,7 +428,7 @@ public class GameController {
      * @param target command card field that the card is moved to
      * @return true if successful, false otherwise
      */
-    public boolean moveCards(@NotNull CommandCardField source, @NotNull CommandCardField target) {
+    public boolean moveCards (@NotNull CommandCardField source, @NotNull CommandCardField target){
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
         if (sourceCard != null && targetCard == null) {
@@ -442,7 +444,7 @@ public class GameController {
      * A method called when no corresponding controller operation is implemented yet.
      * This should eventually be removed.
      */
-    public void notImplemented() {
+    public void notImplemented () {
         // XXX just for now to indicate that the actual method is not yet implemented
         assert false;
     }
@@ -453,13 +455,13 @@ public class GameController {
      * @param heading heading of the conveyor belt
      * @return boolean true if moves was succes false otherwise
      */
-    public boolean moveInDirection(@NotNull Player player,@NotNull Heading heading) {
+    public boolean moveInDirection (@NotNull Player player, @NotNull Heading heading){
         // TODO fix so that it handles walls blocking conveyor belts!
         // TODO needs testing.
         Space neighbourSpace = board.getNeighbour(player.getSpace(), heading);
 
         //Checks if board.getNeighbour might return null, which is the case, if there is a wall in the direction of "heading"
-        if(neighbourSpace == null) {
+        if (neighbourSpace == null) {
             return false;
         }
 

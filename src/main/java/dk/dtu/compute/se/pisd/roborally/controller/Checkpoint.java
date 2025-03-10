@@ -24,8 +24,6 @@ public class Checkpoint extends FieldAction {
         return sequence;
     }
 
-    }
-
     /**
      * if the space has a player that has this checkpoint as the next checkpoint
      * to get the given players nextCheckPoint gets incremented
