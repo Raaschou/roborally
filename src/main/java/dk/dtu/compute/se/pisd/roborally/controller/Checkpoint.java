@@ -8,19 +8,22 @@ import org.jetbrains.annotations.NotNull;
 /**
  * This class represents a checkpoint on a space
  */
-
 public class Checkpoint extends FieldAction {
 
-    //Sequence uses Integer wrapper, so it is able to use toString() method in SpaceView
-    //Might be a better way to do this?
-    private Integer sequence = 0;
+    private final int sequence;
 
-    public Integer getSequence() {
+    public Checkpoint(int sequence) {
+        this.sequence = sequence;
+    }
+
+    /**
+     * Get the sequence for this checkpoint
+     * @return the sequence
+     */
+    public int getSequence() {
         return sequence;
     }
 
-    public void setSequence(Integer sequence) {
-        this.sequence = sequence;
     }
 
     /**
@@ -37,7 +40,7 @@ public class Checkpoint extends FieldAction {
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
         Player currentPlayer = space.getPlayer();
-        if (currentPlayer.getNextCheckpoint() == this.sequence) {
+        if (currentPlayer.getNextCheckpoint() == this.getSequence()) {
             currentPlayer.incrementNextCheckpoint();
             return true;
         }

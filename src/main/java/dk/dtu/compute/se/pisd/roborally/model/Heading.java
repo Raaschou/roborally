@@ -25,20 +25,34 @@ package dk.dtu.compute.se.pisd.roborally.model;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public enum Heading {
 
     SOUTH, WEST, NORTH, EAST;
 
+    /**
+     * Get the next heading in clock-wise direction
+     *
+     * @return a heading value
+     */
     public Heading next() {
         return values()[(this.ordinal() + 1) % values().length];
     }
 
+    /**
+     * Get the previous heading in clock-wise direction
+     *
+     * @return a heading value
+     */
     public Heading prev() {
         return values()[(this.ordinal() + values().length - 1) % values().length];
     }
 
+    /**
+     * Get the opposite heading
+     *
+     * @return a heading value
+     */
     public Heading opposite() {
         return values()[(this.ordinal() + values().length + 2) % values().length];
     }
