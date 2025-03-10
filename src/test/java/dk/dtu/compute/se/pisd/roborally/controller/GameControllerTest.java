@@ -354,25 +354,27 @@ class GameControllerTest {
         Assertions.assertNull(board.getSpace(7, 4).getPlayer(), "Space (7, 4) should be empty! ");
     }
 
-    /*@Test
+    @Test
     void movingOnConveyorBelt() {
+        // Setting player and heading
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
         current.setSpace(board.getSpace(3, 4));
         current.setHeading(Heading.EAST);
-        this.conveyorBelt = new ConveyorBelt();
 
-        conveyorBelt = board.getSpace(3,4).getConveyorBelt();
+        //Setting Conveyorbelt and executing action
+        Space space = board.getSpace(3, 4);
+        ConveyorBelt action = new ConveyorBelt();
+        action.setHeading(Heading.WEST);
+        space.getActions().add(action);
+        action.doAction(gameController, board.getSpace(3,4));
 
-        conveyorBelt.getHeading();
-        conveyorBelt.setHeading(Heading.EAST);
-        conveyorBelt.doAction(gameController, board.getSpace(3,4));
-
-        Assertions.assertEquals(current, board.getSpace(4, 4).getPlayer(), "Player " + current.getName()
-                + " should still be on Space (4,4)!");
-
+        // Checking Players new position, heading and if old Space is empty
+        Assertions.assertEquals(current, board.getSpace(2, 4).getPlayer(), "Player " + current.getName()
+                + " should be on Space (2,4)!");
         Assertions.assertNull(board.getSpace(3, 4).getPlayer(), "Space (3, 4) should be empty!");
-    }*/
+        Assertions.assertEquals(Heading.EAST, current.getHeading(), "Player should be heading EAST!");
+    }
 
 
 
