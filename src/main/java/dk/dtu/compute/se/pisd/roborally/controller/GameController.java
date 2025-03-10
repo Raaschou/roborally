@@ -58,21 +58,26 @@ public class GameController {
     }
 
     /**
-     * Method for pushing player
+     * Move a player to a given space, recursively pushing other players if necessary.
+     *
+     * @param pusher player that is moving
+     * @param space space where the player wants to be
+     * @param heading direction of movement
+     * @throws ImpossibleMoveException
      */
     private void moveToSpace(@NotNull Player pusher, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(pusher.getSpace(), heading) == space;
-        Player pushed= space.getPlayer();
-        if (pushed!= null) {
-            Space nextSpace= board.getNeighbour(space, heading);
-            if (nextSpace!= null) {
+        Player pushed = space.getPlayer();
+        if (pushed != null) {
+            Space nextSpace = board.getNeighbour(space, heading);
+            if (nextSpace != null) {
                 moveToSpace(pushed, nextSpace, heading);
                 assert space.getPlayer() == null : "the space the player wants isn't free!";
             } else {
                 throw new ImpossibleMoveException(pusher, space, heading);
             }
         }
-       pusher.setSpace(space);
+        pusher.setSpace(space);
     }
 
     // XXX V2
@@ -183,7 +188,7 @@ public class GameController {
                             currentPlayer = board.getPlayer(i);
                             Space space = currentPlayer.getSpace();
                             // execute all the actions for the given space.
-                            for (FieldAction action: space.getActions()) {
+                            for (FieldAction action : space.getActions()) {
                                 action.doAction(this, space);
                             }
                         }
@@ -224,7 +229,7 @@ public class GameController {
                                 // TODO figure a way to only do conveyor belt action.
                                 // I don't think it's a problem for now since the space is the same as executed
                                 // earlier and we dont have actions that 'stack' - yet.
-                                for (FieldAction action: space.getActions()) {
+                                for (FieldAction action : space.getActions()) {
                                     action.doAction(this, space);
                                 }
                             }
@@ -323,6 +328,7 @@ public class GameController {
 
     /**
      * Moves the player backwards
+     *
      * @param player is moved backwards
      */
     public void backward(@NotNull Player player) {
@@ -367,11 +373,12 @@ public class GameController {
 
     /**
      * Move function for the conveyor belt to moves a player in the direction of the conveyor belt.
-     * @param player player to be moved by conveyor belt
+     *
+     * @param player  player to be moved by conveyor belt
      * @param heading heading of the conveyor belt
      * @return boolean true if moves was succes false otherwise
      */
-    public boolean moveInDirection(@NotNull Player player,@NotNull Heading heading) {
+    public boolean moveInDirection(@NotNull Player player, @NotNull Heading heading) {
         // TODO fix so that it handles walls blocking conveyor belts!
         // TODO needs testing.
         Space neighbourSpace = board.getNeighbour(player.getSpace(), heading);
