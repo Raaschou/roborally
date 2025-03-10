@@ -378,7 +378,12 @@ public class GameController {
         // TODO fix so that it handles walls blocking conveyor belts!
         // TODO needs testing.
         Space neighbourSpace = board.getNeighbour(player.getSpace(), heading);
-        // Slet løs hvis du har en løsning :)
+
+        //Checks if board.getNeighbour might return null, which is the case, if there is a wall in the direction of "heading"
+        if(neighbourSpace == null) {
+            return false;
+        }
+
         if (neighbourSpace.getPlayer() == null) {
             player.getSpace().setPlayer(null);
             neighbourSpace.setPlayer(player);

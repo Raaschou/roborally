@@ -110,7 +110,7 @@ public class BoardFactory {
         space = board.getSpace(1, 1);
         space.getWalls().add(Heading.WEST);
         action = new ConveyorBelt();
-        action.setHeading(Heading.NORTH);
+        action.setHeading(Heading.WEST);
         space.getActions().add(action);
 
         space = board.getSpace(5, 5);
