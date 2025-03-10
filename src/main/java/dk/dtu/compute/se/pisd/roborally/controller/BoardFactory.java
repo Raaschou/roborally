@@ -16,7 +16,8 @@ public class BoardFactory {
 
     private final static String SIMPLE_BOARD_NAME = "Simple board";
     private final static String ADVANCED_BOARD_NAME = "Advanced board";
-    private static final List<String> boardNames = List.of(SIMPLE_BOARD_NAME, ADVANCED_BOARD_NAME);
+    private final static String CONVEYOR_BOARD_NAME = "Belts belts belts board";
+    private final static List<String> boardNames = List.of(SIMPLE_BOARD_NAME, ADVANCED_BOARD_NAME, CONVEYOR_BOARD_NAME);
     /**
      * The single instance of this class, which is lazily instantiated on demand.
      */
@@ -25,6 +26,8 @@ public class BoardFactory {
     private final int SIMPLE_BOARD_HEIGHT = 8;
     private final int ADVANCED_BOARD_WIDTH = 15;
     private final int ADVANCED_BOARD_HEIGHT = 8;
+    private final int CONVEYOR_BOARD_WIDTH = 12;
+    private final int CONVEYOR_BOARD_HEIGHT = 8;
 
     /**
      * Constructor for BoardFactory. It is private in order to make the factory a singleton.
@@ -71,6 +74,10 @@ public class BoardFactory {
             case (ADVANCED_BOARD_NAME):
                 board = new Board(ADVANCED_BOARD_WIDTH, ADVANCED_BOARD_HEIGHT, ADVANCED_BOARD_NAME);
                 setupAdvancedBoard(board);
+                break;
+            case (CONVEYOR_BOARD_NAME):
+                board = new Board(CONVEYOR_BOARD_WIDTH, CONVEYOR_BOARD_HEIGHT, CONVEYOR_BOARD_NAME);
+                setupBeltsBeltsBeltsBoard(board);
                 break;
             default:
                 throw new IllegalArgumentException("Unrecognized board name");
@@ -132,5 +139,63 @@ public class BoardFactory {
         space = board.getSpace(4, 4);
         act = new Checkpoint(2);
         space.getActions().add(act);
+    }
+
+    /**
+     * Set up board objects for the Belts belts belts board type.
+     *
+     * @param board the board instance to modify
+     */
+    private void setupBeltsBeltsBeltsBoard(Board board) {
+        Space space;
+        ConveyorBelt beltAction;
+        Checkpoint checkpointAction;
+        for (int i = 0; i < CONVEYOR_BOARD_WIDTH; i++) {
+            for (int j = 0; j < CONVEYOR_BOARD_HEIGHT; j++) {
+                space = board.getSpace(i, j);
+                if (j < 3 && !(i == 5 && j == 0)) {
+                    beltAction = new ConveyorBelt();
+                    beltAction.setHeading(Heading.NORTH);
+                    space.getActions().add(beltAction);
+                    }
+                if (j == 0){
+                    space.getWalls().add(Heading.NORTH);
+                }
+                if (j > 4 && !(i == 6 && j == 7)) {
+                    space = board.getSpace(i, j);
+                    beltAction = new ConveyorBelt();
+                    beltAction.setHeading(Heading.SOUTH);
+                    space.getActions().add(beltAction);
+                }
+                if (j == 7) {
+                    space.getWalls().add(Heading.SOUTH);
+                }
+            }
+        }
+        space = board.getSpace(9, 4);
+        checkpointAction = new Checkpoint(2);
+        space.getActions().add(checkpointAction);
+
+        space = board.getSpace(5, 0);
+        checkpointAction = new Checkpoint(3);
+        space.getActions().add(checkpointAction);
+
+        space = board.getSpace(6, 7);
+        checkpointAction = new Checkpoint(1);
+        space.getActions().add(checkpointAction);
+
+        space = board.getSpace(2, 3);
+        checkpointAction = new Checkpoint(4);
+        space.getActions().add(checkpointAction);
+
+        space = board.getSpace(2, 3);
+        space.getWalls().add(Heading.EAST);
+        space = board.getSpace(2, 4);
+        space.getWalls().add(Heading.EAST);
+
+        space = board.getSpace(9, 3);
+        space.getWalls().add(Heading.WEST);
+        space = board.getSpace(9, 4);
+        space.getWalls().add(Heading.WEST);
     }
 }
