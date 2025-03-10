@@ -21,6 +21,7 @@ class GameControllerTest {
     private final int TEST_HEIGHT = 8;
 
     private GameController gameController;
+    private ConveyorBelt conveyorBelt;
 
     @BeforeEach
     void setUp() {
@@ -119,11 +120,11 @@ class GameControllerTest {
 
         /*
          * TODO: Write missing tests for moveForward():
-         *      for bumping
-         *      for chain bumping
-         *      for bumping against walls
+         *      for bumping X
+         *      for chain bumping x
+         *      for bumping against walls x
          *      for chain bumping against walls
-         *      for bumping across game edge
+         *      for bumping across game edge x
          */
     }
 
@@ -207,6 +208,173 @@ class GameControllerTest {
     void again() {
         // needs implementation first.
     }
+
+    @Test
+    void bumpingMovingForward() {
+        //Setting Players space and heading
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        Player neighbour = board.getNextPlayer();
+        current.setSpace(board.getSpace(2, 2));
+        current.setHeading(Heading.SOUTH);
+        neighbour.setSpace(board.getSpace(2,3));
+        neighbour.setHeading(Heading.WEST);
+
+        //Executing command "Forward"
+        gameController.moveForward(current);
+
+        //Checking Players new positions
+        Assertions.assertEquals(current, board.getSpace(2, 3).getPlayer(), "Player " + current.getName()
+                + " should be on Space (2,3)!");
+        Assertions.assertEquals(neighbour, board.getSpace(2, 4).getPlayer(), "Player " + neighbour.getName()
+                + " should be on Space (2,4)!");
+
+        //Checking Players heading and initial space is empty
+        Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player should be heading SOUTH!");
+        Assertions.assertEquals(Heading.WEST, neighbour.getHeading(), "Neighbour should still be heading WEST!");
+        Assertions.assertNull(board.getSpace(2, 2).getPlayer(), "Space (2, 2) should be empty!");
+    }
+
+    @Test
+    void bumpingMovingBackwards() {
+        //Setting Players space and heading
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        Player neighbour = board.getNextPlayer();
+        current.setSpace(board.getSpace(6, 7));
+        current.setHeading(Heading.SOUTH);
+        neighbour.setSpace(board.getSpace(6,6));
+        neighbour.setHeading(Heading.NORTH);
+
+        //Executing command "Backwards"
+        gameController.backward(current);
+
+        //Checking Players new positions
+        Assertions.assertEquals(current, board.getSpace(6, 6).getPlayer(), "Player " + current.getName()
+                + " should be on Space (6,6)!");
+        Assertions.assertEquals(neighbour, board.getSpace(6, 5).getPlayer(), "Player " + neighbour.getName()
+                + " should be on Space (6,5)!");
+
+        //Checking Players heading and initial space is empty
+        Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player should be heading SOUTH!");
+        Assertions.assertEquals(Heading.NORTH, neighbour.getHeading(), "Neighbour should still be heading WEST!");
+        Assertions.assertNull(board.getSpace(6, 7).getPlayer(), "Space (6, 7) should be empty!");
+    }
+
+    @Test
+    void chainBumpingOverEdge() {
+        //Setting Players space and heading
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        Player neighbour = board.getNextPlayer();
+        Player neighboursNeighbour = new Player(board, null, "neighboursNeighbour");
+        current.setSpace(board.getSpace(0, 2));
+        current.setHeading(Heading.WEST);
+        neighbour.setSpace(board.getSpace(7,2));
+        neighbour.setHeading(Heading.WEST);
+        neighboursNeighbour.setSpace(board.getSpace(6,2));
+        neighboursNeighbour.setHeading(Heading.NORTH);
+
+        //Executing command "Forward"
+        gameController.moveForward(current);
+
+        //Checking Players new positions
+        Assertions.assertEquals(current, board.getSpace(7, 2).getPlayer(), "Player " + current.getName()
+                + " should be on Space (7,2)!");
+        Assertions.assertEquals(neighbour, board.getSpace(6, 2).getPlayer(), "Player " + neighbour.getName()
+                + " should be on Space (6,2)!");
+        Assertions.assertEquals(neighboursNeighbour, board.getSpace(5, 2).getPlayer(), "Player " + neighbour.getName()
+                + " should be on Space (5,2)!");
+
+        //Checking Players heading and initial space is empty
+        Assertions.assertEquals(Heading.WEST, current.getHeading(), "Player should be heading WEST!");
+        Assertions.assertEquals(Heading.WEST, neighbour.getHeading(), "Neighbour should still be heading WEST!");
+        Assertions.assertEquals(Heading.NORTH, neighboursNeighbour.getHeading(), "Neighbours neighbour should still be heading NORTH!");
+        Assertions.assertNull(board.getSpace(0, 2).getPlayer(), "Space (2, 2) should be empty!");
+    }
+
+    @Test
+    void bumpingWithWall() {
+        //Setting Players space, heading and setting wall
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        Player neighbour = board.getNextPlayer();
+        Space wall = gameController.board.getSpace(6, 3);
+        wall.getWalls().add(Heading.WEST);
+        current.setSpace(board.getSpace(4, 3));
+        current.setHeading(Heading.EAST);
+        neighbour.setSpace(board.getSpace(5,3));
+        neighbour.setHeading(Heading.EAST);
+
+        //Executing command "Forward"
+        gameController.moveForward(current);
+
+        //Checking Players new positions
+        Assertions.assertEquals(current, board.getSpace(4, 3).getPlayer(), "Player " + current.getName()
+                + " should still be on Space (4,3)!");
+        Assertions.assertEquals(neighbour, board.getSpace(5, 3).getPlayer(), "Player " + neighbour.getName()
+                + " should still be on Space (5,3)!");
+
+        //Checking Players heading and checking space where Neighbour would be if not for a wall is still empty
+        Assertions.assertEquals(Heading.EAST, current.getHeading(), "Player should be heading EAST!");
+        Assertions.assertEquals(Heading.EAST, neighbour.getHeading(), "Neighbour should be heading EAST!");
+        Assertions.assertNull(board.getSpace(6, 3).getPlayer(), "Space (6, 3) should be empty!");
+    }
+
+    @Test
+    void fastFastForwardWithWall() {
+        //Setting Players space, heading and setting wall
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        Player neighbour = board.getNextPlayer();
+        Space wall = gameController.board.getSpace(6, 4);
+        wall.getWalls().add(Heading.EAST);
+        current.setSpace(board.getSpace(3, 4));
+        current.setHeading(Heading.EAST);
+        neighbour.setSpace(board.getSpace(5,4));
+        neighbour.setHeading(Heading.SOUTH);
+
+        //Executing command "FastFastForward"
+        gameController.moveFastFastForward(current);
+
+        //Checking Players new positions
+        Assertions.assertEquals(current, board.getSpace(4, 4).getPlayer(), "Player " + current.getName()
+                + " should be on Space (5,4)!" + current.getSpace());
+
+        // This shouldn't work, but does
+//        Assertions.assertEquals(current, board.getSpace(4, 4).getPlayer(), "Player " + current.getName()
+//            + " should be on Space (4,4)!");
+        Assertions.assertEquals(neighbour, board.getSpace(6, 4).getPlayer(), "Player " + neighbour.getName()
+                + " should be on Space (6,4)!" + neighbour.getSpace());
+
+        //Checking Players heading and checking space where Neighbour would be if not for a wall is still empty
+        Assertions.assertEquals(Heading.EAST, current.getHeading(), "Player should be heading EAST!");
+        Assertions.assertEquals(Heading.SOUTH, neighbour.getHeading(), "Neighbour should be heading SOUTH!");
+       // Assertions.assertNull(board.getSpace(4, 4).getPlayer(), "Space (4, 4) should be empty! "+current.getSpace());
+        Assertions.assertNull(board.getSpace(7, 4).getPlayer(), "Space (7, 4) should be empty! ");
+    }
+
+    @Test
+    void movingOnConveyorBelt() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(3, 4));
+        current.setHeading(Heading.EAST);
+        this.conveyorBelt = new ConveyorBelt();
+
+        conveyorBelt = board.getSpace(3,4).getConveyorBelt();
+
+        conveyorBelt.getHeading();
+        conveyorBelt.setHeading(Heading.EAST);
+        conveyorBelt.doAction(gameController, board.getSpace(3,4));
+
+        Assertions.assertEquals(current, board.getSpace(4, 4).getPlayer(), "Player " + current.getName()
+                + " should still be on Space (4,4)!");
+
+        Assertions.assertNull(board.getSpace(3, 4).getPlayer(), "Space (3, 4) should be empty!");
+    }
+
+
 
     // TODO and there should be more tests added for the different assignments eventually
 

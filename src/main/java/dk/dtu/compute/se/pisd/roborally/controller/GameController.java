@@ -298,15 +298,12 @@ public class GameController {
     // TODO V2
     public void moveFastForward(@NotNull Player player) {
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
     }
 
     public void moveFastFastForward(@NotNull Player player) {
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
     }
 
