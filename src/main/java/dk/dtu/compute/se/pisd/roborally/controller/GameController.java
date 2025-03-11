@@ -38,7 +38,7 @@ public class GameController {
     final public Board board;
 
     // arrays containing players that are on conveyor belts but could not be moved right away
-    private List<Player> conveyorMovementRetryQueue = new ArrayList<>();
+    private ArrayList<Player> conveyorMovementRetryQueue = new ArrayList<>();
     private ArrayList<Player> conveyorMovementRetryQueueCopy = new ArrayList<>();
 
     public GameController(@NotNull Board board) {
@@ -215,7 +215,7 @@ public class GameController {
                         board.setStep(step);
                         board.setCurrentPlayer(board.getPlayer(0));
                     } else {
-                        this.conveyorMovementRetryQueue.clear(); //
+                        this.conveyorMovementRetryQueue.clear();
                         this.conveyorMovementRetryQueueCopy.clear();
                         // Looping through the players to get the actions of the space they are on.
                         for (int i = 0; i < board.getPlayersNumber(); i++) {
@@ -226,38 +226,7 @@ public class GameController {
                                 action.doAction(this, space);
                             }
                         }
-
-                        while (!this.conveyorMovementRetryQueue.isEmpty()) {
-                            /*
-                             * This loop makes sure that players that were initially blocked while conveyor belt tried
-                             * to move them get another chance to be moved.
-                             * The ConveyorBelt class creates a list of the players that couldn't be moved along with
-                             * a copy that is used to check loop conditions.
-                             * If the list of player that hasn't been moved is unchanged the loop terminates,
-                             * otherwise it keeps running till there is no more players on conveyor belts
-                             *
-                             * We should consider outsourcing to helper functions
-                             */
-
-                            boolean listUnchanged = this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy) && this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy);
-                            // if the list is of players is the same as in last iteration terminate loop.
-                            if (listUnchanged) {
-                                break;
-                            }
-
-                            this.conveyorMovementRetryQueueCopy = new ArrayList<>(this.conveyorMovementRetryQueue);
-                            this.conveyorMovementRetryQueue.clear();
-
-                            // loop through the list of player that have not performed conveyor belt action.
-                            for (int i = this.conveyorMovementRetryQueueCopy.size() - 1; i >= 0; i--) {
-                                Player player = this.conveyorMovementRetryQueueCopy.get(i);
-                                Space space = player.getSpace();
-
-                                for (FieldAction action : space.getActions()) {
-                                    action.doAction(this, space);
-                                }
-                            }
-                        }
+                        processBlockedConveyorPlayers();
                         startProgrammingPhase();
                     }
                 }
@@ -469,6 +438,40 @@ public class GameController {
 
     public void addToConveyorRetryQueue(Player player) {
         conveyorMovementRetryQueue.add(player);
+    }
+
+    private void processBlockedConveyorPlayers() {
+        while (!this.conveyorMovementRetryQueue.isEmpty()) {
+            /*
+             * This loop makes sure that players that were initially blocked while conveyor belt tried
+             * to move them get another chance to be moved.
+             * The ConveyorBelt class creates a list of the players that couldn't be moved along with
+             * a copy that is used to check loop conditions.
+             * If the list of player that hasn't been moved is unchanged the loop terminates,
+             * otherwise it keeps running till there is no more players on conveyor belts
+             *
+             * We should consider outsourcing to helper functions
+             */
+
+            boolean listUnchanged = this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy) && this.conveyorMovementRetryQueueCopy.containsAll(this.conveyorMovementRetryQueue);
+            // if the list is of players is the same as in last iteration terminate loop.
+            if (listUnchanged) {
+                break;
+            }
+
+            this.conveyorMovementRetryQueueCopy = new ArrayList<>(this.conveyorMovementRetryQueue);
+            this.conveyorMovementRetryQueue.clear();
+
+            // loop through the list of player that have not performed conveyor belt action.
+            for (int i = this.conveyorMovementRetryQueueCopy.size() - 1; i >= 0; i--) {
+                Player player = this.conveyorMovementRetryQueueCopy.get(i);
+                Space space = player.getSpace();
+
+                for (FieldAction action : space.getActions()) {
+                    action.doAction(this, space);
+                }
+            }
+        }
     }
 
 }
