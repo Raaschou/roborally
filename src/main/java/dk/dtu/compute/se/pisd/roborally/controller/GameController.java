@@ -23,6 +23,7 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.controller.exception.ImpossibleMoveException;
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import dk.dtu.compute.se.pisd.roborally.view.PlayerView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -201,6 +202,7 @@ public class GameController {
                     Command command = card.command;
                     if (command == Command.RIGHT_OR_LEFT){
                         currentPlayer.board.setPhase(Phase.PLAYER_INTERACTION);
+                        // probably needs some extra lines of code here
                         executeCommand(currentPlayer, command);
                     } else {
                         executeCommand(currentPlayer, command);
@@ -278,6 +280,9 @@ public class GameController {
                 case AGAIN:
                     this.again(player);
                     break;
+                case RIGHT_OR_LEFT:
+                    this.rightOrLeft(player, "direction");
+                    break;
                 default:
                     // DO NOTHING (for now)
             }
@@ -334,7 +339,6 @@ public class GameController {
      */
     public void turnRight (@NotNull Player player){
         player.setHeading(player.getHeading().next());
-        board.setPhase(Phase.ACTIVATION);
     }
 
     /**
@@ -344,6 +348,14 @@ public class GameController {
      */
     public void turnLeft (@NotNull Player player){
         player.setHeading(player.getHeading().prev());
+    }
+
+    public void rightOrLeft (@NotNull Player player, String direction) {
+        if (direction.equals("Right")){
+            turnRight(player);
+        } else {
+            turnLeft(player);
+        }
         player.board.setPhase(Phase.ACTIVATION);
     }
 
