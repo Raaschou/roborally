@@ -56,10 +56,13 @@ public class Board extends Subject {
 
     private int counter = 0;
 
+    private int noOfCheckpoints = 0;
+
     public Board(int width, int height, @NotNull String boardName) {
         this.boardName = boardName;
         this.width = width;
         this.height = height;
+
         spaces = new Space[width][height];
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -228,7 +231,8 @@ public class Board extends Subject {
         // status of the game
 
         // TODO V2: changed the status so that it shows the phase, the current player, and the current register
-        return "Player = " + getCurrentPlayer().getName() + ", you've used: " + this.getCounter() + " steps!";
+        return getCurrentPlayer().getName() + ", your next checkpoint is "+ getCurrentPlayer().getNextCheckpoint() +
+                " | Current round: " + this.getCounter() + " | " + "Current register = " + this.getStep();
     }
 
     /**
@@ -259,4 +263,7 @@ public class Board extends Subject {
         return getPlayer((getPlayerNumber(getCurrentPlayer()) + 1) % getPlayersNumber());
     }
 
+    public int getNoOfCheckpoints() { return this.noOfCheckpoints; }
+
+    public void setNoOfCheckpoints(int no){ this.noOfCheckpoints = no; }
 }

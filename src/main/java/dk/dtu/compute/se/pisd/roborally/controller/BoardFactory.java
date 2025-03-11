@@ -143,6 +143,8 @@ public class BoardFactory {
         space = board.getSpace(4, 4);
         act = new Checkpoint(2);
         space.getActions().add(act);
+
+        board.setNoOfCheckpoints(2);
     }
 
     /**
@@ -201,5 +203,7 @@ public class BoardFactory {
         space.getWalls().add(Heading.WEST);
         space = board.getSpace(9, 4);
         space.getWalls().add(Heading.WEST);
+
+        board.setNoOfCheckpoints(4);
     }
 }

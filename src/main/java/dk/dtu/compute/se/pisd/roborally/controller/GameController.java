@@ -57,7 +57,6 @@ public class GameController {
         if (space.getPlayer() == null) {
             currentPlayer.getSpace().setPlayer(null);
             space.setPlayer(currentPlayer);
-            board.setCounter(board.getCounter() + 1);
             board.setCurrentPlayer(board.getNextPlayer());
         }
     }
@@ -221,6 +220,9 @@ public class GameController {
                             for (FieldAction action : space.getActions()) {
                                 action.doAction(this, space);
                             }
+                            if(isPlayerAWinner(currentPlayer, board)){
+                                board.setPhase(Phase.FINISHED);
+                            }
                         }
 
                         while (!this.conveyorMovementRetryQueue.isEmpty()) {
@@ -254,6 +256,7 @@ public class GameController {
                                 }
                             }
                         }
+                        board.setCounter(board.getCounter() + 1);
                         startProgrammingPhase();
                     }
                 }
@@ -464,4 +467,7 @@ public class GameController {
         conveyorMovementRetryQueue.add(player);
     }
 
+    public boolean isPlayerAWinner(Player player, Board board){
+        return player.getNextCheckpoint() == board.getNoOfCheckpoints() + 1;
+    }
 }
