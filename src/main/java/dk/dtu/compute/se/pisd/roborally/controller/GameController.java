@@ -26,6 +26,7 @@ import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ...
@@ -35,6 +36,10 @@ import java.util.ArrayList;
 public class GameController {
 
     final public Board board;
+
+    // arrays containing players that are on conveyor belts but could not be moved right away
+    private List<Player> conveyorMovementRetryQueue = new ArrayList<>();
+    private ArrayList<Player> conveyorMovementRetryQueueCopy = new ArrayList<>();
 
     public GameController(@NotNull Board board) {
         this.board = board;
@@ -206,8 +211,8 @@ public class GameController {
                         board.setStep(step);
                         board.setCurrentPlayer(board.getPlayer(0));
                     } else {
-                        ConveyorBelt.playersThatHaveNotMoved.clear(); //
-                        ConveyorBelt.copyPlayersThatHaveNotMoved.clear();
+                        this.conveyorMovementRetryQueue.clear(); //
+                        this.conveyorMovementRetryQueueCopy.clear();
                         // Looping through the players to get the actions of the space they are on.
                         for (int i = 0; i < board.getPlayersNumber(); i++) {
                             currentPlayer = board.getPlayer(i);
@@ -218,7 +223,7 @@ public class GameController {
                             }
                         }
 
-                        while (!ConveyorBelt.playersThatHaveNotMoved.isEmpty()) {
+                        while (!this.conveyorMovementRetryQueue.isEmpty()) {
                             /*
                              * This loop makes sure that players that were initially blocked while conveyor belt tried
                              * to move them get another chance to be moved.
@@ -230,22 +235,20 @@ public class GameController {
                              * We should consider outsourcing to helper functions
                              */
 
-                            boolean listUnchanged = ConveyorBelt.playersThatHaveNotMoved.containsAll(ConveyorBelt.copyPlayersThatHaveNotMoved) && ConveyorBelt.copyPlayersThatHaveNotMoved.containsAll(ConveyorBelt.playersThatHaveNotMoved);
+                            boolean listUnchanged = this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy) && this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy);
                             // if the list is of players is the same as in last iteration terminate loop.
                             if (listUnchanged) {
                                 break;
                             }
-                            ConveyorBelt.copyPlayersThatHaveNotMoved = new ArrayList<>(ConveyorBelt.playersThatHaveNotMoved);
-                            ConveyorBelt.playersThatHaveNotMoved.clear();
+
+                            this.conveyorMovementRetryQueueCopy = new ArrayList<>(this.conveyorMovementRetryQueue);
+                            this.conveyorMovementRetryQueue.clear();
 
                             // loop through the list of player that have not performed conveyor belt action.
-                            for (int i = ConveyorBelt.copyPlayersThatHaveNotMoved.size() - 1; i >= 0; i--) {
-                                Player player = ConveyorBelt.copyPlayersThatHaveNotMoved.get(i);
+                            for (int i = this.conveyorMovementRetryQueueCopy.size() - 1; i >= 0; i--) {
+                                Player player = this.conveyorMovementRetryQueueCopy.get(i);
                                 Space space = player.getSpace();
 
-                                // TODO figure a way to only do conveyor belt action.
-                                // I don't think it's a problem for now since the space is the same as executed
-                                // earlier and we dont have actions that 'stack' - yet.
                                 for (FieldAction action : space.getActions()) {
                                     action.doAction(this, space);
                                 }
@@ -440,8 +443,7 @@ public class GameController {
      * @return boolean true if moves was succes false otherwise
      */
     public boolean moveInDirection(@NotNull Player player, @NotNull Heading heading) {
-        // TODO fix so that it handles walls blocking conveyor belts!
-        // TODO needs testing.
+        // TODO needs testing. <- Is this done?
         Space neighbourSpace = board.getNeighbour(player.getSpace(), heading);
 
         //Checks if board.getNeighbour might return null, which is the case, if there is a wall in the direction of "heading"
@@ -456,6 +458,10 @@ public class GameController {
         } else {
             return false;
         }
+    }
+
+    public void addToConveyorRetryQueue(Player player) {
+        conveyorMovementRetryQueue.add(player);
     }
 
 }

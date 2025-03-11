@@ -40,9 +40,9 @@ public class ConveyorBelt extends FieldAction {
 
     private Heading heading;
 
-    // arrays containing players that are on conveyor belts but could not be pushed right away
-    public static List<Player> playersThatHaveNotMoved = new ArrayList<>();
-    public static ArrayList<Player> copyPlayersThatHaveNotMoved = new ArrayList<>();
+//    // arrays containing players that are on conveyor belts but could not be pushed right away
+//    public static List<Player> playersThatHaveNotMoved = new ArrayList<>();
+//    public static ArrayList<Player> copyPlayersThatHaveNotMoved = new ArrayList<>();
 
 
     public Heading getHeading() {
@@ -79,7 +79,7 @@ public class ConveyorBelt extends FieldAction {
         Heading heading = this.heading;
         boolean gotPushed = gameController.moveInDirection(currentPlayer, heading);
         if (!gotPushed) {
-            playersThatHaveNotMoved.add(currentPlayer);
+            gameController.addToConveyorRetryQueue(currentPlayer);
         }
         return false;
     }

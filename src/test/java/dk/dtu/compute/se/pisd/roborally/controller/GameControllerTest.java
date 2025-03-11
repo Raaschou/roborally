@@ -373,6 +373,9 @@ class GameControllerTest {
 //    }
 
 
+    // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
+    //      - probably not relevant for our case.
+
     // TODO and there should be more tests added for the different assignments eventually
 
 }
