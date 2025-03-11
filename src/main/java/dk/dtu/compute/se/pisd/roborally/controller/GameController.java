@@ -80,8 +80,6 @@ public class GameController {
         pusher.setSpace(space);
     }
 
-    // XXX V2
-
     /**
      * Start the programming phase by clearing the programming fields
      * for all players and generating random command cards in their
@@ -220,7 +218,6 @@ public class GameController {
                             }
                         }
 
-//                        int iter = 0; // til test slet har ikke slettet endnu skal måske bruges igen.
                         while (!ConveyorBelt.playersThatHaveNotMoved.isEmpty()) {
                             /*
                              * This loop makes sure that players that were initially blocked while conveyor belt tried
@@ -233,13 +230,6 @@ public class GameController {
                              * We should consider outsourcing to helper functions
                              */
 
-//                            // til test kan bare slettes hvis det virker.
-//                            iter++;
-//                            for (Player player: ConveyorBelt.playersThatHaveNotMoved) {
-//                                System.out.print(player.getName() + " ");
-//                                System.out.print(" iteration: " + iter);
-//                            }
-//                            System.out.println();  // test slut
                             boolean listUnchanged = ConveyorBelt.playersThatHaveNotMoved.containsAll(ConveyorBelt.copyPlayersThatHaveNotMoved) && ConveyorBelt.copyPlayersThatHaveNotMoved.containsAll(ConveyorBelt.playersThatHaveNotMoved);
                             // if the list is of players is the same as in last iteration terminate loop.
                             if (listUnchanged) {
@@ -333,15 +323,6 @@ public class GameController {
                     //empty... Overstående bliver implementeret om lidt...
                 }
             }
-            // TODO: afgør om dette skal være her.
-            neighbour = board.getNeighbour(player.getSpace(), player.getHeading());
-            if (neighbour != null) {
-                player.setSpace(neighbour);
-            } else {
-                // Er det nødvendigt ?
-                player.setSpace(player.getSpace());
-                System.out.println("There is a wall in New Oreleans its called the rising sun....");
-            }
         }
     }
 
@@ -401,7 +382,7 @@ public class GameController {
      *
      * @param player is moved backwards
      */
-    public void backward (@NotNull Player player){
+    public void backward (@NotNull Player player) {
         // august siger ok, jeg siger for dovent.
         Heading heading = player.getHeading().opposite();
         Space neighbour = board.getNeighbour(player.getSpace(), heading);
@@ -411,14 +392,8 @@ public class GameController {
             } catch (ImpossibleMoveException e) {
                 //empty
             }
-            // TODO afgør om dette skal være her?
-            player.setSpace(neighbour);
-        } else {
-            // Er det nødvendigt ?
-            System.out.println("There is a wall in New Oreleans its called the rising sun....");
         }
     }
-
     // TODO slet min kommentar...
     // Den her venter vi lige med...
 
@@ -464,7 +439,6 @@ public class GameController {
      * @param heading heading of the conveyor belt
      * @return boolean true if moves was succes false otherwise
      */
-    public boolean moveInDirection (@NotNull Player player, @NotNull Heading heading){
     public boolean moveInDirection(@NotNull Player player, @NotNull Heading heading) {
         // TODO fix so that it handles walls blocking conveyor belts!
         // TODO needs testing.
