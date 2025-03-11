@@ -412,18 +412,14 @@ class GameControllerTest {
         board.setCurrentPlayer(current);
         current.setHeading(Heading.NORTH);
 
-        board.setPhase(Phase.PROGRAMMING);
-        CommandCardField field = current.getProgramField(0);
-        field.setCard(new CommandCard(Command.FORWARD));
-        field.setVisible(true);
-        field = current.getProgramField(1);
-        field.setCard(new CommandCard(Command.AGAIN));
+        gameController.startProgrammingPhase();
+        current.getProgramField(0).setCard(new CommandCard(Command.FORWARD));
+        current.getProgramField(1).setCard(new CommandCard(Command.AGAIN));
         gameController.finishProgrammingPhase();
-//        gameController.
-        Assertions.assertNotEquals(current.getSpace(), board.getSpace(3, 3), "Player " + current.getName() + " shouldnt be on Space (3,2)!");
-        gameController.again(current);
-        Assertions.assertEquals(current, board.getSpace(3, 2).getPlayer(), "Player " + current.getName() + " should be on Space (3,2)!");
-        gameController.again(current);
+        gameController.executePrograms();
+
+
+
         Assertions.assertEquals(current, board.getSpace(3, 1).getPlayer(), "Player " + current.getName() + " should be on Space (3,1)!");
 
     }
