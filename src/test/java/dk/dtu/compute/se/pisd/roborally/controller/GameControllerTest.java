@@ -346,31 +346,31 @@ class GameControllerTest {
         Assertions.assertEquals(Heading.EAST, current.getHeading(), "Player should be heading EAST!");
     }
 
-//TODO få til at virke...
-//    @Test
-//    void conveyorbeltWithWall() {
-//        // Setting player and heading
-//        Board board = gameController.board;
-//        Player current = board.getCurrentPlayer();
-//        current.setSpace(board.getSpace(6, 6));
-//        current.setHeading(Heading.NORTH);
-//
-//        //Setting Wall to stop conveyorbelt action
-//        Space wall = gameController.board.getSpace(6, 7);
-//        wall.getWalls().add(Heading.NORTH);
-//
-//        //Setting Conveyorbelt and executing action
-//        Space space = board.getSpace(6, 6);
-//        ConveyorBelt action = new ConveyorBelt();
-//        action.setHeading(Heading.SOUTH);
-//        space.getActions().add(action);
-//        action.doAction(gameController, board.getSpace(6,6));
-//
-//        // Checking Players position and heading
-//        Assertions.assertEquals(current, board.getSpace(6, 6).getPlayer(), "Player " + current.getName()
-//                + " should be on Space (6,6)!");
-//        Assertions.assertEquals(Heading.NORTH, current.getHeading(), "Player should be heading EAST!");
-//    }
+
+    @Test
+    void conveyorbeltWithWall() {
+        // Setting player and heading
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(6, 3));
+        current.setHeading(Heading.NORTH);
+
+        //Setting Wall to stop conveyorbelt action
+        Space wall = gameController.board.getSpace(6, 3);
+        wall.getWalls().add(Heading.NORTH);
+
+        //Setting Conveyorbelt and executing action
+        Space space = board.getSpace(6, 3);
+        ConveyorBelt action = new ConveyorBelt();
+        action.setHeading(Heading.NORTH);
+        space.getActions().add(action);
+        action.doAction(gameController, board.getSpace(6,3));
+
+        // Checking Players position and heading
+        Assertions.assertEquals(current, board.getSpace(6, 3).getPlayer(), "Player " + current.getName()
+                + " should be on Space (6,3)!");
+        Assertions.assertEquals(Heading.NORTH, current.getHeading(), "Player should be heading EAST!");
+    }
 
 
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
