@@ -42,6 +42,8 @@ public class GameController {
     private ArrayList<Player> conveyorMovementRetryQueue = new ArrayList<>();
     private ArrayList<Player> conveyorMovementRetryQueueCopy = new ArrayList<>();
 
+    private Player interactivePlayer = null;
+
     public GameController(@NotNull Board board) {
         this.board = board;
     }
@@ -201,9 +203,11 @@ public class GameController {
                 if (card != null) {
                     Command command = card.command;
                     if (command == Command.RIGHT_OR_LEFT){
-                        currentPlayer.board.setPhase(Phase.PLAYER_INTERACTION);
-                        // probably needs some extra lines of code here
+                        // the Right or left case changes phase to interactive
                         executeCommand(currentPlayer, command);
+                        this.setInteractivePlayer(currentPlayer);
+
+//                        }
                     } else {
                         executeCommand(currentPlayer, command);
                     }
@@ -281,7 +285,7 @@ public class GameController {
                     this.again(player);
                     break;
                 case RIGHT_OR_LEFT:
-                    this.rightOrLeft(player, "direction");
+                    board.setPhase(Phase.PLAYER_INTERACTION);
                     break;
                 default:
                     // DO NOTHING (for now)
@@ -315,7 +319,6 @@ public class GameController {
      */
     public void moveFastForward (@NotNull Player player){
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
     }
 
@@ -326,9 +329,7 @@ public class GameController {
      */
     public void moveFastFastForward (@NotNull Player player){
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
     }
 
@@ -350,13 +351,21 @@ public class GameController {
         player.setHeading(player.getHeading().prev());
     }
 
-    public void rightOrLeft (@NotNull Player player, String direction) {
+    /**
+     * Turns a player to right or left based on interactive choice
+     *
+     * @param player the player to chose to turn right or left
+     * @param direction the chosen direction the player want to turn
+     */
+    public void turnRightOrLeft (@NotNull Player player, String direction) {
         if (direction.equals("Right")){
             turnRight(player);
-        } else {
+        } else if (direction.equals("Left")) {
             turnLeft(player);
         }
-        player.board.setPhase(Phase.ACTIVATION);
+        // resets the interactive player phase
+        this.setInteractivePlayer(null);
+        board.setPhase(Phase.ACTIVATION);
     }
 
     /**
@@ -385,8 +394,6 @@ public class GameController {
             }
         }
     }
-    // TODO slet min kommentar...
-    // Den her venter vi lige med...
 
     /**
      * not yet implemented
@@ -484,6 +491,24 @@ public class GameController {
                 }
             }
         }
+    }
+
+    /**
+     * sets a given player to be interactive for the PlayerView to acces the right player.
+     *
+     * @param player to set in interactive mode
+     */
+    public void setInteractivePlayer(Player player) {
+        this.interactivePlayer = player;
+    }
+
+    /**
+     * returns the player that is in interactive mode.
+     *
+     * @return the interactive player
+     */
+    public Player getInteractivePlayer() {
+        return this.interactivePlayer;
     }
 
 }

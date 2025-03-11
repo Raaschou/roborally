@@ -214,17 +214,14 @@ public class PlayerView extends Tab implements ViewObserver {
                 playerInteractionPanel.getChildren().clear();
 
                 if (player.board.getCurrentPlayer() == player && player.board.getPhase() == Phase.PLAYER_INTERACTION) {
-                    // TODO V3: these buttons should be shown only when there is
-                    //      an interactive command card, and the buttons should represent
-                    //      the player's choices of the interactive command card. The
-                    //      following is just a mockup showing two options
+                    // If Phase is in PLAYER_INTERACTION the player player are to choose a direction based on these buttons.
                     Button optionButton = new Button("Turn Right!");
-                    optionButton.setOnAction( e -> gameController.rightOrLeft(player, "Right"));
+                    optionButton.setOnAction( e -> gameController.turnRightOrLeft(gameController.getInteractivePlayer(), "Right"));
                     optionButton.setDisable(false);
                     playerInteractionPanel.getChildren().add(optionButton);
 
                     optionButton = new Button("Turn Left!");
-                    optionButton.setOnAction( e -> gameController.rightOrLeft(player, "Left"));
+                    optionButton.setOnAction( e -> gameController.turnRightOrLeft(gameController.getInteractivePlayer(), "Left"));
                     optionButton.setDisable(false);
                     playerInteractionPanel.getChildren().add(optionButton);
                 }
