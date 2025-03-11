@@ -1,9 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -389,8 +386,7 @@ class GameControllerTest {
         Checkpoint checkpoint2 = new Checkpoint(2);
         space.getActions().add(checkpoint2);
 
-        //assert
-        int headingforCheck = current.getNextCheckpoint();
+
         Assertions.assertEquals(1, current.getNextCheckpoint(), "Player " + current.getName()
                 + " should be heading for first!");
 
@@ -403,9 +399,32 @@ class GameControllerTest {
 
         gameController.moveForward(current);
         checkpoint2.doAction(gameController, board.getSpace(3,1));
-        //assert
+
         Assertions.assertEquals(3, current.getNextCheckpoint(), "Player " + current.getName()
                 + " should be heading for third");
+
+    }
+
+    @Test
+    void againTest(){
+        Board board = gameController.board;
+        Player current = board.getSpace(3,3).getPlayer();
+        board.setCurrentPlayer(current);
+        current.setHeading(Heading.NORTH);
+
+        board.setPhase(Phase.PROGRAMMING);
+        CommandCardField field = current.getProgramField(0);
+        field.setCard(new CommandCard(Command.FORWARD));
+        field.setVisible(true);
+        field = current.getProgramField(1);
+        field.setCard(new CommandCard(Command.AGAIN));
+        gameController.finishProgrammingPhase();
+//        gameController.
+        Assertions.assertNotEquals(current.getSpace(), board.getSpace(3, 3), "Player " + current.getName() + " shouldnt be on Space (3,2)!");
+        gameController.again(current);
+        Assertions.assertEquals(current, board.getSpace(3, 2).getPlayer(), "Player " + current.getName() + " should be on Space (3,2)!");
+        gameController.again(current);
+        Assertions.assertEquals(current, board.getSpace(3, 1).getPlayer(), "Player " + current.getName() + " should be on Space (3,1)!");
 
     }
 

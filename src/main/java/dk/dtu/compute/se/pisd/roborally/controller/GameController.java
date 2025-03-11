@@ -281,24 +281,31 @@ public class GameController {
 
             switch (command) {
                 case FORWARD:
+                    player.setLastCommand(Command.FORWARD);
                     this.moveForward(player);
                     break;
                 case RIGHT:
+                    player.setLastCommand(Command.RIGHT);
                     this.turnRight(player);
                     break;
                 case LEFT:
+                    player.setLastCommand(Command.LEFT);
                     this.turnLeft(player);
                     break;
                 case FAST_FORWARD:
+                    player.setLastCommand(Command.FAST_FORWARD);
                     this.moveFastForward(player);
                     break;
                 case FAST_FAST_FORWARD:
+                    player.setLastCommand(Command.FAST_FAST_FORWARD);
                     this.moveFastFastForward(player);
                     break;
                 case U_TURN:
+                    player.setLastCommand(Command.U_TURN);
                     this.uTurn(player);
                     break;
                 case BACKWARD:
+                    player.setLastCommand(Command.BACKWARD);
                     this.backward(player);
                     break;
                 case AGAIN:
@@ -401,11 +408,20 @@ public class GameController {
     // Den her venter vi lige med...
 
     /**
-     * not yet implemented
+     * @author ChRiStOfFeR
+     * Excecutes the again command card, for a given player...
+     * @param player the player for whom to excecute the card...
      */
-    public void again (@NotNull Player player){
-        // TODO implement this
+    public void again (@NotNull Player player) {
+        Command lastCommand = player.getLastCommand();
+
+        if(lastCommand ==null) {
+            return;
+        }
+        executeCommand(player,lastCommand);
     }
+
+
 
     /**
      * Moves a command card from one command card field to another.
@@ -414,7 +430,7 @@ public class GameController {
      * @param target command card field that the card is moved to
      * @return true if successful, false otherwise
      */
-    public boolean moveCards (@NotNull CommandCardField source, @NotNull CommandCardField target){
+    public boolean moveCards (@NotNull CommandCardField source, @NotNull CommandCardField target) {
         CommandCard sourceCard = source.getCard();
         CommandCard targetCard = target.getCard();
         if (sourceCard != null && targetCard == null) {
