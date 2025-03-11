@@ -160,6 +160,13 @@ public class AppController implements Observer {
         }
     }
 
+    public void endGame(Player player){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText(player + " is the winner, now exiting...");
+        alert.show();
+        Optional<ButtonType> result = alert.showAndWait();
+        gameController = null;
+    }
     public boolean isGameRunning() {
         return gameController != null;
     }

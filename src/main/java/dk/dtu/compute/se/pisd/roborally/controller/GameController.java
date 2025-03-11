@@ -23,10 +23,13 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.controller.exception.ImpossibleMoveException;
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ...
@@ -134,6 +137,17 @@ public class GameController {
         board.setStep(0);
     }
 
+    private void startWinning(Player currentPlayer){
+        board.setPhase(Phase.FINISHED);
+        // Most of this code should be in AppController
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText(currentPlayer.getName() + " is the winner!");
+        alert.show();
+        Optional<ButtonType> result = alert.showAndWait();
+      /*  gameController = null; */
+
+    }
+
     /**
      * Make program fields visible for the given register
      *
@@ -221,7 +235,7 @@ public class GameController {
                                 action.doAction(this, space);
                             }
                             if(isPlayerAWinner(currentPlayer, board)){
-                                board.setPhase(Phase.FINISHED);
+                                startWinning(currentPlayer);
                             }
                         }
 

@@ -232,7 +232,7 @@ public class Board extends Subject {
 
         // TODO V2: changed the status so that it shows the phase, the current player, and the current register
         return getCurrentPlayer().getName() + ", your next checkpoint is "+ getCurrentPlayer().getNextCheckpoint() +
-                " | Current round: " + this.getCounter() + " | " + "Current register = " + this.getStep();
+                " | Current round: " + this.getCounter() + " | " + "Current register: " + this.getStep() + " | Phase: " + this.getPhase();
     }
 
     /**
