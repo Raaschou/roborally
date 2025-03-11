@@ -423,7 +423,29 @@ class GameControllerTest {
         Assertions.assertEquals(current, board.getSpace(3, 1).getPlayer(), "Player " + current.getName() + " should be on Space (3,1)!");
 
     }
+    @Test
+    void againTest2(){
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(5, 3));
+        current.setHeading(Heading.NORTH);
 
+        gameController.startProgrammingPhase();
+        current.getProgramField(0).setCard(new CommandCard(Command.FORWARD));
+        current.getProgramField(1).setCard(new CommandCard(Command.AGAIN));
+        gameController.finishProgrammingPhase();
+        Assertions.assertEquals(current, board.getSpace(5,3).getPlayer(), "Player " + current.getName() + " should be on Space (5,3)!");
+        gameController.executeStep();
+        Assertions.assertEquals(current, board.getSpace(5, 2).getPlayer(), "Player " + current.getName() + " should be on Space (5,2)!");
+        gameController.executeStep();//player 2
+        gameController.executeStep();//player 3
+        gameController.executeStep();//player 4
+        gameController.executeStep();//player 5
+        gameController.executeStep();//player 6
+        gameController.executeStep();//player 1
+        Assertions.assertEquals(current, board.getSpace(5, 1).getPlayer(), "Player " + current.getName() + " should be on Space (5,1)!");
+
+    }
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
 
