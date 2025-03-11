@@ -199,11 +199,12 @@ public class GameController {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
-
-                    // Loop her?
-                    executeCommand(currentPlayer, command);
-                } else {
-                    board.setPhase(Phase.PLAYER_INTERACTION);
+                    if (command == Command.RIGHT_OR_LEFT){
+                        currentPlayer.board.setPhase(Phase.PLAYER_INTERACTION);
+                        executeCommand(currentPlayer, command);
+                    } else {
+                        executeCommand(currentPlayer, command);
+                    }
                 }
                 int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
                 if (nextPlayerNumber < board.getPlayersNumber()) {
@@ -333,6 +334,7 @@ public class GameController {
      */
     public void turnRight (@NotNull Player player){
         player.setHeading(player.getHeading().next());
+        board.setPhase(Phase.ACTIVATION);
     }
 
     /**
@@ -342,11 +344,9 @@ public class GameController {
      */
     public void turnLeft (@NotNull Player player){
         player.setHeading(player.getHeading().prev());
+        player.board.setPhase(Phase.ACTIVATION);
     }
 
-    public void turnRightOrLeft (@NotNull Player player) {
-
-    }
     /**
      * Turn a player to the opposite heading
      *
