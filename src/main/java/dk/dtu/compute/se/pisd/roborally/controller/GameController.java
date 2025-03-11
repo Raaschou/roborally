@@ -58,7 +58,12 @@ public class GameController {
     }
 
     /**
-     * Method for pushing player
+     * Move a player to a given space, recursively pushing other players if necessary.
+     *
+     * @param pusher player that is moving
+     * @param space space where the player wants to be
+     * @param heading direction of movement
+     * @throws ImpossibleMoveException
      */
     private void moveToSpace(@NotNull Player pusher, @NotNull Space space, @NotNull Heading heading) throws ImpossibleMoveException {
         assert board.getNeighbour(pusher.getSpace(), heading) == space;
@@ -328,6 +333,7 @@ public class GameController {
                     //empty... Overstående bliver implementeret om lidt...
                 }
             }
+            // TODO: afgør om dette skal være her.
             neighbour = board.getNeighbour(player.getSpace(), player.getHeading());
             if (neighbour != null) {
                 player.setSpace(neighbour);
@@ -392,6 +398,7 @@ public class GameController {
 
     /**
      * Moves the player backwards
+     *
      * @param player is moved backwards
      */
     public void backward (@NotNull Player player){
@@ -404,6 +411,7 @@ public class GameController {
             } catch (ImpossibleMoveException e) {
                 //empty
             }
+            // TODO afgør om dette skal være her?
             player.setSpace(neighbour);
         } else {
             // Er det nødvendigt ?
@@ -451,11 +459,13 @@ public class GameController {
 
     /**
      * Move function for the conveyor belt to moves a player in the direction of the conveyor belt.
-     * @param player player to be moved by conveyor belt
+     *
+     * @param player  player to be moved by conveyor belt
      * @param heading heading of the conveyor belt
      * @return boolean true if moves was succes false otherwise
      */
     public boolean moveInDirection (@NotNull Player player, @NotNull Heading heading){
+    public boolean moveInDirection(@NotNull Player player, @NotNull Heading heading) {
         // TODO fix so that it handles walls blocking conveyor belts!
         // TODO needs testing.
         Space neighbourSpace = board.getNeighbour(player.getSpace(), heading);
