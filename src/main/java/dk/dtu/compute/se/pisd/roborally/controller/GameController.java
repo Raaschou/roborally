@@ -140,11 +140,17 @@ public class GameController {
     private void startWinning(Player currentPlayer){
         board.setPhase(Phase.FINISHED);
         // Most of this code should be in AppController
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        /*Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText(currentPlayer.getName() + " is the winner!");
         alert.show();
-        Optional<ButtonType> result = alert.showAndWait();
-      /*  gameController = null; */
+        Optional<ButtonType> result = alert.showAndWait();*/
+        //This technically works as intended, but calls endGame statically and throws an IllegalStateException
+        try{
+            AppController.endGame(currentPlayer);
+        } catch (IllegalStateException e){
+            System.out.println("Alright" + e);
+        }
+
 
     }
 
