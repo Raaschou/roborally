@@ -1,9 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
+import dk.dtu.compute.se.pisd.roborally.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -381,6 +378,8 @@ class GameControllerTest {
         current.setHeading(Heading.NORTH);
         board.setNoOfCheckpoints(1);
 
+        //Creates checkpoint and does checkpoint action on the player,
+        //which should increment nextCheckpoint attribute
         Space space = board.getSpace(4,4);
         Checkpoint point = new Checkpoint(1);
         space.getActions().add(point);
@@ -389,6 +388,30 @@ class GameControllerTest {
         Assertions.assertEquals(2,current.getNextCheckpoint(),current.getName() + "next checkpoint should be 2");
     }
 
+    @Test
+    void gameWin(){
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(4, 4));
+        current.setHeading(Heading.NORTH);
+        board.setNoOfCheckpoints(2);
+
+        Space space = board.getSpace(4,4);
+        Checkpoint point = new Checkpoint(1);
+        space.getActions().add(point);
+        point.doAction(gameController, board.getSpace(4,4));
+
+        //Creates another checkpoint and moves the player there and does checkpoint action
+        space = board.getSpace(6,6);
+        point = new Checkpoint(2);
+        space.getActions().add(point);
+        current.setSpace(board.getSpace(6,6));
+        point.doAction(gameController, board.getSpace(6,6));
+
+        Assertions.assertEquals(3,current.getNextCheckpoint(),current.getName() + "next checkpoint should be 3");
+        Assertions.assertTrue(gameController.isPlayerAWinner(current,board), "Board should be in finished phase");
+
+    }
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
 
