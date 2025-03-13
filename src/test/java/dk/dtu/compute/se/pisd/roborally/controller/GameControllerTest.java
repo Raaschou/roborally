@@ -401,16 +401,22 @@ class GameControllerTest {
         space.getActions().add(point);
         point.doAction(gameController, board.getSpace(4,4));
 
+
         //Creates another checkpoint and moves the player there and does checkpoint action
         space = board.getSpace(6,6);
         point = new Checkpoint(2);
         space.getActions().add(point);
         current.setSpace(board.getSpace(6,6));
+       /* gameController.startProgrammingPhase();
+        gameController.finishProgrammingPhase();
+        gameController.executePrograms();*/
         point.doAction(gameController, board.getSpace(6,6));
+        //It is not currently possible to run the startWinning method, as the popup, it creates, does ugly things in the terminal
+        //gameController.startWinning(current);
 
         Assertions.assertEquals(3,current.getNextCheckpoint(),current.getName() + "next checkpoint should be 3");
-        Assertions.assertTrue(gameController.isPlayerAWinner(current,board), "Board should be in finished phase");
-
+        Assertions.assertTrue(gameController.isPlayerAWinner(current,board), "isPlayerAWinner should be true");
+        Assertions.assertSame(Phase.FINISHED, board.getPhase(), "Board should be in finished phase");
     }
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.

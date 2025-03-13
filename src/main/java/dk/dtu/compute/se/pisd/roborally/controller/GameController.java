@@ -141,7 +141,7 @@ public class GameController {
      * Ends the game, creates a popup window showing the winner
      * @param currentPlayer winner of the game
      */
-    private void startWinning(Player currentPlayer){
+    public void startWinning(Player currentPlayer){
         board.setPhase(Phase.FINISHED);
 
         // This creates an alert window
