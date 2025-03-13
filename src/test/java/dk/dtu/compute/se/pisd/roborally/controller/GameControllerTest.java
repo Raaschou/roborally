@@ -372,6 +372,22 @@ class GameControllerTest {
         Assertions.assertEquals(Heading.NORTH, current.getHeading(), "Player should be heading EAST!");
     }
 
+    @Test
+    void checkpointIncrementPlayerNextCheckpoint(){
+        //Creates board with 1 checkpoint
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(4, 4));
+        current.setHeading(Heading.NORTH);
+        board.setNoOfCheckpoints(1);
+
+        Space space = board.getSpace(4,4);
+        Checkpoint point = new Checkpoint(1);
+        space.getActions().add(point);
+        point.doAction(gameController, board.getSpace(4,4));
+
+        Assertions.assertEquals(2,current.getNextCheckpoint(),current.getName() + "next checkpoint should be 2");
+    }
 
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
