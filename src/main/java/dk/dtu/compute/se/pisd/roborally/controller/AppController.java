@@ -159,14 +159,14 @@ public class AppController implements Observer {
             Platform.exit();
         }
     }
-    // Not currently reaching here
+   /*
     public static void endGame(Player player){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText(player.getName() + " is the winner!");
         alert.show();
         Optional<ButtonType> result = alert.showAndWait();
-        /*gameController = null;*/
-    }
+        *//*gameController = null;*//*
+    }*/
     public boolean isGameRunning() {
         return gameController != null;
     }

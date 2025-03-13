@@ -137,19 +137,26 @@ public class GameController {
         board.setStep(0);
     }
 
+    /**
+     * Ends the game, creates a popup window showing the winner
+     * @param currentPlayer winner of the game
+     */
     private void startWinning(Player currentPlayer){
         board.setPhase(Phase.FINISHED);
-        // Most of this code should be in AppController
-        /*Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+        // This creates an alert window
+        // It could be argued, that the AppController should be the one creating a popup,
+        // but as this is a part of the normal game flow, we chose to place it in the gameController.
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText(currentPlayer.getName() + " is the winner!");
         alert.show();
-        Optional<ButtonType> result = alert.showAndWait();*/
+
         //This technically works as intended, but calls endGame statically and throws an IllegalStateException
-        try{
+        /*try{
             AppController.endGame(currentPlayer);
         } catch (IllegalStateException e){
             System.out.println("Alright" + e);
-        }
+        }*/
 
 
     }
