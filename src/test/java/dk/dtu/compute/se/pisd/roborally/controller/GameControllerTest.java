@@ -409,7 +409,7 @@ class GameControllerTest {
         gameController.moveForward(current);
         point2.doAction(gameController, board.getSpace(6, 2));
         Assertions.assertEquals(2, current.getNextCheckpoint(), current.getName() + "next checkpoint should still be 2");
-        Assertions.assertFalse(gameController.isPlayerAWinner(current, board), "isPlayerAWinner should be false");
+        Assertions.assertFalse(gameController.isPlayerAWinner(current), "isPlayerAWinner should be false");
 
         space = board.getSpace(6, 1);
         Checkpoint point3 = new Checkpoint(2);
@@ -422,7 +422,7 @@ class GameControllerTest {
         gameController.backward(current);
         point2.doAction(gameController, board.getSpace(6, 2));
         Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
-        Assertions.assertTrue(gameController.isPlayerAWinner(current, board), "isPlayerAWinner should be true");
+        Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
 
         try {
             gameController.startWinning(current);
@@ -432,7 +432,7 @@ class GameControllerTest {
         }
 
         Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
-        Assertions.assertTrue(gameController.isPlayerAWinner(current, board), "isPlayerAWinner should be true");
+        Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
         Assertions.assertSame(Phase.FINISHED, board.getPhase(), "Board should be in finished phase");
     }
 
@@ -470,7 +470,7 @@ class GameControllerTest {
         }
 
         Assertions.assertEquals(3, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 3");
-        Assertions.assertTrue(gameController.isPlayerAWinner(current, board), "isPlayerAWinner should be true");
+        Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
         Assertions.assertSame(Phase.FINISHED, board.getPhase(), "Board should be in finished phase");
     }
 

@@ -24,11 +24,9 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 import dk.dtu.compute.se.pisd.roborally.controller.exception.ImpossibleMoveException;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ...
@@ -40,7 +38,7 @@ public class GameController {
     final public Board board;
 
     // arrays containing players that are on conveyor belts but could not be moved right away
-    private ArrayList<Player> conveyorMovementRetryQueue = new ArrayList<>();
+    private final ArrayList<Player> conveyorMovementRetryQueue = new ArrayList<>();
     private ArrayList<Player> conveyorMovementRetryQueueCopy = new ArrayList<>();
 
     public GameController(@NotNull Board board) {
@@ -67,8 +65,8 @@ public class GameController {
     /**
      * Move a player to a given space, recursively pushing other players if necessary.
      *
-     * @param pusher player that is moving
-     * @param space space where the player wants to be
+     * @param pusher  player that is moving
+     * @param space   space where the player wants to be
      * @param heading direction of movement
      * @throws ImpossibleMoveException
      */
@@ -139,9 +137,10 @@ public class GameController {
 
     /**
      * Ends the game, creates a popup window showing the winner
+     *
      * @param currentPlayer winner of the game
      */
-    public void startWinning(Player currentPlayer){
+    public void startWinning(Player currentPlayer) {
         board.setPhase(Phase.FINISHED);
 
         // This creates an alert window
@@ -150,15 +149,6 @@ public class GameController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText(currentPlayer.getName() + " is the winner!");
         alert.show();
-
-        //This technically works as intended, but calls endGame statically and throws an IllegalStateException
-        /*try{
-            AppController.endGame(currentPlayer);
-        } catch (IllegalStateException e){
-            System.out.println("Alright" + e);
-        }*/
-
-
     }
 
     /**
@@ -225,7 +215,7 @@ public class GameController {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
-                    if (command == Command.RIGHT_OR_LEFT){
+                    if (command == Command.RIGHT_OR_LEFT) {
                         // the Right or left case changes phase to interactive
                         executeCommand(currentPlayer, command);
                         return;
@@ -233,9 +223,7 @@ public class GameController {
                         executeCommand(currentPlayer, command);
                     }
                 }
-                if (board.getPhase() == Phase.ACTIVATION) {
-                    continueNextStep(currentPlayer);
-                }
+                continueNextStep(currentPlayer);
             } else {
                 // this should not happen
                 assert false;
@@ -254,10 +242,6 @@ public class GameController {
      */
     private void executeCommand(@NotNull Player player, Command command) {
         if (player != null && player.board == board && command != null) {
-            // XXX This is a very simplistic way of dealing with some basic cards and
-            //     their execution. This should eventually be done in a more elegant way
-            //     (this concerns the way cards are modelled as well as the way they are executed).
-
             switch (command) {
                 case FORWARD:
                     player.setLastCommand(Command.FORWARD);
@@ -287,11 +271,16 @@ public class GameController {
                     player.setLastCommand(Command.BACKWARD);
                     this.backward(player);
                     break;
+                case Command.RIGHT_OR_LEFT:
+                    player.setLastCommand(Command.RIGHT_OR_LEFT);
+                    board.setPhase(Phase.PLAYER_INTERACTION);
+                    break;
                 case AGAIN:
                     this.again(player);
                     break;
                 default:
                     // DO NOTHING (for now)
+                    break;
             }
         }
     }
@@ -319,9 +308,8 @@ public class GameController {
      *
      * @param player player to move
      */
-    public void moveFastForward (@NotNull Player player){
+    public void moveFastForward(@NotNull Player player) {
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
     }
 
@@ -330,11 +318,9 @@ public class GameController {
      *
      * @param player player to move
      */
-    public void moveFastFastForward (@NotNull Player player){
+    public void moveFastFastForward(@NotNull Player player) {
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
     }
 
@@ -343,7 +329,7 @@ public class GameController {
      *
      * @param player player to turn
      */
-    public void turnRight (@NotNull Player player){
+    public void turnRight(@NotNull Player player) {
         player.setHeading(player.getHeading().next());
     }
 
@@ -352,7 +338,7 @@ public class GameController {
      *
      * @param player player to turn
      */
-    public void turnLeft (@NotNull Player player){
+    public void turnLeft(@NotNull Player player) {
         player.setHeading(player.getHeading().prev());
     }
 
@@ -361,7 +347,7 @@ public class GameController {
      *
      * @param player player to turn
      */
-    public void uTurn (@NotNull Player player){
+    public void uTurn(@NotNull Player player) {
         player.setHeading(player.getHeading().opposite());
     }
 
@@ -370,15 +356,13 @@ public class GameController {
      *
      * @param player is moved backwards
      */
-    public void backward (@NotNull Player player) {
-        // august siger ok, jeg siger for dovent.
+    public void backward(@NotNull Player player) {
         Heading heading = player.getHeading().opposite();
         Space neighbour = board.getNeighbour(player.getSpace(), heading);
         if (neighbour != null) {
             try {
                 moveToSpace(player, neighbour, heading);
-            } catch (ImpossibleMoveException e) {
-                //empty
+            } catch (ImpossibleMoveException ignored) {
             }
         }
     }
@@ -386,11 +370,11 @@ public class GameController {
     /**
      * Turns a player to right or left based on interactive choice
      *
-     * @param player the player to chose to turn right or left
+     * @param player    the player to chose to turn right or left
      * @param direction the chosen direction the player want to turn
      */
-    public void turnRightOrLeft (@NotNull Player player, String direction) {
-        if (direction.equals("Right")){
+    public void turnRightOrLeft(@NotNull Player player, String direction) {
+        if (direction.equals("Right")) {
             turnRight(player);
         } else if (direction.equals("Left")) {
             turnLeft(player);
@@ -402,24 +386,24 @@ public class GameController {
     }
 
     /**
+     * @param player the player for whom to excecute the card...
      * @author ChRiStOfFeR
      * Excecutes the again command card, for a given player...
-     * @param player the player for whom to excecute the card...
      */
-    public void again (@NotNull Player player) {
+    public void again(@NotNull Player player) {
         Command lastCommand = player.getLastCommand();
 
-        if(lastCommand ==null) {
+        if (lastCommand == null) {
             return;
         }
-        executeCommand(player,lastCommand);
+        executeCommand(player, lastCommand);
     }
 
     /**
      * A method called when no corresponding controller operation is implemented yet.
      * This should eventually be removed.
      */
-    public void notImplemented () {
+    public void notImplemented() {
         // XXX just for now to indicate that the actual method is not yet implemented
         assert false;
     }
@@ -466,10 +450,6 @@ public class GameController {
             // execute all the actions for the given space.
             for (FieldAction action : space.getActions()) {
                 action.doAction(this, space);
-            }
-            if(isPlayerAWinner(currentPlayer, board)){
-                startWinning(currentPlayer);
-                return;
             }
         }
     }
@@ -524,12 +504,14 @@ public class GameController {
             } else {
                 executeFieldActions();
                 processBlockedConveyorPlayers();
-                startProgrammingPhase();
+                if (board.getPhase() != Phase.FINISHED) {
+                    startProgrammingPhase();
+                }
             }
         }
     }
 
-    public boolean isPlayerAWinner(Player player, Board board){
-        return player.getNextCheckpoint() == board.getNoOfCheckpoints() + 1;
+    public boolean isPlayerAWinner(Player player) {
+        return player.getNextCheckpoint() >= board.getNoOfCheckpoints() + 1;
     }
 }
