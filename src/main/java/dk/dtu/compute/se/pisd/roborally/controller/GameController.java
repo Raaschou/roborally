@@ -400,15 +400,6 @@ public class GameController {
     }
 
     /**
-     * A method called when no corresponding controller operation is implemented yet.
-     * This should eventually be removed.
-     */
-    public void notImplemented() {
-        // XXX just for now to indicate that the actual method is not yet implemented
-        assert false;
-    }
-
-    /**
      * Move function for the conveyor belt to moves a player in the direction of the conveyor belt.
      *
      * @param player  player to be moved by conveyor belt
