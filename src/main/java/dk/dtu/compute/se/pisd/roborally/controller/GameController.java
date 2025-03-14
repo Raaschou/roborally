@@ -424,7 +424,6 @@ public class GameController {
      * @param player is moved backwards
      */
     public void backward (@NotNull Player player) {
-        // august siger ok, jeg siger for dovent.
         Heading heading = player.getHeading().opposite();
         Space neighbour = board.getNeighbour(player.getSpace(), heading);
         if (neighbour != null) {
@@ -452,6 +451,7 @@ public class GameController {
         executeCommand(player,lastCommand);
     }
 
+    //TODO Delete after interactive card is implemented?
     /**
      * A method called when no corresponding controller operation is implemented yet.
      * This should eventually be removed.
@@ -486,10 +486,22 @@ public class GameController {
         }
     }
 
+    /**
+     * Helper method for conveyor logic, adds player to the retry queue.
+     *
+     * @param player player who might be moved by conveyor belt
+     */
     public void addToConveyorRetryQueue(Player player) {
         conveyorMovementRetryQueue.add(player);
     }
 
+    /**
+     * Checks if the player is a winner
+     *
+     * @param player player who finished their register
+     * @param board current board
+     * @return
+     */
     public boolean isPlayerAWinner(Player player, Board board){
         return player.getNextCheckpoint() == board.getNoOfCheckpoints() + 1;
     }
