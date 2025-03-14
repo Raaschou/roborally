@@ -22,8 +22,8 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
+import dk.dtu.compute.se.pisd.roborally.model.Space;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -33,17 +33,11 @@ import java.util.List;
  * This class represents a conveyor belt on a space.
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 // XXX A3
 public class ConveyorBelt extends FieldAction {
 
     private Heading heading;
-
-//    // arrays containing players that are on conveyor belts but could not be pushed right away
-//    public static List<Player> playersThatHaveNotMoved = new ArrayList<>();
-//    public static ArrayList<Player> copyPlayersThatHaveNotMoved = new ArrayList<>();
-
 
     public Heading getHeading() {
         return heading;
@@ -74,6 +68,12 @@ public class ConveyorBelt extends FieldAction {
         // right now I can't see how we can do it otherwise since we can't bump players when
         // pushed on belts and we can have multiple players on the same space even though it's
         // only for a period..
+        ArrayList<Space> conflictingSpaces = getConflictingConveyorSpaces(space);
+        for (Space conflictingSpace : conflictingSpaces) {
+            if (conflictingSpace.getPlayer() != null) {
+                return false;
+            }
+        }
 
         Player currentPlayer = space.getPlayer();
         Heading heading = this.heading;
@@ -82,5 +82,44 @@ public class ConveyorBelt extends FieldAction {
             gameController.addToConveyorRetryQueue(currentPlayer);
         }
         return false;
+    }
+
+    /**
+     * Given a space with a conveyor belt on it find any other spaces with conveyor belts,
+     * that point to the same target space.
+     *
+     * @param space A space for which to find conflicting spaces
+     * @return a list of spaces with conveyors pointing to the same target as input space
+     */
+    private ArrayList<Space> getConflictingConveyorSpaces(Space space) {
+        ArrayList<Space> conflictingSpaces = new ArrayList<>();
+        ConveyorBelt belt = null;
+        for (FieldAction action : space.getActions()) {
+            if (action instanceof ConveyorBelt) {
+                belt = (ConveyorBelt) action;
+            }
+        }
+        if (belt == null) {
+            // input space does not have a conveyor belt
+            return conflictingSpaces;
+        }
+        Space target = space.board.getNeighbour(space, belt.getHeading());
+        if (target == null) {
+            // there is a wall between the conveyor space and target space, so there are
+            // no conflicts with the input space, because it's conveyor does nothing
+            return conflictingSpaces;
+        }
+        ArrayList<Heading> headingsToCheck = new ArrayList<Heading>(List.of(Heading.NORTH, Heading.EAST, Heading.SOUTH, Heading.WEST));
+        headingsToCheck.remove(belt.getHeading().opposite());
+        for (Heading heading : headingsToCheck) {
+            Space potentiallyConflictingSpace = space.board.getNeighbour(target, heading);
+            if (potentiallyConflictingSpace != null && potentiallyConflictingSpace.hasConveyorBelt()) {
+                ConveyorBelt conflictingBelt = potentiallyConflictingSpace.getConveyorBelt();
+                if (conflictingBelt.getHeading() == heading.opposite()) {
+                    conflictingSpaces.add(potentiallyConflictingSpace);
+                }
+            }
+        }
+        return conflictingSpaces;
     }
 }
