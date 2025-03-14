@@ -234,8 +234,7 @@ public class GameController {
             if (neighbour != null) {
                 try {
                     moveToSpace(player, neighbour, heading);
-                } catch (ImpossibleMoveException e) {
-                    //empty... Overstående bliver implementeret om lidt...
+                } catch (ImpossibleMoveException ignored) {
                 }
             }
         }
@@ -321,7 +320,7 @@ public class GameController {
         }
         // resets the interactive player phase
         board.setPhase(Phase.ACTIVATION);
-        continueNextStep(player);// evt. sæt til INTERACTION_DONE phase ?
+        continueNextStep(player);
         continuePrograms();
     }
 
@@ -368,7 +367,6 @@ public class GameController {
      * @return boolean true if moves was succes false otherwise
      */
     public boolean moveInDirection(@NotNull Player player, @NotNull Heading heading) {
-        // TODO needs testing. <- Is this done?
         Space neighbourSpace = board.getNeighbour(player.getSpace(), heading);
 
         //Checks if board.getNeighbour might return null, which is the case, if there is a wall in the direction of "heading"
