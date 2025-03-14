@@ -88,13 +88,6 @@ public class PlayerView extends Tab implements ViewObserver {
             }
         }
 
-        // FIXME the following buttons should actually not be on the tabs of the individual
-        //       players, but on the PlayersView (view for all players). This should be
-        //       refactored.
-
-        // TODO V2: the following buttons should be associated with the proper methods
-        //          in the game controller
-
         finishButton = new Button("Finish Programming");
         finishButton.setOnAction( e -> gameController.finishProgrammingPhase());
 
@@ -130,8 +123,6 @@ public class PlayerView extends Tab implements ViewObserver {
         top.getChildren().add(cardsLabel);
         top.getChildren().add(cardsPane);
 
-        // TODO A3 add a label for the status of this player could be added here
-        //      ege showing the number of achieved chekpoints (etc).
 
         if (player.board != null) {
             player.board.attach(this);
@@ -139,10 +130,14 @@ public class PlayerView extends Tab implements ViewObserver {
         }
     }
 
+    /**
+     * Updates the player view
+     *
+     * @param subject the subject which changed
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == player.board) {
-            // TODO A3 update the status label for this player
             for (int i = 0; i < Player.NUMBER_OF_REGISTERS; i++) {
                 CardFieldView cardFieldView = programCardViews[i];
                 if (cardFieldView != null) {

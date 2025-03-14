@@ -180,7 +180,7 @@ public class GameController {
     }
 
     /**
-     *
+     *  Execute all steps command cards in the command fields.
      */
     public void executePrograms() {
         board.setStepMode(false);
@@ -218,7 +218,7 @@ public class GameController {
                     if (command == Command.RIGHT_OR_LEFT) {
                         // the Right or left case changes phase to interactive
                         executeCommand(currentPlayer, command);
-                        return;
+                        return; // breaks the game loop execution till player interaction is done
                     } else {
                         executeCommand(currentPlayer, command);
                     }
@@ -381,7 +381,7 @@ public class GameController {
         }
         // resets the interactive player phase
         board.setPhase(Phase.ACTIVATION);
-        continueNextStep(player);
+        continueNextStep(player);  // continue execution of the game loop
         continuePrograms();
     }
 
@@ -407,7 +407,6 @@ public class GameController {
      * @return boolean true if moves was succes false otherwise
      */
     public boolean moveInDirection(@NotNull Player player, @NotNull Heading heading) {
-        // TODO needs testing. <- Is this done?
         Space neighbourSpace = board.getNeighbour(player.getSpace(), heading);
 
         //Checks if board.getNeighbour might return null, which is the case, if there is a wall in the direction of "heading"
@@ -423,7 +422,6 @@ public class GameController {
             return false;
         }
     }
-
 
     /**
      * Helper method for conveyor logic, adds player to the retry queue.
@@ -462,9 +460,7 @@ public class GameController {
              * The ConveyorBelt class creates a list of the players that couldn't be moved along with
              * a copy that is used to check loop conditions.
              * If the list of player that hasn't been moved is unchanged the loop terminates,
-             * otherwise it keeps running till there is no more players on conveyor belts
-             *
-             * We should consider outsourcing to helper functions
+             * otherwise it keeps running till there is no more players that should be moved by conveyor belt.
              */
 
             boolean listUnchanged = this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy) && this.conveyorMovementRetryQueueCopy.containsAll(this.conveyorMovementRetryQueue);
@@ -487,6 +483,10 @@ public class GameController {
         }
     }
 
+    /**
+     * Continues execution of the 'game loop'
+     * @param player the current player that is in action.
+     */
     private void continueNextStep(Player player) {
         int step = board.getStep();
         int nextPlayerNumber = board.getPlayerNumber(player) + 1;
@@ -507,7 +507,6 @@ public class GameController {
             }
         }
     }
-
 
     /**
      * Checks if the player is a winner
