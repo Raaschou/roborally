@@ -49,6 +49,7 @@ public class Player extends Subject {
     private CommandCardField[] cards;
 
     private int nextCheckpoint;
+    private Command lastCommand;
 
     public Player(@NotNull Board board, String color, @NotNull String name) {
         this.board = board;
@@ -56,6 +57,7 @@ public class Player extends Subject {
         this.color = color;
         this.nextCheckpoint = 1;
         this.space = null;
+        this.lastCommand =null;
 
         program = new CommandCardField[NO_REGISTERS];
         for (int i = 0; i < program.length; i++) {
@@ -66,6 +68,13 @@ public class Player extends Subject {
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new CommandCardField(this);
         }
+    }
+
+    public Command getLastCommand() {
+        return lastCommand;
+    }
+    public void setLastCommand(Command command){
+        this.lastCommand = command;
     }
 
     public String getName() {

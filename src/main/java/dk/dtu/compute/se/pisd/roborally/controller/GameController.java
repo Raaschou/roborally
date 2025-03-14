@@ -60,6 +60,7 @@ public class GameController {
         if (space.getPlayer() == null) {
             currentPlayer.getSpace().setPlayer(null);
             space.setPlayer(currentPlayer);
+            board.setCounter(board.getCounter() + 1);
             board.setCurrentPlayer(board.getNextPlayer());
         }
     }
@@ -283,7 +284,6 @@ public class GameController {
                                 }
                             }
                         }
-                        board.setCounter(board.getCounter() + 1);
                         startProgrammingPhase();
                     }
                 }
@@ -431,10 +431,17 @@ public class GameController {
     // Den her venter vi lige med...
 
     /**
-     * not yet implemented
+     * @author ChRiStOfFeR
+     * Excecutes the again command card, for a given player...
+     * @param player the player for whom to excecute the card...
      */
-    public void again (@NotNull Player player){
-        // TODO implement this
+    public void again (@NotNull Player player) {
+        Command lastCommand = player.getLastCommand();
+
+        if(lastCommand ==null) {
+            return;
+        }
+        executeCommand(player,lastCommand);
     }
 
     /**

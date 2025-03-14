@@ -425,6 +425,84 @@ class GameControllerTest {
         Assertions.assertTrue(gameController.isPlayerAWinner(current, board), "isPlayerAWinner should be true");
         Assertions.assertSame(Phase.FINISHED, board.getPhase(), "Board should be in finished phase");
     }
+
+    @Test
+    void testIncrementingChechpoint() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(3, 3));
+        current.setHeading(Heading.NORTH);
+
+
+
+        Space space = board.getSpace(3, 2);
+        Checkpoint checkpoint1 = new Checkpoint(1);
+        space.getActions().add(checkpoint1);
+
+        space = board.getSpace(3, 1);
+        Checkpoint checkpoint2 = new Checkpoint(2);
+        space.getActions().add(checkpoint2);
+
+
+        Assertions.assertEquals(1, current.getNextCheckpoint(), "Player " + current.getName()
+                + " should be heading for first!");
+
+        gameController.moveForward(current);
+
+        checkpoint1.doAction(gameController, board.getSpace(3,2));
+
+        Assertions.assertEquals(2, current.getNextCheckpoint(), "Player " + current.getName()
+                + " should be heading for second!");
+
+        gameController.moveForward(current);
+        checkpoint2.doAction(gameController, board.getSpace(3,1));
+
+        Assertions.assertEquals(3, current.getNextCheckpoint(), "Player " + current.getName()
+                + " should be heading for third");
+
+    }
+
+    @Test
+    void againTest(){
+        Board board = gameController.board;
+        Player current = board.getSpace(3,3).getPlayer();
+        board.setCurrentPlayer(current);
+        current.setHeading(Heading.NORTH);
+
+        gameController.startProgrammingPhase();
+        current.getProgramField(0).setCard(new CommandCard(Command.FORWARD));
+        current.getProgramField(1).setCard(new CommandCard(Command.AGAIN));
+        gameController.finishProgrammingPhase();
+        gameController.executePrograms();
+
+
+
+        Assertions.assertEquals(current, board.getSpace(3, 1).getPlayer(), "Player " + current.getName() + " should be on Space (3,1)!");
+
+    }
+    @Test
+    void againTest2(){
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(5, 3));
+        current.setHeading(Heading.NORTH);
+
+        gameController.startProgrammingPhase();
+        current.getProgramField(0).setCard(new CommandCard(Command.FORWARD));
+        current.getProgramField(1).setCard(new CommandCard(Command.AGAIN));
+        gameController.finishProgrammingPhase();
+        Assertions.assertEquals(current, board.getSpace(5,3).getPlayer(), "Player " + current.getName() + " should be on Space (5,3)!");
+        gameController.executeStep();
+        Assertions.assertEquals(current, board.getSpace(5, 2).getPlayer(), "Player " + current.getName() + " should be on Space (5,2)!");
+        gameController.executeStep();//player 2
+        gameController.executeStep();//player 3
+        gameController.executeStep();//player 4
+        gameController.executeStep();//player 5
+        gameController.executeStep();//player 6
+        gameController.executeStep();//player 1
+        Assertions.assertEquals(current, board.getSpace(5, 1).getPlayer(), "Player " + current.getName() + " should be on Space (5,1)!");
+
+    }
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
 
