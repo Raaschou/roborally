@@ -388,6 +388,55 @@ class GameControllerTest {
     }
 
     @Test
+    void tooEarlyOnCheckpoint() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(6, 4));
+        current.setHeading(Heading.NORTH);
+        board.setNoOfCheckpoints(3);
+
+        Space space = board.getSpace(6, 3);
+        Checkpoint point1 = new Checkpoint(1);
+        space.getActions().add(point1);
+        gameController.moveForward(current);
+        point1.doAction(gameController, board.getSpace(6, 3));
+
+        Assertions.assertEquals(2, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 2");
+
+        space = board.getSpace(6, 2);
+        Checkpoint point2 = new Checkpoint(3);
+        space.getActions().add(point2);
+        gameController.moveForward(current);
+        point2.doAction(gameController, board.getSpace(6, 2));
+        Assertions.assertEquals(2, current.getNextCheckpoint(), current.getName() + "next checkpoint should still be 2");
+        Assertions.assertFalse(gameController.isPlayerAWinner(current, board), "isPlayerAWinner should be false");
+
+        space = board.getSpace(6, 1);
+        Checkpoint point3 = new Checkpoint(2);
+        space.getActions().add(point3);
+        gameController.moveForward(current);
+        point3.doAction(gameController, board.getSpace(6, 1));
+
+        Assertions.assertEquals(3, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 3");
+
+        gameController.backward(current);
+        point2.doAction(gameController, board.getSpace(6, 2));
+        Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
+        Assertions.assertTrue(gameController.isPlayerAWinner(current, board), "isPlayerAWinner should be true");
+
+        try {
+            gameController.startWinning(current);
+        } catch (Throwable ignored) {
+            // ignored. this is thrown because of the "YOU WON" alert which can not be shown
+            // since no window exists during test execution
+        }
+
+        Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
+        Assertions.assertTrue(gameController.isPlayerAWinner(current, board), "isPlayerAWinner should be true");
+        Assertions.assertSame(Phase.FINISHED, board.getPhase(), "Board should be in finished phase");
+    }
+
+    @Test
     void gameWin() {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
@@ -469,7 +518,6 @@ class GameControllerTest {
         current.getProgramField(1).setCard(new CommandCard(Command.AGAIN));
         gameController.finishProgrammingPhase();
         gameController.executePrograms();
-        int d = 1+1;
         Assertions.assertEquals(current, board.getSpace(3, 1).getPlayer(), "Player " + current.getName() + " should be on Space (3,1)!");
     }
 
@@ -497,7 +545,28 @@ class GameControllerTest {
         gameController.executeStep();//player 6
         gameController.executeStep();//player 1
         Assertions.assertEquals(current, board.getSpace(5, 1).getPlayer(), "Player " + current.getName() + " should be on Space (5,1)!");
+    }
 
+    @Test
+    void testTwoPlayersOnAdjacentConveyors() {
+        // ensure that when two adjacent conveyors with the same heading are occupied by two players,
+        // both players are moved
+        Board board = gameController.board;
+        board.setNoOfCheckpoints(50); // prevent winning which causes an exception because the "YOU WON" alert has no parent window in tests
+        Player p1 = board.getPlayer(0);
+        Player p2 = board.getPlayer(1);
+        Space s1 = board.getSpace(2, 4);
+        Space s2 = board.getSpace(3, 4);
+        ConveyorBelt c1 = new ConveyorBelt();
+        c1.setHeading(Heading.WEST);
+        ConveyorBelt c2 = new ConveyorBelt();
+        c2.setHeading(Heading.WEST);
+        p1.setSpace(s1);
+        p2.setSpace(s2);
+        gameController.executePrograms();
+
+        Assertions.assertEquals(p1, board.getSpace(1, 4).getPlayer(), p1.getName() + " should be on (1,4)");
+        Assertions.assertEquals(p2, board.getSpace(2, 4).getPlayer(), p2.getName() + " should be on (2,4)");
     }
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
