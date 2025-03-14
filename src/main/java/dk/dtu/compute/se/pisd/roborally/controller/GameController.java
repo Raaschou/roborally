@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * ...
@@ -41,7 +40,7 @@ public class GameController {
     final public Board board;
 
     // arrays containing players that are on conveyor belts but could not be moved right away
-    private List<Player> conveyorMovementRetryQueue = new ArrayList<>();
+    private ArrayList<Player> conveyorMovementRetryQueue = new ArrayList<>();
     private ArrayList<Player> conveyorMovementRetryQueueCopy = new ArrayList<>();
 
     public GameController(@NotNull Board board) {
@@ -101,7 +100,7 @@ public class GameController {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
             if (player != null) {
-                for (int j = 0; j < Player.NO_REGISTERS; j++) {
+                for (int j = 0; j < Player.NUMBER_OF_REGISTERS; j++) {
                     CommandCardField field = player.getProgramField(j);
                     field.setCard(null);
                     field.setVisible(true);
@@ -168,7 +167,7 @@ public class GameController {
      * @param register the register in which to make program fields visible
      */
     private void makeProgramFieldsVisible(int register) {
-        if (register >= 0 && register < Player.NO_REGISTERS) {
+        if (register >= 0 && register < Player.NUMBER_OF_REGISTERS) {
             for (int i = 0; i < board.getPlayersNumber(); i++) {
                 Player player = board.getPlayer(i);
                 CommandCardField field = player.getProgramField(register);
@@ -183,7 +182,7 @@ public class GameController {
     private void makeProgramFieldsInvisible() {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
-            for (int j = 0; j < Player.NO_REGISTERS; j++) {
+            for (int j = 0; j < Player.NUMBER_OF_REGISTERS; j++) {
                 CommandCardField field = player.getProgramField(j);
                 field.setVisible(false);
             }
@@ -222,71 +221,20 @@ public class GameController {
         Player currentPlayer = board.getCurrentPlayer();
         if (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
             int step = board.getStep();
-            if (step >= 0 && step < Player.NO_REGISTERS) {
+            if (step >= 0 && step < Player.NUMBER_OF_REGISTERS) {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
-                    executeCommand(currentPlayer, command);
-                }
-                int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
-                if (nextPlayerNumber < board.getPlayersNumber()) {
-                    board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
-                } else {
-                    step++;
-                    if (step < Player.NO_REGISTERS) {
-                        makeProgramFieldsVisible(step);
-                        board.setStep(step);
-                        board.setCurrentPlayer(board.getPlayer(0));
+                    if (command == Command.RIGHT_OR_LEFT){
+                        // the Right or left case changes phase to interactive
+                        executeCommand(currentPlayer, command);
+                        return;
                     } else {
-                        this.conveyorMovementRetryQueue.clear(); //
-                        this.conveyorMovementRetryQueueCopy.clear();
-                        // Looping through the players to get the actions of the space they are on.
-                        for (int i = 0; i < board.getPlayersNumber(); i++) {
-                            currentPlayer = board.getPlayer(i);
-                            Space space = currentPlayer.getSpace();
-                            // execute all the actions for the given space.
-                            for (FieldAction action : space.getActions()) {
-                                action.doAction(this, space);
-                            }
-                            if(isPlayerAWinner(currentPlayer, board)){
-                                startWinning(currentPlayer);
-                                return;
-                            }
-                        }
-
-                        while (!this.conveyorMovementRetryQueue.isEmpty()) {
-                            /*
-                             * This loop makes sure that players that were initially blocked while conveyor belt tried
-                             * to move them get another chance to be moved.
-                             * The ConveyorBelt class creates a list of the players that couldn't be moved along with
-                             * a copy that is used to check loop conditions.
-                             * If the list of player that hasn't been moved is unchanged the loop terminates,
-                             * otherwise it keeps running till there is no more players on conveyor belts
-                             *
-                             * We should consider outsourcing to helper functions
-                             */
-
-                            boolean listUnchanged = this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy) && this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy);
-                            // if the list is of players is the same as in last iteration terminate loop.
-                            if (listUnchanged) {
-                                break;
-                            }
-
-                            this.conveyorMovementRetryQueueCopy = new ArrayList<>(this.conveyorMovementRetryQueue);
-                            this.conveyorMovementRetryQueue.clear();
-
-                            // loop through the list of player that have not performed conveyor belt action.
-                            for (int i = this.conveyorMovementRetryQueueCopy.size() - 1; i >= 0; i--) {
-                                Player player = this.conveyorMovementRetryQueueCopy.get(i);
-                                Space space = player.getSpace();
-
-                                for (FieldAction action : space.getActions()) {
-                                    action.doAction(this, space);
-                                }
-                            }
-                        }
-                        startProgrammingPhase();
+                        executeCommand(currentPlayer, command);
                     }
+                }
+                if (board.getPhase() == Phase.ACTIVATION) {
+                    continueNextStep(currentPlayer);
                 }
             } else {
                 // this should not happen
@@ -360,8 +308,7 @@ public class GameController {
             if (neighbour != null) {
                 try {
                     moveToSpace(player, neighbour, heading);
-                } catch (ImpossibleMoveException e) {
-                    //empty... Overstående bliver implementeret om lidt...
+                } catch (ImpossibleMoveException ignored) {
                 }
             }
         }
@@ -435,8 +382,24 @@ public class GameController {
             }
         }
     }
-    // TODO slet min kommentar...
-    // Den her venter vi lige med...
+
+    /**
+     * Turns a player to right or left based on interactive choice
+     *
+     * @param player the player to chose to turn right or left
+     * @param direction the chosen direction the player want to turn
+     */
+    public void turnRightOrLeft (@NotNull Player player, String direction) {
+        if (direction.equals("Right")){
+            turnRight(player);
+        } else if (direction.equals("Left")) {
+            turnLeft(player);
+        }
+        // resets the interactive player phase
+        board.setPhase(Phase.ACTIVATION);
+        continueNextStep(player);
+        continuePrograms();
+    }
 
     /**
      * @author ChRiStOfFeR
@@ -488,6 +451,82 @@ public class GameController {
 
     public void addToConveyorRetryQueue(Player player) {
         conveyorMovementRetryQueue.add(player);
+    }
+
+    /**
+     * Execute field actions for the spaces that has a player
+     */
+    private void executeFieldActions() {
+        conveyorMovementRetryQueue.clear();
+        conveyorMovementRetryQueueCopy.clear();
+        // Looping through the players to get the actions of the space they are on.
+        for (int i = 0; i < board.getPlayersNumber(); i++) {
+            Player currentPlayer = board.getPlayer(i);
+            Space space = currentPlayer.getSpace();
+            // execute all the actions for the given space.
+            for (FieldAction action : space.getActions()) {
+                action.doAction(this, space);
+            }
+            if(isPlayerAWinner(currentPlayer, board)){
+                startWinning(currentPlayer);
+                return;
+            }
+        }
+    }
+
+    /**
+     * if a player on the conveyor belt couldn't be moved right away they are checked again
+     */
+    private void processBlockedConveyorPlayers() {
+        while (!this.conveyorMovementRetryQueue.isEmpty()) {
+            /*
+             * This loop makes sure that players that were initially blocked while conveyor belt tried
+             * to move them get another chance to be moved.
+             * The ConveyorBelt class creates a list of the players that couldn't be moved along with
+             * a copy that is used to check loop conditions.
+             * If the list of player that hasn't been moved is unchanged the loop terminates,
+             * otherwise it keeps running till there is no more players on conveyor belts
+             *
+             * We should consider outsourcing to helper functions
+             */
+
+            boolean listUnchanged = this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy) && this.conveyorMovementRetryQueueCopy.containsAll(this.conveyorMovementRetryQueue);
+            // if the list is of players is the same as in last iteration terminate loop.
+            if (listUnchanged) {
+                break;
+            }
+
+            this.conveyorMovementRetryQueueCopy = new ArrayList<>(this.conveyorMovementRetryQueue);
+            this.conveyorMovementRetryQueue.clear();
+
+            // loop through the list of player that have not performed conveyor belt action.
+            for (int i = conveyorMovementRetryQueueCopy.size() - 1; i >= 0; i--) {
+                Player player = conveyorMovementRetryQueueCopy.get(i);
+                Space space = player.getSpace();
+                for (FieldAction action : space.getActions()) {
+                    action.doAction(this, space);
+                }
+            }
+        }
+    }
+
+    private void continueNextStep(Player player) {
+        int step = board.getStep();
+        int nextPlayerNumber = board.getPlayerNumber(player) + 1;
+        if (nextPlayerNumber < board.getPlayersNumber()) {
+            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+        } else {
+            step++;
+            if (step < Player.NUMBER_OF_REGISTERS) {
+                makeProgramFieldsVisible(step);
+                board.setStep(step);
+                board.setCurrentPlayer(board.getPlayer(0));
+            } else {
+                executeFieldActions();
+                processBlockedConveyorPlayers();
+                startProgrammingPhase();
+            }
+        }
     }
 
     public boolean isPlayerAWinner(Player player, Board board){
