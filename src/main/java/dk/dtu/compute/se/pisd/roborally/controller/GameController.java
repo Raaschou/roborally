@@ -433,6 +433,12 @@ public class GameController {
         }
     }
 
+
+    /**
+     * Helper method for conveyor logic, adds player to the retry queue.
+     *
+     * @param player player who might be moved by conveyor belt
+     */
     public void addToConveyorRetryQueue(Player player) {
         conveyorMovementRetryQueue.add(player);
     }
@@ -511,6 +517,13 @@ public class GameController {
         }
     }
 
+
+    /**
+     * Checks if the player is a winner
+     *
+     * @param player player who finished their register
+     * @return
+     */
     public boolean isPlayerAWinner(Player player) {
         return player.getNextCheckpoint() >= board.getNoOfCheckpoints() + 1;
     }
