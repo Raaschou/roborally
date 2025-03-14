@@ -531,7 +531,7 @@ class GameControllerTest {
         Assertions.assertEquals(board.getSpace(0,6),current.getSpace(), "Player should've moved one space back");
     }
 
-    
+
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
 

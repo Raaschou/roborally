@@ -148,10 +148,18 @@ public class Player extends Subject {
         return cards[i];
     }
 
+    /**
+     * Gets what checkpoint the player should move to
+     *
+     * @return nextCheckpoint attribute
+     */
     public int getNextCheckpoint() {
         return nextCheckpoint;
     }
 
+    /**
+     * Increments the nextCheckpoint attribute
+     */
     public void incrementNextCheckpoint() {
         this.nextCheckpoint++;
     }
