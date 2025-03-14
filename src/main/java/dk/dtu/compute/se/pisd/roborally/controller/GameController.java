@@ -322,6 +322,7 @@ public class GameController {
         // resets the interactive player phase
         board.setPhase(Phase.ACTIVATION);
         continueNextStep(player);// evt. sæt til INTERACTION_DONE phase ?
+        continuePrograms();
     }
 
     /**
@@ -466,9 +467,7 @@ public class GameController {
              *
              * We should consider outsourcing to helper functions
              */
-            for (Player elem: conveyorMovementRetryQueue) {
-                System.out.println(elem.getName());
-            }
+
             boolean listUnchanged = this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy) && this.conveyorMovementRetryQueueCopy.containsAll(this.conveyorMovementRetryQueue);
             // if the list is of players is the same as in last iteration terminate loop.
             if (listUnchanged) {
