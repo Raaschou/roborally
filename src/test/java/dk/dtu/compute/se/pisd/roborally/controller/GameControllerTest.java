@@ -568,6 +568,37 @@ class GameControllerTest {
         Assertions.assertEquals(p1, board.getSpace(1, 4).getPlayer(), p1.getName() + " should be on (1,4)");
         Assertions.assertEquals(p2, board.getSpace(2, 4).getPlayer(), p2.getName() + " should be on (2,4)");
     }
+
+    @Test
+    void callRestOfTheExecuteCommand() {
+        Board board = gameController.board;
+        board.setNoOfCheckpoints(999);
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(0, 0));
+        current.setHeading(Heading.SOUTH);
+
+
+        gameController.startProgrammingPhase();
+        current.getProgramField(0).setCard(new CommandCard(Command.RIGHT));
+        current.getProgramField(1).setCard(new CommandCard(Command.LEFT));
+        current.getProgramField(2).setCard(new CommandCard(Command.FAST_FORWARD));
+        current.getProgramField(3).setCard(new CommandCard(Command.FAST_FAST_FORWARD));
+        current.getProgramField(4).setCard(new CommandCard(Command.U_TURN));
+        gameController.finishProgrammingPhase();
+        gameController.executePrograms();
+
+        //Assert if player has moved as expected
+        Assertions.assertEquals(board.getSpace(0,5),current.getSpace(), "Player should've moved two spaces south");
+        Assertions.assertEquals(Heading.NORTH,current.getHeading(), "Player should've turned around and be facing north");
+
+        //Another round to get check last command card, backward
+        gameController.startProgrammingPhase();
+        current.getProgramField(0).setCard(new CommandCard(Command.BACKWARD));
+        gameController.finishProgrammingPhase();
+        gameController.executePrograms();
+
+        Assertions.assertEquals(board.getSpace(0,6),current.getSpace(), "Player should've moved one space back");
+    }
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
 
