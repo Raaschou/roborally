@@ -438,25 +438,6 @@ public class GameController {
     }
 
     /**
-     * Moves a command card from one command card field to another.
-     *
-     * @param source command card field containing the card
-     * @param target command card field that the card is moved to
-     * @return true if successful, false otherwise
-     */
-    public boolean moveCards (@NotNull CommandCardField source, @NotNull CommandCardField target){
-        CommandCard sourceCard = source.getCard();
-        CommandCard targetCard = target.getCard();
-        if (sourceCard != null && targetCard == null) {
-            target.setCard(sourceCard);
-            source.setCard(null);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * A method called when no corresponding controller operation is implemented yet.
      * This should eventually be removed.
      */
