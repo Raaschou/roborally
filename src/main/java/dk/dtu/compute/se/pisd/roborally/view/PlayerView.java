@@ -59,8 +59,6 @@ public class PlayerView extends Tab implements ViewObserver {
     private Button finishButton;
     private Button executeButton;
     private Button stepButton;
-    private Button turnRightButton;
-    private Button turnLeftButton;
 
     private VBox playerInteractionPanel;
 
@@ -105,12 +103,6 @@ public class PlayerView extends Tab implements ViewObserver {
 
         stepButton = new Button("Execute Current Register");
         stepButton.setOnAction( e-> gameController.executeStep());
-
-        turnRightButton = new Button("Turn Right!");
-        turnRightButton.setOnAction( e-> gameController.executePrograms());
-
-        turnLeftButton = new Button("Turn Left!");
-        turnLeftButton.setOnAction( e-> gameController.executePrograms());
 
         buttonPanel = new VBox(finishButton, executeButton, stepButton);
         buttonPanel.setAlignment(Pos.CENTER_LEFT);
@@ -215,12 +207,12 @@ public class PlayerView extends Tab implements ViewObserver {
                 if (player.board.getCurrentPlayer() == player && player.board.getPhase() == Phase.PLAYER_INTERACTION) {
                     // If Phase is in PLAYER_INTERACTION the player player are to choose a direction based on these buttons.
                     Button optionButton = new Button("Turn Right!");
-                    optionButton.setOnAction( e -> gameController.turnRightOrLeft(gameController.getInteractivePlayer(), "Right"));
+                    optionButton.setOnAction( e -> gameController.turnRightOrLeft(player.board.getCurrentPlayer(), "Right"));
                     optionButton.setDisable(false);
                     playerInteractionPanel.getChildren().add(optionButton);
 
                     optionButton = new Button("Turn Left!");
-                    optionButton.setOnAction( e -> gameController.turnRightOrLeft(gameController.getInteractivePlayer(), "Left"));
+                    optionButton.setOnAction( e -> gameController.turnRightOrLeft(player.board.getCurrentPlayer(), "Left"));
                     optionButton.setDisable(false);
                     playerInteractionPanel.getChildren().add(optionButton);
                 }

@@ -36,11 +36,12 @@ public class GameController {
 
     final public Board board;
 
+   /* private boolean */
+
     // arrays containing players that are on conveyor belts but could not be moved right away
     private ArrayList<Player> conveyorMovementRetryQueue = new ArrayList<>();
     private ArrayList<Player> conveyorMovementRetryQueueCopy = new ArrayList<>();
 
-    private Player interactivePlayer = null;
 
     public GameController(@NotNull Board board) {
         this.board = board;
@@ -203,26 +204,13 @@ public class GameController {
                     if (command == Command.RIGHT_OR_LEFT){
                         // the Right or left case changes phase to interactive
                         executeCommand(currentPlayer, command);
-                        interactivePlayer = currentPlayer;
-
+                        return;
                     } else {
                         executeCommand(currentPlayer, command);
                     }
                 }
-                int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
-                if (nextPlayerNumber < board.getPlayersNumber()) {
-                    board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
-                } else {
-                    step++;
-                    if (step < Player.NUMBER_OF_REGISTERS) {
-                        makeProgramFieldsVisible(step);
-                        board.setStep(step);
-                        board.setCurrentPlayer(board.getPlayer(0));
-                    } else {
-                        executeFieldActions();
-                        processBlockedConveyorPlayers();
-                        startProgrammingPhase();
-                    }
+                if (board.getPhase() == Phase.ACTIVATION) {
+                    continueNextStep(currentPlayer);
                 }
             } else {
                 // this should not happen
@@ -233,7 +221,6 @@ public class GameController {
             assert false;
         }
     }
-
 
     /**
      * Move a player forward in the direction they're facing
@@ -333,8 +320,8 @@ public class GameController {
             turnLeft(player);
         }
         // resets the interactive player phase
-        interactivePlayer = null;
-        board.setPhase(Phase.ACTIVATION); // evt. sæt til INTERACTION_DONE phase ?
+        board.setPhase(Phase.ACTIVATION);
+        continueNextStep(player);// evt. sæt til INTERACTION_DONE phase ?
     }
 
     /**
@@ -399,10 +386,6 @@ public class GameController {
 
     public void addToConveyorRetryQueue(Player player) {
         conveyorMovementRetryQueue.add(player);
-    }
-
-    public Player getInteractivePlayer() {
-        return interactivePlayer;
     }
 
     /**
@@ -502,6 +485,25 @@ public class GameController {
                 for (FieldAction action : space.getActions()) {
                     action.doAction(this, space);
                 }
+            }
+        }
+    }
+
+    private void continueNextStep(Player player) {
+        int step = board.getStep();
+        int nextPlayerNumber = board.getPlayerNumber(player) + 1;
+        if (nextPlayerNumber < board.getPlayersNumber()) {
+            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+        } else {
+            step++;
+            if (step < Player.NUMBER_OF_REGISTERS) {
+                makeProgramFieldsVisible(step);
+                board.setStep(step);
+                board.setCurrentPlayer(board.getPlayer(0));
+            } else {
+                executeFieldActions();
+                processBlockedConveyorPlayers();
+                startProgrammingPhase();
             }
         }
     }
