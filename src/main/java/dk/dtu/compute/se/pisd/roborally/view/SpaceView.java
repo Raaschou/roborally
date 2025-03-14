@@ -164,19 +164,17 @@ public class SpaceView extends StackPane implements ViewObserver {
             this.getChildren().add(arrow);
         }
     }
-
+    /**
+     * Updates the view by drawimg elements of the board, the walls, checkpoints, and conveyor belts,
+     * and draws the players
+     * .
+     * @param subject //TODO Nogen klogere hoveder skal lige forklare den her, evt. ændre hele den her doc
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == this.space) {
             this.getChildren().clear();
             drawWalls();
-
-            // XXX A3: drawing walls and action on the space (could be done
-            //         here); it would be even better if fixed things on
-            //         spaces  are only drawn once (and not on every update)
-
-            // Not sure if drawActions() can be placed another place to not get updated every click,
-            // but haven't gotten it to draw elsewhere
             drawActions();
             updatePlayer();
         }
