@@ -250,6 +250,7 @@ public class GameController {
                             }
                             if(isPlayerAWinner(currentPlayer, board)){
                                 startWinning(currentPlayer);
+                                return;
                             }
                         }
 
@@ -311,24 +312,31 @@ public class GameController {
 
             switch (command) {
                 case FORWARD:
+                    player.setLastCommand(Command.FORWARD);
                     this.moveForward(player);
                     break;
                 case RIGHT:
+                    player.setLastCommand(Command.RIGHT);
                     this.turnRight(player);
                     break;
                 case LEFT:
+                    player.setLastCommand(Command.LEFT);
                     this.turnLeft(player);
                     break;
                 case FAST_FORWARD:
+                    player.setLastCommand(Command.FAST_FORWARD);
                     this.moveFastForward(player);
                     break;
                 case FAST_FAST_FORWARD:
+                    player.setLastCommand(Command.FAST_FAST_FORWARD);
                     this.moveFastFastForward(player);
                     break;
                 case U_TURN:
+                    player.setLastCommand(Command.U_TURN);
                     this.uTurn(player);
                     break;
                 case BACKWARD:
+                    player.setLastCommand(Command.BACKWARD);
                     this.backward(player);
                     break;
                 case AGAIN:

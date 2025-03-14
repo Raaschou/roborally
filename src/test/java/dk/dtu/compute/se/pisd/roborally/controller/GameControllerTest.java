@@ -361,16 +361,15 @@ class GameControllerTest {
         ConveyorBelt action = new ConveyorBelt();
         action.setHeading(Heading.NORTH);
         space.getActions().add(action);
-        action.doAction(gameController, board.getSpace(6,3));
+        action.doAction(gameController, board.getSpace(6, 3));
 
         // Checking Players position and heading
-        Assertions.assertEquals(current, board.getSpace(6, 3).getPlayer(), "Player " + current.getName()
-                + " should be on Space (6,3)!");
+        Assertions.assertEquals(current, board.getSpace(6, 3).getPlayer(), "Player " + current.getName() + " should be on Space (6,3)!");
         Assertions.assertEquals(Heading.NORTH, current.getHeading(), "Player should be heading EAST!");
     }
 
     @Test
-    void checkpointIncrementPlayerNextCheckpoint(){
+    void checkpointIncrementPlayerNextCheckpoint() {
         //Creates board with 1 checkpoint
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
@@ -380,35 +379,34 @@ class GameControllerTest {
 
         //Creates checkpoint and does checkpoint action on the player,
         //which should increment nextCheckpoint attribute
-        Space space = board.getSpace(4,4);
+        Space space = board.getSpace(4, 4);
         Checkpoint point = new Checkpoint(1);
         space.getActions().add(point);
-        point.doAction(gameController, board.getSpace(4,4));
+        point.doAction(gameController, board.getSpace(4, 4));
 
-        Assertions.assertEquals(2,current.getNextCheckpoint(),current.getName() + "next checkpoint should be 2");
+        Assertions.assertEquals(2, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 2");
     }
 
     @Test
-    void gameWin(){
+    void gameWin() {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
         current.setSpace(board.getSpace(4, 4));
         current.setHeading(Heading.NORTH);
         board.setNoOfCheckpoints(2);
 
-        Space space = board.getSpace(4,4);
+        Space space = board.getSpace(4, 4);
         Checkpoint point = new Checkpoint(1);
         space.getActions().add(point);
-        point.doAction(gameController, board.getSpace(4,4));
-
+        point.doAction(gameController, board.getSpace(4, 4));
 
         //Creates another checkpoint and moves the player there and does checkpoint action
-        space = board.getSpace(6,6);
+        space = board.getSpace(6, 6);
         point = new Checkpoint(2);
         space.getActions().add(point);
-        current.setSpace(board.getSpace(6,6));
-        point.doAction(gameController, board.getSpace(6,6));
-        
+        current.setSpace(board.getSpace(6, 6));
+        point.doAction(gameController, board.getSpace(6, 6));
+
         //Try-catch block is a workaround for testing the phase change that happens in the startWinning() method
         //Because javafx is not initialised in the GameControllerTest, it would otherwise cause a crash when reaching the popup
         try {
@@ -417,8 +415,9 @@ class GameControllerTest {
             gameController.startProgrammingPhase();
             gameController.finishProgrammingPhase();
             gameController.executePrograms();
-        } catch (ExceptionInInitializerError e) {
-            System.out.println("Maybe here");
+        } catch (ExceptionInInitializerError ignored) {
+            // this exception is ignored. it is thrown, because the player wins and an
+            // Alert dialog is shown, which is not possible since no window is initialized for the test
         }
 
         Assertions.assertEquals(3, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 3");
@@ -433,8 +432,6 @@ class GameControllerTest {
         current.setSpace(board.getSpace(3, 3));
         current.setHeading(Heading.NORTH);
 
-
-
         Space space = board.getSpace(3, 2);
         Checkpoint checkpoint1 = new Checkpoint(1);
         space.getActions().add(checkpoint1);
@@ -443,29 +440,27 @@ class GameControllerTest {
         Checkpoint checkpoint2 = new Checkpoint(2);
         space.getActions().add(checkpoint2);
 
-
-        Assertions.assertEquals(1, current.getNextCheckpoint(), "Player " + current.getName()
-                + " should be heading for first!");
+        Assertions.assertEquals(1, current.getNextCheckpoint(), "Player " + current.getName() + " should be heading for first!");
 
         gameController.moveForward(current);
 
-        checkpoint1.doAction(gameController, board.getSpace(3,2));
+        checkpoint1.doAction(gameController, board.getSpace(3, 2));
 
-        Assertions.assertEquals(2, current.getNextCheckpoint(), "Player " + current.getName()
-                + " should be heading for second!");
+        Assertions.assertEquals(2, current.getNextCheckpoint(), "Player " + current.getName() + " should be heading for second!");
 
         gameController.moveForward(current);
-        checkpoint2.doAction(gameController, board.getSpace(3,1));
+        checkpoint2.doAction(gameController, board.getSpace(3, 1));
 
-        Assertions.assertEquals(3, current.getNextCheckpoint(), "Player " + current.getName()
-                + " should be heading for third");
-
+        Assertions.assertEquals(3, current.getNextCheckpoint(), "Player " + current.getName() + " should be heading for third");
     }
 
     @Test
-    void againTest(){
+    void againTest() {
         Board board = gameController.board;
-        Player current = board.getSpace(3,3).getPlayer();
+        // prevent the player from winning, which causes an error when we try to display an Alert
+        // because no window exists in tests
+        board.setNoOfCheckpoints(212938);
+        Player current = board.getSpace(3, 3).getPlayer();
         board.setCurrentPlayer(current);
         current.setHeading(Heading.NORTH);
 
@@ -474,15 +469,16 @@ class GameControllerTest {
         current.getProgramField(1).setCard(new CommandCard(Command.AGAIN));
         gameController.finishProgrammingPhase();
         gameController.executePrograms();
-
-
-
+        int d = 1+1;
         Assertions.assertEquals(current, board.getSpace(3, 1).getPlayer(), "Player " + current.getName() + " should be on Space (3,1)!");
-
     }
+
     @Test
-    void againTest2(){
+    void againTest2() {
         Board board = gameController.board;
+        // prevent the player from winning, which causes an error when we try to display an Alert
+        // because no window exists in tests
+        board.setNoOfCheckpoints(212938);
         Player current = board.getCurrentPlayer();
         current.setSpace(board.getSpace(5, 3));
         current.setHeading(Heading.NORTH);
@@ -491,7 +487,7 @@ class GameControllerTest {
         current.getProgramField(0).setCard(new CommandCard(Command.FORWARD));
         current.getProgramField(1).setCard(new CommandCard(Command.AGAIN));
         gameController.finishProgrammingPhase();
-        Assertions.assertEquals(current, board.getSpace(5,3).getPlayer(), "Player " + current.getName() + " should be on Space (5,3)!");
+        Assertions.assertEquals(current, board.getSpace(5, 3).getPlayer(), "Player " + current.getName() + " should be on Space (5,3)!");
         gameController.executeStep();
         Assertions.assertEquals(current, board.getSpace(5, 2).getPlayer(), "Player " + current.getName() + " should be on Space (5,2)!");
         gameController.executeStep();//player 2
