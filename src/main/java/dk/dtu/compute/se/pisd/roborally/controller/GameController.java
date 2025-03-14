@@ -23,11 +23,9 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.controller.exception.ImpossibleMoveException;
 import dk.dtu.compute.se.pisd.roborally.model.*;
-import dk.dtu.compute.se.pisd.roborally.view.PlayerView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ...
@@ -101,7 +99,7 @@ public class GameController {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
             if (player != null) {
-                for (int j = 0; j < Player.NO_REGISTERS; j++) {
+                for (int j = 0; j < Player.NUMBER_OF_REGISTERS; j++) {
                     CommandCardField field = player.getProgramField(j);
                     field.setCard(null);
                     field.setVisible(true);
@@ -144,7 +142,7 @@ public class GameController {
      * @param register the register in which to make program fields visible
      */
     private void makeProgramFieldsVisible(int register) {
-        if (register >= 0 && register < Player.NO_REGISTERS) {
+        if (register >= 0 && register < Player.NUMBER_OF_REGISTERS) {
             for (int i = 0; i < board.getPlayersNumber(); i++) {
                 Player player = board.getPlayer(i);
                 CommandCardField field = player.getProgramField(register);
@@ -159,7 +157,7 @@ public class GameController {
     private void makeProgramFieldsInvisible() {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
-            for (int j = 0; j < Player.NO_REGISTERS; j++) {
+            for (int j = 0; j < Player.NUMBER_OF_REGISTERS; j++) {
                 CommandCardField field = player.getProgramField(j);
                 field.setVisible(false);
             }
@@ -198,16 +196,15 @@ public class GameController {
         Player currentPlayer = board.getCurrentPlayer();
         if (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
             int step = board.getStep();
-            if (step >= 0 && step < Player.NO_REGISTERS) {
+            if (step >= 0 && step < Player.NUMBER_OF_REGISTERS) {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
                     if (command == Command.RIGHT_OR_LEFT){
                         // the Right or left case changes phase to interactive
                         executeCommand(currentPlayer, command);
-                        this.setInteractivePlayer(currentPlayer);
+                        interactivePlayer = currentPlayer;
 
-//                        }
                     } else {
                         executeCommand(currentPlayer, command);
                     }
@@ -217,22 +214,12 @@ public class GameController {
                     board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
                 } else {
                     step++;
-                    if (step < Player.NO_REGISTERS) {
+                    if (step < Player.NUMBER_OF_REGISTERS) {
                         makeProgramFieldsVisible(step);
                         board.setStep(step);
                         board.setCurrentPlayer(board.getPlayer(0));
                     } else {
-                        this.conveyorMovementRetryQueue.clear();
-                        this.conveyorMovementRetryQueueCopy.clear();
-                        // Looping through the players to get the actions of the space they are on.
-                        for (int i = 0; i < board.getPlayersNumber(); i++) {
-                            currentPlayer = board.getPlayer(i);
-                            Space space = currentPlayer.getSpace();
-                            // execute all the actions for the given space.
-                            for (FieldAction action : space.getActions()) {
-                                action.doAction(this, space);
-                            }
-                        }
+                        executeFieldActions();
                         processBlockedConveyorPlayers();
                         startProgrammingPhase();
                     }
@@ -247,51 +234,6 @@ public class GameController {
         }
     }
 
-    /**
-     * Execute a command for a given player.
-     *
-     * @param player  player to execute command on
-     * @param command command to execute
-     */
-    private void executeCommand(@NotNull Player player, Command command) {
-        if (player != null && player.board == board && command != null) {
-            // XXX This is a very simplistic way of dealing with some basic cards and
-            //     their execution. This should eventually be done in a more elegant way
-            //     (this concerns the way cards are modelled as well as the way they are executed).
-
-            switch (command) {
-                case FORWARD:
-                    this.moveForward(player);
-                    break;
-                case RIGHT:
-                    this.turnRight(player);
-                    break;
-                case LEFT:
-                    this.turnLeft(player);
-                    break;
-                case FAST_FORWARD:
-                    this.moveFastForward(player);
-                    break;
-                case FAST_FAST_FORWARD:
-                    this.moveFastFastForward(player);
-                    break;
-                case U_TURN:
-                    this.uTurn(player);
-                    break;
-                case BACKWARD:
-                    this.backward(player);
-                    break;
-                case AGAIN:
-                    this.again(player);
-                    break;
-                case RIGHT_OR_LEFT:
-                    board.setPhase(Phase.PLAYER_INTERACTION);
-                    break;
-                default:
-                    // DO NOTHING (for now)
-            }
-        }
-    }
 
     /**
      * Move a player forward in the direction they're facing
@@ -352,23 +294,6 @@ public class GameController {
     }
 
     /**
-     * Turns a player to right or left based on interactive choice
-     *
-     * @param player the player to chose to turn right or left
-     * @param direction the chosen direction the player want to turn
-     */
-    public void turnRightOrLeft (@NotNull Player player, String direction) {
-        if (direction.equals("Right")){
-            turnRight(player);
-        } else if (direction.equals("Left")) {
-            turnLeft(player);
-        }
-        // resets the interactive player phase
-        this.setInteractivePlayer(null);
-        board.setPhase(Phase.ACTIVATION);
-    }
-
-    /**
      * Turn a player to the opposite heading
      *
      * @param player player to turn
@@ -393,6 +318,23 @@ public class GameController {
                 //empty
             }
         }
+    }
+
+    /**
+     * Turns a player to right or left based on interactive choice
+     *
+     * @param player the player to chose to turn right or left
+     * @param direction the chosen direction the player want to turn
+     */
+    public void turnRightOrLeft (@NotNull Player player, String direction) {
+        if (direction.equals("Right")){
+            turnRight(player);
+        } else if (direction.equals("Left")) {
+            turnLeft(player);
+        }
+        // resets the interactive player phase
+        interactivePlayer = null;
+        board.setPhase(Phase.ACTIVATION); // evt. sæt til INTERACTION_DONE phase ?
     }
 
     /**
@@ -459,6 +401,76 @@ public class GameController {
         conveyorMovementRetryQueue.add(player);
     }
 
+    public Player getInteractivePlayer() {
+        return interactivePlayer;
+    }
+
+    /**
+     * Execute a command for a given player.
+     *
+     * @param player  player to execute command on
+     * @param command command to execute
+     */
+    private void executeCommand(@NotNull Player player, Command command) {
+        if (player != null && player.board == board && command != null) {
+            // XXX This is a very simplistic way of dealing with some basic cards and
+            //     their execution. This should eventually be done in a more elegant way
+            //     (this concerns the way cards are modelled as well as the way they are executed).
+
+            switch (command) {
+                case FORWARD:
+                    this.moveForward(player);
+                    break;
+                case RIGHT:
+                    this.turnRight(player);
+                    break;
+                case LEFT:
+                    this.turnLeft(player);
+                    break;
+                case FAST_FORWARD:
+                    this.moveFastForward(player);
+                    break;
+                case FAST_FAST_FORWARD:
+                    this.moveFastFastForward(player);
+                    break;
+                case U_TURN:
+                    this.uTurn(player);
+                    break;
+                case BACKWARD:
+                    this.backward(player);
+                    break;
+                case AGAIN:
+                    this.again(player);
+                    break;
+                case RIGHT_OR_LEFT:
+                    board.setPhase(Phase.PLAYER_INTERACTION);
+                    break;
+                default:
+                    // DO NOTHING (for now)
+            }
+        }
+    }
+
+    /**
+     * Execute field actions for the spaces that has a player
+     */
+    private void executeFieldActions() {
+        conveyorMovementRetryQueue.clear();
+        conveyorMovementRetryQueueCopy.clear();
+        // Looping through the players to get the actions of the space they are on.
+        for (int i = 0; i < board.getPlayersNumber(); i++) {
+            Player currentPlayer = board.getPlayer(i);
+            Space space = currentPlayer.getSpace();
+            // execute all the actions for the given space.
+            for (FieldAction action : space.getActions()) {
+                action.doAction(this, space);
+            }
+        }
+    }
+
+    /**
+     * if a player on the conveyor belt couldn't be moved right away they are checked again
+     */
     private void processBlockedConveyorPlayers() {
         while (!this.conveyorMovementRetryQueue.isEmpty()) {
             /*
@@ -471,7 +483,9 @@ public class GameController {
              *
              * We should consider outsourcing to helper functions
              */
-
+            for (Player elem: conveyorMovementRetryQueue) {
+                System.out.println(elem.getName());
+            }
             boolean listUnchanged = this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy) && this.conveyorMovementRetryQueueCopy.containsAll(this.conveyorMovementRetryQueue);
             // if the list is of players is the same as in last iteration terminate loop.
             if (listUnchanged) {
@@ -482,33 +496,14 @@ public class GameController {
             this.conveyorMovementRetryQueue.clear();
 
             // loop through the list of player that have not performed conveyor belt action.
-            for (int i = this.conveyorMovementRetryQueueCopy.size() - 1; i >= 0; i--) {
-                Player player = this.conveyorMovementRetryQueueCopy.get(i);
+            for (int i = conveyorMovementRetryQueueCopy.size() - 1; i >= 0; i--) {
+                Player player = conveyorMovementRetryQueueCopy.get(i);
                 Space space = player.getSpace();
-
                 for (FieldAction action : space.getActions()) {
                     action.doAction(this, space);
                 }
             }
         }
-    }
-
-    /**
-     * sets a given player to be interactive for the PlayerView to acces the right player.
-     *
-     * @param player to set in interactive mode
-     */
-    public void setInteractivePlayer(Player player) {
-        this.interactivePlayer = player;
-    }
-
-    /**
-     * returns the player that is in interactive mode.
-     *
-     * @return the interactive player
-     */
-    public Player getInteractivePlayer() {
-        return this.interactivePlayer;
     }
 
 }

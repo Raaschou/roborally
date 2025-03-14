@@ -34,7 +34,7 @@ import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
  */
 public class Player extends Subject {
 
-    final public static int NO_REGISTERS = 5;
+    final public static int NUMBER_OF_REGISTERS = 5;
     final public static int NO_CARDS = 8;
 
     final public Board board;
@@ -57,7 +57,7 @@ public class Player extends Subject {
         this.nextCheckpoint = 1;
         this.space = null;
 
-        program = new CommandCardField[NO_REGISTERS];
+        program = new CommandCardField[NUMBER_OF_REGISTERS];
         for (int i = 0; i < program.length; i++) {
             program[i] = new CommandCardField(this);
         }

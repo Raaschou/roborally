@@ -23,7 +23,6 @@ package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
-import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.CommandCardField;
 import dk.dtu.compute.se.pisd.roborally.model.Phase;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
@@ -82,8 +81,8 @@ public class PlayerView extends Tab implements ViewObserver {
         programPane = new GridPane();
         programPane.setVgap(2.0);
         programPane.setHgap(2.0);
-        programCardViews = new CardFieldView[Player.NO_REGISTERS];
-        for (int i = 0; i < Player.NO_REGISTERS; i++) {
+        programCardViews = new CardFieldView[Player.NUMBER_OF_REGISTERS];
+        for (int i = 0; i < Player.NUMBER_OF_REGISTERS; i++) {
             CommandCardField cardField = player.getProgramField(i);
             if (cardField != null) {
                 programCardViews[i] = new CardFieldView(gameController, cardField);
@@ -152,7 +151,7 @@ public class PlayerView extends Tab implements ViewObserver {
     public void updateView(Subject subject) {
         if (subject == player.board) {
             // TODO A3 update the status label for this player
-            for (int i = 0; i < Player.NO_REGISTERS; i++) {
+            for (int i = 0; i < Player.NUMBER_OF_REGISTERS; i++) {
                 CardFieldView cardFieldView = programCardViews[i];
                 if (cardFieldView != null) {
                     if (player.board.getPhase() == Phase.PROGRAMMING ) {
@@ -178,7 +177,7 @@ public class PlayerView extends Tab implements ViewObserver {
             if (player.board.getPhase() != Phase.PLAYER_INTERACTION) {
                 if (!programPane.getChildren().contains(buttonPanel)) {
                     programPane.getChildren().remove(playerInteractionPanel);
-                    programPane.add(buttonPanel, Player.NO_REGISTERS, 0);
+                    programPane.add(buttonPanel, Player.NUMBER_OF_REGISTERS, 0);
                 }
                 switch (player.board.getPhase()) {
                     case INITIALISATION:
@@ -209,7 +208,7 @@ public class PlayerView extends Tab implements ViewObserver {
             } else {
                 if (!programPane.getChildren().contains(playerInteractionPanel)) {
                     programPane.getChildren().remove(buttonPanel);
-                    programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
+                    programPane.add(playerInteractionPanel, Player.NUMBER_OF_REGISTERS, 0);
                 }
                 playerInteractionPanel.getChildren().clear();
 
