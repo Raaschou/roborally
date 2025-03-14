@@ -407,15 +407,22 @@ class GameControllerTest {
         point = new Checkpoint(2);
         space.getActions().add(point);
         current.setSpace(board.getSpace(6,6));
-       /* gameController.startProgrammingPhase();
-        gameController.finishProgrammingPhase();
-        gameController.executePrograms();*/
         point.doAction(gameController, board.getSpace(6,6));
-        //It is not currently possible to run the startWinning method, as the popup, it creates, does ugly things in the terminal
-        //gameController.startWinning(current);
+        
+        //Try-catch block is a workaround for testing the phase change that happens in the startWinning() method
+        //Because javafx is not initialised in the GameControllerTest, it would otherwise cause a crash when reaching the popup
+        try {
+            //It would be possible to just use the startWinning() method,
+            //but to get more coverage, e.g. the isPlayerAWinner() method, it is done this way
+            gameController.startProgrammingPhase();
+            gameController.finishProgrammingPhase();
+            gameController.executePrograms();
+        } catch (ExceptionInInitializerError e) {
+            System.out.println("Maybe here");
+        }
 
-        Assertions.assertEquals(3,current.getNextCheckpoint(),current.getName() + "next checkpoint should be 3");
-        Assertions.assertTrue(gameController.isPlayerAWinner(current,board), "isPlayerAWinner should be true");
+        Assertions.assertEquals(3, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 3");
+        Assertions.assertTrue(gameController.isPlayerAWinner(current, board), "isPlayerAWinner should be true");
         Assertions.assertSame(Phase.FINISHED, board.getPhase(), "Board should be in finished phase");
     }
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
