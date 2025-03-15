@@ -597,11 +597,58 @@ class GameControllerTest {
         //Another round to get check last command card, backward
         gameController.startProgrammingPhase();
         current.getProgramField(0).setCard(new CommandCard(Command.BACKWARD));
+        current.getProgramField(1).setCard(new CommandCard(Command.RIGHT_OR_LEFT));
+        gameController.turnRightOrLeft(current, "Left");
+        current.getProgramField(2).setCard(new CommandCard(Command.RIGHT_OR_LEFT));
+        gameController.turnRightOrLeft(current, "Right");
         gameController.finishProgrammingPhase();
         gameController.executePrograms();
 
         Assertions.assertEquals(board.getSpace(0,6),current.getSpace(), "Player should've moved one space back");
     }
+
+    @Test
+    void lineOfConveyorBeltsAndPlayers(){
+        Board board = gameController.board;
+        board.setNoOfCheckpoints(999);
+        Player p1 = board.getPlayer(0);
+        Player p2 = board.getPlayer(1);
+        Player p3 = board.getPlayer(2);
+        Player p4 = board.getPlayer(3);
+        Space s1 = board.getSpace(1, 0);
+        Space s2 = board.getSpace(2, 0);
+        Space s3 = board.getSpace(3, 0);
+        Space s4 = board.getSpace(4, 0);
+        ConveyorBelt c1 = new ConveyorBelt();
+        c1.setHeading(Heading.WEST);
+        ConveyorBelt c2 = new ConveyorBelt();
+        c2.setHeading(Heading.WEST);
+        ConveyorBelt c3 = new ConveyorBelt();
+        c3.setHeading(Heading.WEST);
+        ConveyorBelt c4 = new ConveyorBelt();
+        c4.setHeading(Heading.WEST);
+
+        s1.getActions().add(c1);
+        s2.getActions().add(c2);
+        s3.getActions().add(c3);
+        s4.getActions().add(c4);
+        p1.setSpace(s4);
+        p2.setSpace(s2);
+        p3.setSpace(s3);
+        p4.setSpace(s1);
+        //Get all conveyor belts to run
+        gameController.startProgrammingPhase();
+        gameController.finishProgrammingPhase();
+        gameController.executePrograms();
+
+        Assertions.assertEquals(p1, board.getSpace(3, 0).getPlayer(), "Player 1 should be on (3,0)!");
+        Assertions.assertEquals(p2, board.getSpace(1, 0).getPlayer(), "Player 2 should be on (1,0)!");
+        Assertions.assertEquals(p3, board.getSpace(2, 0).getPlayer(), "Player 3 should be on (3,0)!");
+        Assertions.assertEquals(p4, board.getSpace(0, 0).getPlayer(), "Player should be on (0,0)!");
+    }
+    //TODO Test for interactive card
+    //TODO Test for retry queue if possible
+
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
 
