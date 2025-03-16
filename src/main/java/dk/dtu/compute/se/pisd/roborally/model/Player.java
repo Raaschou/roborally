@@ -70,17 +70,38 @@ public class Player extends Subject {
         }
     }
 
+    /**
+     * Gets a player's last command
+     *
+     * @return the last command of the player
+     */
     public Command getLastCommand() {
         return lastCommand;
     }
+
+    /**
+     * Sets the last command of a player
+     *
+     * @param command the last command of the player
+     */
     public void setLastCommand(Command command){
         this.lastCommand = command;
     }
 
+    /**
+     * Get the player's name
+     *
+     * @return name of the player
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Set the name of a player
+     *
+     * @param name the name the player is set to
+     */
     public void setName(String name) {
         if (name != null && !name.equals(this.name)) {
             this.name = name;
@@ -91,10 +112,20 @@ public class Player extends Subject {
         }
     }
 
+    /**
+     * Gets the player's color
+     *
+     * @return the player color
+     */
     public String getColor() {
         return color;
     }
 
+    /**
+     * Sets the color of the player
+     *
+     * @param color the color the player color is set to
+     */
     public void setColor(String color) {
         this.color = color;
         notifyChange();
@@ -126,6 +157,11 @@ public class Player extends Subject {
         }
     }
 
+    /**
+     * Gets the player's current heading
+     *
+     * @return Player's current heading
+     */
     public Heading getHeading() {
         return heading;
     }
@@ -140,10 +176,22 @@ public class Player extends Subject {
         }
     }
 
+    /**
+     * Get the programming field with a given index
+     *
+     * @param i index of the programming field
+     * @return the programming field with index i
+     */
     public CommandCardField getProgramField(int i) {
         return program[i];
     }
 
+    /**
+     * Get the card in a programming field
+     *
+     * @param i index of the programming field
+     * @return the card placed in the programming field with index i
+     */
     public CommandCardField getCardField(int i) {
         return cards[i];
     }
