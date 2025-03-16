@@ -49,11 +49,11 @@ We have tested the implemented move functionality using the already implemented 
 # Assignment 4b)
 - [x] added game board 
 - [x] made the new game board selectable
-- [] updated gui
-  - [] made gui for walls
-  - [] made gui for conveyor belts
-  - [] made gui for check points
-- [] implemented method view.SpaceView.updateView()
+- [ ] updated gui
+  - [ ] made gui for walls
+  - [ ] made gui for conveyor belts
+  - [ ] made gui for check points
+- [ ] implemented method view.SpaceView.updateView()
 - [x] written javaDocs for implementations and uses 
 
 ## Added advanced game board
@@ -68,21 +68,21 @@ We have added the visual of walls, conveyor belts and check points to the GUI. T
 We have written JavaDocs for all the methods we have implemented and for the methods we have used.
 
 # Assignment 4c)
-- [] implemented the existing command cards
-  - [] moveForward
-  - [] moveFastForward
-  - [] turnRight
-  - [] turnLeft
-- [] implemented walls blocking player movement
-- [] implemented buttons in playerView
-  - [] Finish Programming
-  - [] Execute Program
-  - [] Execute Current Register
-- [] added command cards
-  - [] uTurn
-  - [] moveBackwards
-- [] implemented uTurn and moveBackwards functionality
-- [] written javaDocs for implementations and uses
+- [ ] implemented the existing command cards
+  - [ ] moveForward
+  - [ ] moveFastForward
+  - [ ] turnRight
+  - [ ] turnLeft
+- [ ] implemented walls blocking player movement
+- [ ] implemented buttons in playerView
+  - [ ] Finish Programming
+  - [ ] Execute Program
+  - [ ] Execute Current Register
+- [ ] added command cards
+  - [ ] uTurn
+  - [ ] moveBackwards
+- [ ] implemented uTurn and moveBackwards functionality
+- [ ] written javaDocs for implementations and uses
 - [x] added tests for new functionality
 - [x] tested implementations with tests and manually
 
@@ -101,13 +101,13 @@ Besides running (and passing) the implemented tests we have done manual testing 
 
 
 # Assignment 4d)
-- [] implemented bumping of other players
+- [ ] implemented bumping of other players
 - [x] implemented field actions - executed after command card execution
   - [x] conveyor belt
   - [x] check points
 - [x] updated the controller.GameController.executeNextStep() to execute field actions
-- [] added again commandCard
-- [] added status label with info of players current checkpoint
+- [ ] added again commandCard
+- [ ] added status label with info of players current checkpoint
 - [x] written javaDocs for implementations and uses
 
 ## Implementation of fieldActions
@@ -161,8 +161,8 @@ We have written tests for all the implemented functionality. That includes:
 Besides the tests is checked, they all passed we have tested the new game functionality manually.
 
 # Assignment 4e) 
-- [] implemented winning conditions
-- [] added (interactive) command card "Turn Left or Right"                            <- Rune skriver denne 
-- [] implemented interactive command cards functionality - interrupts the 'game loop' <- Rune skriver denne 
-- [] written javaDocs for implementations and uses
-- [] added tests for new functionality 
+- [ ] implemented winning conditions
+- [ ] added (interactive) command card "Turn Left or Right"                            <- Rune skriver denne 
+- [ ] implemented interactive command cards functionality - interrupts the 'game loop' <- Rune skriver denne 
+- [ ] written javaDocs for implementations and uses
+- [ ] added tests for new functionality 
