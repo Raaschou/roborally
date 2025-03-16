@@ -162,7 +162,7 @@ Besides the tests is checked, they all passed we have tested the new game functi
 
 # Assignment 4e) 
 - [] implemented winning conditions
-- [] added (interactive) command card "Turn Left or Right" 
-- [] implemented interactive command cards functionality - interrupts the 'game loop'
+- [] added (interactive) command card "Turn Left or Right"                            <- Rune skriver denne 
+- [] implemented interactive command cards functionality - interrupts the 'game loop' <- Rune skriver denne 
 - [] written javaDocs for implementations and uses
 - [] added tests for new functionality 
