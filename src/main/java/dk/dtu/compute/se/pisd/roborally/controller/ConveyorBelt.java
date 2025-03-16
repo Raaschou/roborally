@@ -53,21 +53,13 @@ public class ConveyorBelt extends FieldAction {
      */
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
-
-        // this is a bit tricky since the order of doing it matter eg.
-        // p1 p2 is on the same conveyor belt and p2 stands were p1 are to be
-        // pushed to then p1 can't get pushed before p2 has been pushed but if for
+        // The order of doing doAction matter e.g.:
+        // p1, p2 is on the same conveyor belt and p2 stands were p1 are to be
+        // pushed to then p1 can't get pushed before p2 has been pushed and if for
         // some reason p2 can't move p1 can't move either.
         //
-        // So we should check if the space p1 are to be move to (if not occupied)
-        // Im pretty sure we can do it if we make a list of the players who have not
-        // been moved but might are to be moved by the conveyor belt and then iterate
-        // through the list and pop the players who are moved in later or if they
-        // cannot be moved
-        //
-        // right now I can't see how we can do it otherwise since we can't bump players when
-        // pushed on belts and we can have multiple players on the same space even though it's
-        // only for a period..
+        // So we should check if the space p1 are to be move to (if not occupied) is going to be unoccupied.
+
         ArrayList<Space> conflictingSpaces = getConflictingConveyorSpaces(space);
         for (Space conflictingSpace : conflictingSpaces) {
             if (conflictingSpace.getPlayer() != null) {

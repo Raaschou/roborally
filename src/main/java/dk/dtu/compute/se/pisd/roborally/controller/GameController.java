@@ -457,7 +457,7 @@ public class GameController {
             /*
              * This loop makes sure that players that were initially blocked while conveyor belt tried
              * to move them get another chance to be moved.
-             * The ConveyorBelt class creates a list of the players that couldn't be moved along with
+             * The GameController class creates a list of the players that couldn't be moved along with
              * a copy that is used to check loop conditions.
              * If the list of player that hasn't been moved is unchanged the loop terminates,
              * otherwise it keeps running till there is no more players that should be moved by conveyor belt.
