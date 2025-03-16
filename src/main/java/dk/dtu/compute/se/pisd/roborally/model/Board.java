@@ -92,6 +92,13 @@ public class Board extends Subject {
         }
     }
 
+    /**
+     * Get the space with given coordinates
+     *
+     * @param x x-coordinate
+     * @param y y-coordinate
+     * @return space with the given coordinate
+     */
     public Space getSpace(int x, int y) {
         if (x >= 0 && x < width && y >= 0 && y < height) {
             return spaces[x][y];
@@ -100,10 +107,20 @@ public class Board extends Subject {
         }
     }
 
+    /**
+     * Get the total number of players
+     *
+     * @return the number of players
+     */
     public int getPlayersNumber() {
         return players.size();
     }
 
+    /**
+     * Add a player to the board
+     *
+     * @param player the player to be added
+     */
     public void addPlayer(@NotNull Player player) {
         if (player.board == this && !players.contains(player)) {
             players.add(player);
@@ -111,6 +128,12 @@ public class Board extends Subject {
         }
     }
 
+    /**
+     * Get the player with a given playernumber
+     *
+     * @param i the number of the player
+     * @return the player with the given number
+     */
     public Player getPlayer(int i) {
         if (i >= 0 && i < players.size()) {
             return players.get(i);
@@ -140,10 +163,20 @@ public class Board extends Subject {
         }
     }
 
+    /**
+     * Get the current board phase
+     *
+     * @return the phase the board is in
+     */
     public Phase getPhase() {
         return phase;
     }
 
+    /**
+     * Set the phase the board is in
+     *
+     * @param phase the phase the board is changed to
+     */
     public void setPhase(Phase phase) {
         if (phase != this.phase) {
             this.phase = phase;
@@ -151,6 +184,12 @@ public class Board extends Subject {
         }
     }
 
+    /**
+     * Get the step the board is in.
+     * Is used in the GameController to keep hold of what registers is executed
+     *
+     * @return current step
+     */
     public int getStep() {
         return step;
     }
@@ -162,10 +201,23 @@ public class Board extends Subject {
         }
     }
 
+    /**
+     * Current step mode.
+     * Used for the GameController to determine to run in step mode one action card at a time
+     * or in execute all action cards.
+     *
+     * @return current stepmode
+     */
     public boolean isStepMode() {
         return stepMode;
     }
 
+    /**
+     * Set the step mode
+     * true if in stepmode false if in execute all steps
+     *
+     * @param stepMode step mode
+     */
     public void setStepMode(boolean stepMode) {
         if (stepMode != this.stepMode) {
             this.stepMode = stepMode;
@@ -173,6 +225,12 @@ public class Board extends Subject {
         }
     }
 
+    /**
+     * Get the number of a given player
+     *
+     * @param player to get the number of
+     * @return the number of the given player
+     */
     public int getPlayerNumber(@NotNull Player player) {
         if (player.board == this) {
             return players.indexOf(player);
@@ -225,12 +283,16 @@ public class Board extends Subject {
         return null;
     }
 
+    /**
+     * Get a status message with information of the current player
+     *
+     * @return status message
+     */
     public String getStatusMessage() {
         // this is actually a view aspect, but for making assignment V1 easy for
         // the students, this method gives a string representation of the current
         // status of the game
 
-        // TODO V2: changed the status so that it shows the phase, the current player, and the current register
         return getCurrentPlayer().getName() + ", your next checkpoint is "+ getCurrentPlayer().getNextCheckpoint() +
                 " | Current round: " + this.getCounter() + " | " + "Current register: " + this.getStep() + " | Phase: " + this.getPhase();
     }
@@ -263,7 +325,20 @@ public class Board extends Subject {
         return getPlayer((getPlayerNumber(getCurrentPlayer()) + 1) % getPlayersNumber());
     }
 
-    public int getNoOfCheckpoints() { return this.noOfCheckpoints; }
+    /**
+     * Get the number of check points
+     *
+     * @return the number of check points
+     */
+    public int getNoOfCheckpoints() {
+        return this.noOfCheckpoints;
+    }
 
-    public void setNoOfCheckpoints(int no){ this.noOfCheckpoints = no; }
+    /**
+     * Set the number of check points
+     * @param number the number of check points
+     */
+    public void setNoOfCheckpoints(int number){
+        this.noOfCheckpoints = number;
+    }
 }
