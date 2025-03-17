@@ -189,8 +189,8 @@ Besides the tests is checked, they all passed we have tested the new game functi
 - [x] implemented winning conditions
 - [x] added (interactive) command card "Turn Left or Right" 
 - [x] implemented interactive command cards functionality - interrupts the 'game loop' 
-- [ ] written javaDocs for implementations and uses
-- [ ] added tests for new functionality 
+- [x] written javaDocs for implementations and uses
+- [x] added tests for new functionality 
 
 ## Winning conditions
 For the win conditions, we chose add the noOfCheckpoints attribute to the board class. This is compared to the
@@ -213,3 +213,11 @@ The newly implemented method controller.GameController.turnLeftOrRight() resets 
 the game by calling continueNextStep. After this the turnLeftOrRight() method check if the game was in stepMode and 
 resumes the mode the game was in before the interactive card interrupted the "game loop".
 
+## Documentation
+We have written JavaDocs for the methods we have implemented and the ones we have used plus a couple we had missed. 
+
+## Testing
+We have implemented tests for all the classes, methods and lines in the controllers GameController ConveyorBelt and
+CheckPoint classes, and we have aimed to cover all the edge cases we could think of.
+We have also tested classes methods and lines in the models classes Board, Command, Phases, Player and Space WITH A FEW 
+EXEPTIONS?? TODO: figure this out <<<--
