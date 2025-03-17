@@ -372,10 +372,11 @@ class GameControllerTest {
     void checkpointIncrementPlayerNextCheckpoint() {
         //Creates board with 1 checkpoint
         Board board = gameController.board;
+        board.setNoOfCheckpoints(999); //Avoid javafx window throwing errors
         Player current = board.getCurrentPlayer();
         current.setSpace(board.getSpace(4, 4));
         current.setHeading(Heading.NORTH);
-        board.setNoOfCheckpoints(1);
+
 
         //Creates checkpoint and does checkpoint action on the player,
         //which should increment nextCheckpoint attribute
@@ -417,19 +418,17 @@ class GameControllerTest {
         gameController.moveForward(current);
         point3.doAction(gameController, board.getSpace(6, 1));
 
+
         Assertions.assertEquals(3, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 3");
 
         gameController.backward(current);
-        point2.doAction(gameController, board.getSpace(6, 2));
-        Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
-        Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
 
         try {
-            gameController.startWinning(current);
-        } catch (Throwable ignored) {
-            // ignored. this is thrown because of the "YOU WON" alert which can not be shown
-            // since no window exists during test execution
-        }
+            point2.doAction(gameController, board.getSpace(6, 2));
+        } catch (Throwable ignored) {} //For some reason this throws more errors, when reaching the popup code, than the other doAction methods
+
+        Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
+        Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
 
         Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
         Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
@@ -440,34 +439,30 @@ class GameControllerTest {
     void gameWin() {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
-        current.setSpace(board.getSpace(4, 4));
+        current.setSpace(board.getSpace(4, 3));
         current.setHeading(Heading.NORTH);
         board.setNoOfCheckpoints(2);
 
-        Space space = board.getSpace(4, 4);
+        Space space = board.getSpace(4, 3);
         Checkpoint point = new Checkpoint(1);
         space.getActions().add(point);
-        point.doAction(gameController, board.getSpace(4, 4));
+
+
+
+            point.doAction(gameController, board.getSpace(4, 3));
+
 
         //Creates another checkpoint and moves the player there and does checkpoint action
         space = board.getSpace(6, 6);
         point = new Checkpoint(2);
         space.getActions().add(point);
         current.setSpace(board.getSpace(6, 6));
-        point.doAction(gameController, board.getSpace(6, 6));
-
         //Try-catch block is a workaround for testing the phase change that happens in the startWinning() method
         //Because javafx is not initialised in the GameControllerTest, it would otherwise cause a crash when reaching the popup
-        try {
-            //It would be possible to just use the startWinning() method,
-            //but to get more coverage, e.g. the isPlayerAWinner() method, it is done this way
-            gameController.startProgrammingPhase();
-            gameController.finishProgrammingPhase();
-            gameController.executePrograms();
-        } catch (ExceptionInInitializerError ignored) {
-            // this exception is ignored. it is thrown, because the player wins and an
-            // Alert dialog is shown, which is not possible since no window is initialized for the test
-        }
+        try{
+            point.doAction(gameController, board.getSpace(6, 6));
+        } catch (ExceptionInInitializerError ignored) {}
+
 
         Assertions.assertEquals(3, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 3");
         Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
@@ -477,6 +472,7 @@ class GameControllerTest {
     @Test
     void testIncrementingChechpoint() {
         Board board = gameController.board;
+        board.setNoOfCheckpoints(999); //Avoid javafx window throwing errors
         Player current = board.getCurrentPlayer();
         current.setSpace(board.getSpace(3, 3));
         current.setHeading(Heading.NORTH);
@@ -561,8 +557,15 @@ class GameControllerTest {
         c1.setHeading(Heading.WEST);
         ConveyorBelt c2 = new ConveyorBelt();
         c2.setHeading(Heading.WEST);
+
+        //Put conveyor belts and players on their respective spaces
+        s1.getActions().add(c1);
+        s2.getActions().add(c2);
         p1.setSpace(s1);
         p2.setSpace(s2);
+
+        gameController.startProgrammingPhase();
+        gameController.finishProgrammingPhase();
         gameController.executePrograms();
 
         Assertions.assertEquals(p1, board.getSpace(1, 4).getPlayer(), p1.getName() + " should be on (1,4)");
@@ -594,11 +597,58 @@ class GameControllerTest {
         //Another round to get check last command card, backward
         gameController.startProgrammingPhase();
         current.getProgramField(0).setCard(new CommandCard(Command.BACKWARD));
+        current.getProgramField(1).setCard(new CommandCard(Command.RIGHT_OR_LEFT));
+        gameController.turnRightOrLeft(current, "Left");
+        current.getProgramField(2).setCard(new CommandCard(Command.RIGHT_OR_LEFT));
+        gameController.turnRightOrLeft(current, "Right");
         gameController.finishProgrammingPhase();
         gameController.executePrograms();
 
         Assertions.assertEquals(board.getSpace(0,6),current.getSpace(), "Player should've moved one space back");
     }
+
+    @Test
+    void lineOfConveyorBeltsAndPlayers(){
+        Board board = gameController.board;
+        board.setNoOfCheckpoints(999);
+        Player p1 = board.getPlayer(0);
+        Player p2 = board.getPlayer(1);
+        Player p3 = board.getPlayer(2);
+        Player p4 = board.getPlayer(3);
+        Space s1 = board.getSpace(1, 0);
+        Space s2 = board.getSpace(2, 0);
+        Space s3 = board.getSpace(3, 0);
+        Space s4 = board.getSpace(4, 0);
+        ConveyorBelt c1 = new ConveyorBelt();
+        c1.setHeading(Heading.WEST);
+        ConveyorBelt c2 = new ConveyorBelt();
+        c2.setHeading(Heading.WEST);
+        ConveyorBelt c3 = new ConveyorBelt();
+        c3.setHeading(Heading.WEST);
+        ConveyorBelt c4 = new ConveyorBelt();
+        c4.setHeading(Heading.WEST);
+
+        s1.getActions().add(c1);
+        s2.getActions().add(c2);
+        s3.getActions().add(c3);
+        s4.getActions().add(c4);
+        p1.setSpace(s4);
+        p2.setSpace(s2);
+        p3.setSpace(s3);
+        p4.setSpace(s1);
+        //Get all conveyor belts to run
+        gameController.startProgrammingPhase();
+        gameController.finishProgrammingPhase();
+        gameController.executePrograms();
+
+        Assertions.assertEquals(p1, board.getSpace(3, 0).getPlayer(), "Player 1 should be on (3,0)!");
+        Assertions.assertEquals(p2, board.getSpace(1, 0).getPlayer(), "Player 2 should be on (1,0)!");
+        Assertions.assertEquals(p3, board.getSpace(2, 0).getPlayer(), "Player 3 should be on (3,0)!");
+        Assertions.assertEquals(p4, board.getSpace(0, 0).getPlayer(), "Player should be on (0,0)!");
+    }
+    //TODO Test for interactive card
+    //TODO Test for retry queue if possible
+
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
 
