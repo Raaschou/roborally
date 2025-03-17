@@ -24,6 +24,7 @@ class GameControllerTest {
     void setUp() {
         Board board = new Board(TEST_WIDTH, TEST_HEIGHT);
         gameController = new GameController(board);
+        GameController.testMode = true;
         for (int i = 0; i < 6; i++) {
             Player player = new Player(board, null, "Player " + i);
             board.addPlayer(player);
@@ -36,22 +37,8 @@ class GameControllerTest {
     @AfterEach
     void tearDown() {
         gameController = null;
+        GameController.testMode = false;
     }
-
-    /**
-     * Test for Assignment V1 (can be deleted later once V1 was shown to the teacher)
-     */
-    @Test
-    void testV1() {
-        Board board = gameController.board;
-
-        Player player = board.getCurrentPlayer();
-        gameController.moveCurrentPlayerToSpace(board.getSpace(0, 4));
-
-        Assertions.assertEquals(player, board.getSpace(0, 4).getPlayer(), "Player " + player.getName() + " should be on Space (0,4)!");
-    }
-
-    //The following tests should be used later for assignment V2
 
     @Test
     void moveCurrentPlayerToSpace() {
@@ -103,18 +90,8 @@ class GameControllerTest {
         gameController.moveForward(current);
         Assertions.assertEquals(current, board.getSpace(6, 5).getPlayer(), "Player " + current.getName() + " has moved should be on space (6, 5)");
         Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player " + current.getName() + " should be heading SOUTH!");
-
-        /*
-         * TODO: Write missing tests for moveForward():
-         *      for bumping X
-         *      for chain bumping x
-         *      for bumping against walls x
-         *      for chain bumping against walls
-         *      for bumping across game edge x
-         */
     }
 
-    // Uncomment these after merging with the implemented functions.
     @Test
     void moveFastForward() {
         Board board = gameController.board;
@@ -127,7 +104,6 @@ class GameControllerTest {
         Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player 0 should be heading SOUTH!");
         Assertions.assertNull(board.getSpace(0, 0).getPlayer(), "Space (0, 0) should be empty!");
     }
-
 
     @Test
     void moveFastFastForward() {
@@ -375,7 +351,7 @@ class GameControllerTest {
         Player current = board.getCurrentPlayer();
         current.setSpace(board.getSpace(4, 4));
         current.setHeading(Heading.NORTH);
-        board.setNoOfCheckpoints(1);
+
 
         //Creates checkpoint and does checkpoint action on the player,
         //which should increment nextCheckpoint attribute
@@ -421,16 +397,9 @@ class GameControllerTest {
 
         gameController.backward(current);
         point2.doAction(gameController, board.getSpace(6, 2));
+
         Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
         Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
-
-        try {
-            gameController.startWinning(current);
-        } catch (Throwable ignored) {
-            // ignored. this is thrown because of the "YOU WON" alert which can not be shown
-            // since no window exists during test execution
-        }
-
         Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
         Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
         Assertions.assertSame(Phase.FINISHED, board.getPhase(), "Board should be in finished phase");
@@ -440,34 +409,23 @@ class GameControllerTest {
     void gameWin() {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
-        current.setSpace(board.getSpace(4, 4));
+        current.setSpace(board.getSpace(4, 3));
         current.setHeading(Heading.NORTH);
         board.setNoOfCheckpoints(2);
 
-        Space space = board.getSpace(4, 4);
+        Space space = board.getSpace(4, 3);
         Checkpoint point = new Checkpoint(1);
         space.getActions().add(point);
-        point.doAction(gameController, board.getSpace(4, 4));
+
+        point.doAction(gameController, board.getSpace(4, 3));
 
         //Creates another checkpoint and moves the player there and does checkpoint action
         space = board.getSpace(6, 6);
         point = new Checkpoint(2);
         space.getActions().add(point);
         current.setSpace(board.getSpace(6, 6));
-        point.doAction(gameController, board.getSpace(6, 6));
 
-        //Try-catch block is a workaround for testing the phase change that happens in the startWinning() method
-        //Because javafx is not initialised in the GameControllerTest, it would otherwise cause a crash when reaching the popup
-        try {
-            //It would be possible to just use the startWinning() method,
-            //but to get more coverage, e.g. the isPlayerAWinner() method, it is done this way
-            gameController.startProgrammingPhase();
-            gameController.finishProgrammingPhase();
-            gameController.executePrograms();
-        } catch (ExceptionInInitializerError ignored) {
-            // this exception is ignored. it is thrown, because the player wins and an
-            // Alert dialog is shown, which is not possible since no window is initialized for the test
-        }
+        point.doAction(gameController, board.getSpace(6, 6));
 
         Assertions.assertEquals(3, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 3");
         Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
@@ -475,7 +433,7 @@ class GameControllerTest {
     }
 
     @Test
-    void testIncrementingChechpoint() {
+    void testIncrementingCheckpoint() {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
         current.setSpace(board.getSpace(3, 3));
@@ -492,7 +450,6 @@ class GameControllerTest {
         Assertions.assertEquals(1, current.getNextCheckpoint(), "Player " + current.getName() + " should be heading for first!");
 
         gameController.moveForward(current);
-
         checkpoint1.doAction(gameController, board.getSpace(3, 2));
 
         Assertions.assertEquals(2, current.getNextCheckpoint(), "Player " + current.getName() + " should be heading for second!");
@@ -504,11 +461,8 @@ class GameControllerTest {
     }
 
     @Test
-    void againTest() {
+    void testAgain() {
         Board board = gameController.board;
-        // prevent the player from winning, which causes an error when we try to display an Alert
-        // because no window exists in tests
-        board.setNoOfCheckpoints(212938);
         Player current = board.getSpace(3, 3).getPlayer();
         board.setCurrentPlayer(current);
         current.setHeading(Heading.NORTH);
@@ -522,11 +476,8 @@ class GameControllerTest {
     }
 
     @Test
-    void againTest2() {
+    void testAgainAgain() {
         Board board = gameController.board;
-        // prevent the player from winning, which causes an error when we try to display an Alert
-        // because no window exists in tests
-        board.setNoOfCheckpoints(212938);
         Player current = board.getCurrentPlayer();
         current.setSpace(board.getSpace(5, 3));
         current.setHeading(Heading.NORTH);
@@ -561,8 +512,15 @@ class GameControllerTest {
         c1.setHeading(Heading.WEST);
         ConveyorBelt c2 = new ConveyorBelt();
         c2.setHeading(Heading.WEST);
+
+        //Put conveyor belts and players on their respective spaces
+        s1.getActions().add(c1);
+        s2.getActions().add(c2);
         p1.setSpace(s1);
         p2.setSpace(s2);
+
+        gameController.startProgrammingPhase();
+        gameController.finishProgrammingPhase();
         gameController.executePrograms();
 
         Assertions.assertEquals(p1, board.getSpace(1, 4).getPlayer(), p1.getName() + " should be on (1,4)");
@@ -577,7 +535,6 @@ class GameControllerTest {
         current.setSpace(board.getSpace(0, 0));
         current.setHeading(Heading.SOUTH);
 
-
         gameController.startProgrammingPhase();
         current.getProgramField(0).setCard(new CommandCard(Command.RIGHT));
         current.getProgramField(1).setCard(new CommandCard(Command.LEFT));
@@ -588,17 +545,64 @@ class GameControllerTest {
         gameController.executePrograms();
 
         //Assert if player has moved as expected
-        Assertions.assertEquals(board.getSpace(0,5),current.getSpace(), "Player should've moved two spaces south");
-        Assertions.assertEquals(Heading.NORTH,current.getHeading(), "Player should've turned around and be facing north");
+        Assertions.assertEquals(board.getSpace(0, 5), current.getSpace(), "Player should've moved two spaces south");
+        Assertions.assertEquals(Heading.NORTH, current.getHeading(), "Player should've turned around and be facing north");
 
         //Another round to get check last command card, backward
         gameController.startProgrammingPhase();
         current.getProgramField(0).setCard(new CommandCard(Command.BACKWARD));
+        current.getProgramField(1).setCard(new CommandCard(Command.RIGHT_OR_LEFT));
+        gameController.turnRightOrLeft(current, "Left");
+        current.getProgramField(2).setCard(new CommandCard(Command.RIGHT_OR_LEFT));
+        gameController.turnRightOrLeft(current, "Right");
         gameController.finishProgrammingPhase();
         gameController.executePrograms();
 
-        Assertions.assertEquals(board.getSpace(0,6),current.getSpace(), "Player should've moved one space back");
+        Assertions.assertEquals(board.getSpace(0, 6), current.getSpace(), "Player should've moved one space back");
     }
+
+    @Test
+    void lineOfConveyorBeltsAndPlayers() {
+        Board board = gameController.board;
+        board.setNoOfCheckpoints(999);
+        Player p1 = board.getPlayer(0);
+        Player p2 = board.getPlayer(1);
+        Player p3 = board.getPlayer(2);
+        Player p4 = board.getPlayer(3);
+        Space s1 = board.getSpace(1, 0);
+        Space s2 = board.getSpace(2, 0);
+        Space s3 = board.getSpace(3, 0);
+        Space s4 = board.getSpace(4, 0);
+        ConveyorBelt c1 = new ConveyorBelt();
+        c1.setHeading(Heading.WEST);
+        ConveyorBelt c2 = new ConveyorBelt();
+        c2.setHeading(Heading.WEST);
+        ConveyorBelt c3 = new ConveyorBelt();
+        c3.setHeading(Heading.WEST);
+        ConveyorBelt c4 = new ConveyorBelt();
+        c4.setHeading(Heading.WEST);
+
+        s1.getActions().add(c1);
+        s2.getActions().add(c2);
+        s3.getActions().add(c3);
+        s4.getActions().add(c4);
+        p1.setSpace(s4);
+        p2.setSpace(s2);
+        p3.setSpace(s3);
+        p4.setSpace(s1);
+        //Get all conveyor belts to run
+        gameController.startProgrammingPhase();
+        gameController.finishProgrammingPhase();
+        gameController.executePrograms();
+
+        Assertions.assertEquals(p1, board.getSpace(3, 0).getPlayer(), "Player 1 should be on (3,0)!");
+        Assertions.assertEquals(p2, board.getSpace(1, 0).getPlayer(), "Player 2 should be on (1,0)!");
+        Assertions.assertEquals(p3, board.getSpace(2, 0).getPlayer(), "Player 3 should be on (3,0)!");
+        Assertions.assertEquals(p4, board.getSpace(0, 0).getPlayer(), "Player should be on (0,0)!");
+    }
+    //TODO Test for interactive card
+    //TODO Test for retry queue if possible
+
 
     @Test
     void assertStatementsInExecuteNextStepWrongPhase() {
