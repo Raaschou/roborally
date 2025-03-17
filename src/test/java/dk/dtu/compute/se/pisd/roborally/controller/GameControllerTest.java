@@ -52,6 +52,8 @@ class GameControllerTest {
         Platform.runLater(runnable);
 
         // give JavaFX time to process the thing and then move on
+        // if not for this, the runnable will not be executed in time for the assertions
+        // and tests will fail
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
