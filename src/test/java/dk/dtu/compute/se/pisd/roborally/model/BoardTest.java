@@ -1,15 +1,11 @@
-package dk.dtu.compute.se.pisd.roborally.controller.model;
+package dk.dtu.compute.se.pisd.roborally.model;
 
 import dk.dtu.compute.se.pisd.roborally.controller.GameController;
-import dk.dtu.compute.se.pisd.roborally.model.Board;
-import dk.dtu.compute.se.pisd.roborally.model.Heading;
-import dk.dtu.compute.se.pisd.roborally.model.Player;
-import dk.dtu.compute.se.pisd.roborally.model.Space;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SpaceTest {
+public class BoardTest {
 
     private GameController gameController;
 
@@ -29,14 +25,21 @@ public class SpaceTest {
     }
 
     @Test
-    void testHasWallInDirection() {
+    void testGetNeighbour() {
         Space zz = gameController.board.getSpace(0, 0);
         zz.getWalls().add(Heading.EAST);
-        boolean result = zz.hasWallInDirection(Heading.EAST);
-        Assertions.assertTrue(result, "Result was false even though the space has a wall in the given direction");
+        Space result = gameController.board.getNeighbour(zz, Heading.EAST);
+        Assertions.assertNull(result, "Neighbour was not null even though a wall was in the way in the same space");
 
-        result = zz.hasWallInDirection(Heading.NORTH);
-        Assertions.assertFalse(result, "Result was true even though the space has no wall in the given direction");
+        zz.getWalls().clear();
+        Space neighbour = gameController.board.getSpace(1, 0);
+        neighbour.getWalls().add(Heading.WEST);
+        result = gameController.board.getNeighbour(zz, Heading.EAST);
+        Assertions.assertNull(result, "Neighbour was not null even though a wall was in the way on the neighbour space");
+
+        neighbour.getWalls().clear();
+        result = gameController.board.getNeighbour(zz, Heading.EAST);
+        Assertions.assertNotNull(result, "Neighbour was null even though no walls exist");
     }
 
 }
