@@ -599,6 +599,26 @@ class GameControllerTest {
 
         Assertions.assertEquals(board.getSpace(0,6),current.getSpace(), "Player should've moved one space back");
     }
+
+    @Test
+    void assertStatementsInExecuteNextStepWrongPhase() {
+        gameController.board.setPhase(Phase.PROGRAMMING); // sets the phase to be wrong for executeNextStep.
+
+        Assertions.assertThrows(AssertionError.class, () -> {
+            gameController.executeStep();  // We call executeStep since we can't call executeNextStep (private)
+        });
+    }
+
+    @Test
+    void assertStatementInExecuteNextStepWrongStep() {
+        gameController.board.setStep(-10); // sets the step to make no sense for executeNextStep
+
+        Assertions.assertThrows(AssertionError.class, () -> {
+            gameController.executeStep();  // We call executeStep since we can't call executeNextStep (private)
+        });
+    }
+
+
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
 
