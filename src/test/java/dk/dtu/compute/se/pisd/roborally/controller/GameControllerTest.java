@@ -1,5 +1,6 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
+import com.sun.javafx.logging.jfr.JFRInputEvent;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import javafx.application.Platform;
 import org.junit.jupiter.api.*;
@@ -403,7 +404,6 @@ class GameControllerTest {
         current.setSpace(board.getSpace(4, 4));
         current.setHeading(Heading.NORTH);
 
-
         //Creates checkpoint and does checkpoint action on the player,
         //which should increment nextCheckpoint attribute
         Space space = board.getSpace(4, 4);
@@ -414,6 +414,32 @@ class GameControllerTest {
         });
 
         Assertions.assertEquals(2, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 2");
+    }
+
+    @Test
+    void checkpointCheckpointBeforeConveyor() {
+        //Creates board with 1 checkpoint
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(4, 4));
+        current.setHeading(Heading.NORTH);
+
+        // creates a conveyor belt then a check point at the same space. execute doActions and check that check point
+        // is correct. Obviously it is since we use addFirst for to add the check point to the FieldActions..
+        Space space = board.getSpace(4, 4);
+        Checkpoint point = new Checkpoint(1);
+        ConveyorBelt belt = new ConveyorBelt();
+        belt.setHeading(Heading.EAST);
+        space.getActions().add(belt);
+        space.getActions().addFirst(point);
+        runWithInitializedJavaFX(() -> {
+            for (FieldAction action : space.getActions()) {
+                action.doAction(gameController, space);
+            }
+        });
+
+        Assertions.assertEquals(2, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 2");
+        Assertions.assertEquals(current, board.getSpace(5, 4).getPlayer(), " " + current.getName() + " should be at space (5, 4)" );
     }
 
     @Test
@@ -695,10 +721,6 @@ class GameControllerTest {
             gameController.executeStep();  // We call executeStep since we can't call executeNextStep (private)
         });
     }
-
-
-    // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
-    //      - probably not relevant for our case.
 
     // TODO and there should be more tests added for the different assignments eventually
 
