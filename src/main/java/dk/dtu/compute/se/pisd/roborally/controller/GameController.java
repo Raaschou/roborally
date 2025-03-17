@@ -35,8 +35,14 @@ import java.util.ArrayList;
  */
 public class GameController {
 
-    final public Board board;
+    /**
+     * A global flag used to determine whether the app is running in a unit test, in which
+     * case the "You've won"-alert is not displayed (which would cause an error since JavaFX is
+     * not initialized in unit tests)
+     */
+    static boolean testMode = false;
 
+    final public Board board;
     // arrays containing players that are on conveyor belts but could not be moved right away
     private final ArrayList<Player> conveyorMovementRetryQueue = new ArrayList<>();
     private ArrayList<Player> conveyorMovementRetryQueueCopy = new ArrayList<>();
@@ -146,9 +152,11 @@ public class GameController {
         // This creates an alert window
         // It could be argued, that the AppController should be the one creating a popup,
         // but as this is a part of the normal game flow, we chose to place it in the gameController.
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText(currentPlayer.getName() + " is the winner!");
-        alert.show();
+        if (!testMode) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText(currentPlayer.getName() + " is the winner!");
+            alert.show();
+        }
     }
 
     /**
@@ -180,7 +188,7 @@ public class GameController {
     }
 
     /**
-     *  Execute all steps command cards in the command fields.
+     * Execute all steps command cards in the command fields.
      */
     public void executePrograms() {
         board.setStepMode(false);
@@ -487,6 +495,7 @@ public class GameController {
 
     /**
      * Continues execution of the 'game loop'
+     *
      * @param player the current player that is in action.
      */
     private void continueNextStep(Player player) {
