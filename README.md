@@ -49,11 +49,11 @@ We have tested the implemented move functionality using the already implemented 
 # Assignment 4b)
 - [x] added game board 
 - [x] made the new game board selectable
-- [ ] updated gui
-  - [ ] made gui for walls
+- [x] updated gui
+  - [x] made gui for walls
   - [x] made gui for conveyor belts
   - [x] made gui for check points
-- [ ] implemented method view.SpaceView.updateView()
+- [x] implemented method view.SpaceView.updateView()
 - [x] written javaDocs for implementations and uses 
 
 ## Added advanced game board
@@ -62,7 +62,8 @@ When a game i started the players are prompted to select a game board after they
 The 'advanced board' contains some walls, conveyor belts and check points.
 
 ## GUI update
-We have added the visual of walls, conveyor belts and check points to the GUI. TODO: "Den der har lavet dette beskriv gerne hvordan".
+We have added the visual of walls, conveyor belts and check points to the GUI.
+We will break them down in two separate sections below.
 
 ### Field actions
 We added two new methods to the SpaceView class for drawing the objects. 
@@ -74,18 +75,27 @@ solved by checking the object using the instanceof operator before casting it to
 we were able to use the specific fields, e.g. using conveyor belts heading to draw them pointing the correct direction.
 
 ### Walls
+Walls are drawn with a specific width and color, and we have made adjustments to prevent rendering issues.
+Each wall is placed based on its heading (NORTH, SOUTH, EAST, WEST) and adjusted accordingly.
+The walls are saved in an arraylist, when creating a board, e.g. in the Advanced board. 
+
+## Method updateView()
+This method ensures that the update applies to the correct space. 
+If the given subject matches this space all existing elements in the view are removed
+using the method getChildren().clear(). After that the view is redrawn by calling 
+the methods, drawWalls(), drawActions() and updatePlayer().
 
 ## Documentation
 We have written JavaDocs for all the methods we have implemented and for the methods we have used.
-
 
 # Assignment 4c)
 - [x] implemented the existing command cards
   - [x] moveForward
   - [x] moveFastForward
+  - [x] moveFastFastForward
   - [x] turnRight
   - [x] turnLeft
-- [ ] implemented walls blocking player movement
+- [x] implemented walls blocking player movement
 - [x] implemented buttons in playerView TODO: Er det nok/for meget? De havde trods alt skrevet det meste af koden.
   - [x] Finish Programming
   - [x] Execute Program
@@ -94,20 +104,27 @@ We have written JavaDocs for all the methods we have implemented and for the met
   - [x] uTurn
   - [x] moveBackwards
 - [x] implemented uTurn and moveBackwards functionality
-- [ ] written javaDocs for implementations and uses
+- [ ] written javaDocs for implementations and uses 
 - [x] added tests for new functionality
 - [x] tested implementations with tests and manually
 
+## Implementing functionality of walls via getNeighbour() and hasWallInDirection() method
+We updated the getNeighbour method and included a boolean method, hasWallInDirection(). This method
+takes the Heading of the player then calls getWalls().contains(heading) checking if the players space contains a
+wall in the same direction of the players heading, or the neighbouring space has a wall in the opposite heading. 
+This ensures that movement is blocked if a wall is present.
+
 ## Implementing command cards
 We have implemented the functionality of several command cards for the gameplay.
-As well as adding new commands (moveBackwards and uTurn) and their functionality.
-The moves moveForward and moveFastForward first checks the heading of the player.
+As well as adding new commands (moveBackwards and uTurn) and their functionality. Besides these command cards
+we decided to additionally add a command card, "moveFastFastForward".
+The move moveForward first checks the heading of the player.
 It determines the next space in that direction using board.getNeighbour().
 If a valid neighboring space exists, it attempts to move the player there using moveToSpace().
 If the move is blocked by a wall, it catches and ignores the ImpossibleMoveException. If there is a
 another player at the Neighbour space, it will check if that player can be pushed in the direction of the
-player pushing. The move moveFastForward doesn't have its own functionality, rather it calls the command card
-moveForward twice.
+player pushing. The move moveFastForward and moveFastFastForward doesn't have its own functionality, 
+rather it calls the command card moveForward two or three times. 
 The moves turnRight and turnLeft works in roughly the same way.
 The cards both use the player.setHeading and then calls the getHeading.next() or getHeading.prev().
 As the heading is of the datatype enum we can call the previous or the next heading of the list and change it.
@@ -120,8 +137,11 @@ player.setHeading isn't used as the player should not change heading when moving
 We implemented the buttons, so the program is interactable and playable after laying the programming cards. The "Finish
 Programming" button initialises the activation phase, which then requires the press of "Execute Program" or "Execute 
 Current Register". The buttons respectively executes the entire program, going through all the cards sequentially, or 
-executes the program one player register at a time. At any point it is possible to execute the rest of the program using
-the "Execute Program" button.
+executes the program one player register at a time. At any point it is possible to execute the rest of the program 
+using the "Execute Program" button.
+
+## Documentation
+JavaDocs has been written for the implemented methods. OBS tjek updateView();
 
 ## Added tests 
 We have added tests in GameControllerTest that tests the implementations of the new functionality:
@@ -143,8 +163,8 @@ Besides running (and passing) the implemented tests we have done manual testing 
   - [x] conveyor belt
   - [x] check points
 - [x] updated the controller.GameController.executeNextStep() to execute field actions
-- [ ] added again commandCard
-- [ ] added status label with info of players current checkpoint
+- [x] added again commandCard
+- [x] added status label with info of players current checkpoint 
 - [x] written javaDocs for implementations and uses
 
 ## Implementation of bumping other players
@@ -186,6 +206,14 @@ p1 won't be able to move initially p1 is added to the queue, p2 is moved then th
 This makes sure the games conveyor belts behaves similar regardless of player's positioning. 
 
 This functionality is implemented it the helper method controller.GameController.processBlockedConveyorPlayers(). 
+
+## Command card "Again"
+We decided to add an extra command card called "Again". The Again method re-executes 
+the last command the player executed, if any. We implemented a method, getLastCommand() and setLastCommand()
+for this purpose. We then retrieve the last executed command using player.getLastCommand().
+If no command exists (null), the method simply returns.
+Otherwise, it calls executeCommand(player, lastCommand) to reapply the last action.
+Before any action is executed, the executeCommand(), starts by setting the given command as the last command.
 
 ## Updated GameController
 We have updated the controller.GameController.executeNextStep() method to call the implemented helper methods
