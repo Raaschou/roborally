@@ -289,12 +289,7 @@ public class Board extends Subject {
      * @return status message
      */
     public String getStatusMessage() {
-        // this is actually a view aspect, but for making assignment V1 easy for
-        // the students, this method gives a string representation of the current
-        // status of the game
-
-        return getCurrentPlayer().getName() + ", your next checkpoint is "+ getCurrentPlayer().getNextCheckpoint() +
-                " | Current round: " + this.getCounter() + " | " + "Current register: " + this.getStep() + " | Phase: " + this.getPhase();
+        return getCurrentPlayer().getName() + ", your next checkpoint is " + getCurrentPlayer().getNextCheckpoint() + " | Current round: " + this.getCounter() + " | " + "Current register: " + this.getStep() + " | Phase: " + this.getPhase();
     }
 
     /**
@@ -336,9 +331,10 @@ public class Board extends Subject {
 
     /**
      * Set the number of check points
+     *
      * @param number the number of check points
      */
-    public void setNoOfCheckpoints(int number){
+    public void setNoOfCheckpoints(int number) {
         this.noOfCheckpoints = number;
     }
 }
