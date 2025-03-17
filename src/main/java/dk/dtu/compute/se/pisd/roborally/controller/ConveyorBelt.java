@@ -34,7 +34,6 @@ import java.util.List;
  *
  * @author Ekkart Kindler, ekki@dtu.dk
  */
-// XXX A3
 public class ConveyorBelt extends FieldAction {
 
     private Heading heading;
@@ -53,14 +52,10 @@ public class ConveyorBelt extends FieldAction {
      */
     @Override
     public boolean doAction(@NotNull GameController gameController, @NotNull Space space) {
-        // The order of doing doAction matter e.g.:
-        // p1, p2 is on the same conveyor belt and p2 stands were p1 are to be
-        // pushed to then p1 can't get pushed before p2 has been pushed and if for
-        // some reason p2 can't move p1 can't move either.
-        //
-        // So we should check if the space p1 are to be move to (if not occupied) is going to be unoccupied.
-
+        // get other spaces with conveyors that point to the same target space
         ArrayList<Space> conflictingSpaces = getConflictingConveyorSpaces(space);
+
+        // if any of the conflicting spaces are occupied by a player, the move is impossible
         for (Space conflictingSpace : conflictingSpaces) {
             if (conflictingSpace.getPlayer() != null) {
                 return false;
@@ -83,14 +78,9 @@ public class ConveyorBelt extends FieldAction {
      * @param space A space for which to find conflicting spaces
      * @return a list of spaces with conveyors pointing to the same target as input space
      */
-    private ArrayList<Space> getConflictingConveyorSpaces(Space space) {
+    public static ArrayList<Space> getConflictingConveyorSpaces(Space space) {
         ArrayList<Space> conflictingSpaces = new ArrayList<>();
-        ConveyorBelt belt = null;
-        for (FieldAction action : space.getActions()) {
-            if (action instanceof ConveyorBelt) {
-                belt = (ConveyorBelt) action;
-            }
-        }
+        ConveyorBelt belt = space.getConveyorBelt();
         if (belt == null) {
             // input space does not have a conveyor belt
             return conflictingSpaces;

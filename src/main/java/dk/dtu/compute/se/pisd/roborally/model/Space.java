@@ -113,19 +113,19 @@ public class Space extends Subject {
         return actions;
     }
 
+    /**
+     * Check if the space has a conveyor belt
+     * @return true if the space has a conveyor belt, false otherwise
+     */
     public boolean hasConveyorBelt() {
-        for (FieldAction action : getActions()) {
-            if (action instanceof ConveyorBelt) {
-                return true;
-            }
-        }
-        return false;
+        return getConveyorBelt() != null;
     }
 
+    /**
+     * Get the conveyor belt on the space if there is one.
+     * @return the conveyor belt on the space if there is one, null otherwise
+     */
     public ConveyorBelt getConveyorBelt() {
-        if (!hasConveyorBelt()) {
-            return null;
-        }
         for (FieldAction action : getActions()) {
             if (action instanceof ConveyorBelt) {
                 return (ConveyorBelt) action;
