@@ -160,6 +160,20 @@ class GameControllerTest {
     }
 
     @Test
+    void turnLeftOrRight() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+
+        gameController.turnRightOrLeft(current, "Left");
+        Assertions.assertEquals(Heading.EAST, current.getHeading(), "Player 0 should be heading EAST!");
+        Assertions.assertEquals(current, board.getSpace(0, 0).getPlayer(), "Player " + current.getName() + " should be on Space (0,0)!");
+
+        gameController.turnRightOrLeft(current, "Right");
+        Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player 0 should be heading SOUTH!");
+        Assertions.assertEquals(current, board.getSpace(0, 0).getPlayer(), "Player " + current.getName() + " should be on Space (0,0)!");
+    }
+
+    @Test
     void uTurn() {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
@@ -699,7 +713,6 @@ class GameControllerTest {
     }
     //TODO Test for interactive card
     //TODO Test for retry queue if possible
-
 
     @Test
     void assertStatementsInExecuteNextStepWrongPhase() {
