@@ -69,23 +69,42 @@ We have written JavaDocs for all the methods we have implemented and for the met
 
 
 # Assignment 4c)
-- [ ] implemented the existing command cards
-  - [ ] moveForward
-  - [ ] moveFastForward
-  - [ ] turnRight
-  - [ ] turnLeft
+- [x] implemented the existing command cards
+  - [x] moveForward
+  - [x] moveFastForward
+  - [x] turnRight
+  - [x] turnLeft
 - [ ] implemented walls blocking player movement
 - [ ] implemented buttons in playerView
   - [ ] Finish Programming
   - [ ] Execute Program
   - [ ] Execute Current Register
-- [ ] added command cards
-  - [ ] uTurn
-  - [ ] moveBackwards
-- [ ] implemented uTurn and moveBackwards functionality
+- [x] added command cards
+  - [x] uTurn
+  - [x] moveBackwards
+- [x] implemented uTurn and moveBackwards functionality
 - [ ] written javaDocs for implementations and uses
 - [x] added tests for new functionality
 - [x] tested implementations with tests and manually
+
+## Implementing command cards
+We have implemented the functionality of several command cards for the gameplay.
+As well as adding new commands (moveBackwards and uTurn) and their functionality.
+The moves moveForward and moveFastForward first checks the heading of the player.
+It determines the next space in that direction using board.getNeighbour().
+If a valid neighboring space exists, it attempts to move the player there using moveToSpace().
+If the move is blocked by a wall, it catches and ignores the ImpossibleMoveException. If there is a 
+another player at the Neighbour space, it will check if that player can be pushed in the direction of the 
+player pushing. The move moveFastForward doesn't have its own functionality, rather it calls the command card 
+moveForward twice.
+The moves turnRight and turnLeft works in roughly the same way.
+The cards both use the player.setHeading and then calls the getHeading.next() or getHeading.prev(). 
+As the heading is of the datatype enum we can call the previous or the next heading of the list and change it.
+The same functionality applies to the moves uTurn and moveBackwards. The uTurn uses getHeading.opposite() and 
+turns the player 180 degrees. moveBackwards gets the heading of the player and turns it in the same way as the 
+uTurn. It then checks the same way as the moveForward if it can move in that direction. Importantly the method
+player.setHeading isn't used as the player should not change heading when moving backwards.
+
 
 ## Added tests 
 We have added tests in GameControllerTest that tests the implementations of the new functionality:
