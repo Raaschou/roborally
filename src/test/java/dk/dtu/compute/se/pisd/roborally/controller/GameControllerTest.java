@@ -1,10 +1,8 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.model.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import javafx.application.Platform;
+import org.junit.jupiter.api.*;
 
 /**
  * Testing the functionality of the move and turn functions in the GameController.
@@ -16,15 +14,20 @@ class GameControllerTest {
 
     private final int TEST_WIDTH = 8;
     private final int TEST_HEIGHT = 8;
-
     private GameController gameController;
     private ConveyorBelt conveyorBelt;
 
+    @BeforeAll
+    static void beforeAll() {
+        // start up java fx to allow unit tests for the "you've won" alert
+        Platform.startup(() -> {
+        });
+    }
+
     @BeforeEach
-    void setUp() {
+    void beforeEach() {
         Board board = new Board(TEST_WIDTH, TEST_HEIGHT);
         gameController = new GameController(board);
-        GameController.testMode = true;
         for (int i = 0; i < 6; i++) {
             Player player = new Player(board, null, "Player " + i);
             board.addPlayer(player);
@@ -37,7 +40,23 @@ class GameControllerTest {
     @AfterEach
     void tearDown() {
         gameController = null;
-        GameController.testMode = false;
+    }
+
+    /**
+     * Execute a runnable in the JavaFX thread, which allows us to test cases where the player wins.
+     * @apiNote if not for this, testing a situation where a player wins would cause an exception, because
+     * the "You've won" alert could not be displayed on the main thread.
+     * @param runnable runnable to execute on the JavaFX thread
+     */
+    private void runWithInitializedJavaFX(Runnable runnable) {
+        Platform.runLater(runnable);
+
+        // give JavaFX time to process the thing and then move on
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -358,7 +377,9 @@ class GameControllerTest {
         Space space = board.getSpace(4, 4);
         Checkpoint point = new Checkpoint(1);
         space.getActions().add(point);
-        point.doAction(gameController, board.getSpace(4, 4));
+        runWithInitializedJavaFX(() -> {
+            point.doAction(gameController, board.getSpace(4, 4));
+        });
 
         Assertions.assertEquals(2, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 2");
     }
@@ -396,13 +417,24 @@ class GameControllerTest {
         Assertions.assertEquals(3, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 3");
 
         gameController.backward(current);
-        point2.doAction(gameController, board.getSpace(6, 2));
+        runWithInitializedJavaFX(() -> {
+            point2.doAction(gameController, board.getSpace(6, 2));
+        });
 
         Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
         Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
         Assertions.assertEquals(4, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 4");
         Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
         Assertions.assertSame(Phase.FINISHED, board.getPhase(), "Board should be in finished phase");
+    }
+
+    @Test
+    void testStartWinning() {
+        Assertions.assertNotEquals(Phase.FINISHED, gameController.board.getPhase(), "Phase should not be FINISHED before winning");
+        runWithInitializedJavaFX(() -> {
+            gameController.startWinning(gameController.board.getCurrentPlayer());
+        });
+        Assertions.assertEquals(Phase.FINISHED, gameController.board.getPhase(), "Phase should be FINISHED after winning");
     }
 
     @Test
@@ -414,18 +446,22 @@ class GameControllerTest {
         board.setNoOfCheckpoints(2);
 
         Space space = board.getSpace(4, 3);
-        Checkpoint point = new Checkpoint(1);
-        space.getActions().add(point);
+        final Checkpoint cp1 = new Checkpoint(1);
+        space.getActions().add(cp1);
 
-        point.doAction(gameController, board.getSpace(4, 3));
+        runWithInitializedJavaFX(() -> {
+            cp1.doAction(gameController, board.getSpace(4, 3));
+        });
 
         //Creates another checkpoint and moves the player there and does checkpoint action
         space = board.getSpace(6, 6);
-        point = new Checkpoint(2);
-        space.getActions().add(point);
+        final Checkpoint cp2 = new Checkpoint(2);
+        space.getActions().add(cp2);
         current.setSpace(board.getSpace(6, 6));
 
-        point.doAction(gameController, board.getSpace(6, 6));
+        runWithInitializedJavaFX(() -> {
+            cp2.doAction(gameController, board.getSpace(6, 6));
+        });
 
         Assertions.assertEquals(3, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 3");
         Assertions.assertTrue(gameController.isPlayerAWinner(current), "isPlayerAWinner should be true");
@@ -450,12 +486,16 @@ class GameControllerTest {
         Assertions.assertEquals(1, current.getNextCheckpoint(), "Player " + current.getName() + " should be heading for first!");
 
         gameController.moveForward(current);
-        checkpoint1.doAction(gameController, board.getSpace(3, 2));
+        runWithInitializedJavaFX(() -> {
+            checkpoint1.doAction(gameController, board.getSpace(3, 2));
+        });
 
         Assertions.assertEquals(2, current.getNextCheckpoint(), "Player " + current.getName() + " should be heading for second!");
 
         gameController.moveForward(current);
-        checkpoint2.doAction(gameController, board.getSpace(3, 1));
+        runWithInitializedJavaFX(() -> {
+            checkpoint2.doAction(gameController, board.getSpace(3, 1));
+        });
 
         Assertions.assertEquals(3, current.getNextCheckpoint(), "Player " + current.getName() + " should be heading for third");
     }
@@ -616,7 +656,7 @@ class GameControllerTest {
     @Test
     void assertStatementInExecuteNextStepWrongStep() {
         gameController.board.setStep(-10); // sets the step to make no sense for executeNextStep
-      //  Player player = gameController.board.getCurrentPlayer();
+        //  Player player = gameController.board.getCurrentPlayer();
         gameController.board.setPhase(Phase.ACTIVATION);
 
         Assertions.assertThrows(AssertionError.class, () -> {
