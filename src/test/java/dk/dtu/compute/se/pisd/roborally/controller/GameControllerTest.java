@@ -348,7 +348,6 @@ class GameControllerTest {
     void checkpointIncrementPlayerNextCheckpoint() {
         //Creates board with 1 checkpoint
         Board board = gameController.board;
-        board.setNoOfCheckpoints(999); //Avoid javafx window throwing errors
         Player current = board.getCurrentPlayer();
         current.setSpace(board.getSpace(4, 4));
         current.setHeading(Heading.NORTH);
@@ -603,6 +602,28 @@ class GameControllerTest {
     }
     //TODO Test for interactive card
     //TODO Test for retry queue if possible
+
+
+    @Test
+    void assertStatementsInExecuteNextStepWrongPhase() {
+        gameController.board.setPhase(Phase.PROGRAMMING); // sets the phase to be wrong for executeNextStep.
+
+        Assertions.assertThrows(AssertionError.class, () -> {
+            gameController.executeStep();  // We call executeStep since we can't call executeNextStep (private)
+        });
+    }
+
+    @Test
+    void assertStatementInExecuteNextStepWrongStep() {
+        gameController.board.setStep(-10); // sets the step to make no sense for executeNextStep
+      //  Player player = gameController.board.getCurrentPlayer();
+        gameController.board.setPhase(Phase.ACTIVATION);
+
+        Assertions.assertThrows(AssertionError.class, () -> {
+            gameController.executeStep();  // We call executeStep since we can't call executeNextStep (private)
+        });
+    }
+
 
     // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
     //      - probably not relevant for our case.
