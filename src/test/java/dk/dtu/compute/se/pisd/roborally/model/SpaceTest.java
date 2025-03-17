@@ -39,7 +39,7 @@ public class SpaceTest {
     @Test
     void testGetPlayer() {
         Space zz = gameController.board.getSpace(0, 0);
-        Player testPlayer = new Player(gameController.board, "black", "name");
+        Player testPlayer = new Player(gameController.board, null, "name");
         zz.setPlayer(testPlayer);
         Assertions.assertEquals(testPlayer, zz.getPlayer());
     }
@@ -47,8 +47,8 @@ public class SpaceTest {
     @Test
     void testSetPlayer() {
         Space zz = gameController.board.getSpace(0, 0);
-        Player tp1 = new Player(gameController.board, "black", "name1");
-        Player tp2 = new Player(gameController.board, "black", "name2");
+        Player tp1 = new Player(gameController.board, null, "name1");
+        Player tp2 = new Player(gameController.board, null, "name2");
         zz.setPlayer(tp1);
         Assertions.assertEquals(tp1, zz.getPlayer());
 

@@ -116,7 +116,7 @@ public class BoardTest {
 
         Assertions.assertInstanceOf(Integer.class, gameController.board.getPlayerNumber(gameController.board.getCurrentPlayer()));
         Assertions.assertEquals(0, gameController.board.getPlayerNumber(gameController.board.getCurrentPlayer()));
-        Assertions.assertEquals(-1, gameController.board.getPlayerNumber(new Player(new Board(0, 0), "black", "name")));
+        Assertions.assertEquals(-1, gameController.board.getPlayerNumber(new Player(new Board(0, 0), null, "name")));
 
         Assertions.assertEquals("Player 0, your next checkpoint is 1 | Current round: 0 | Current register: 0 | Phase: INITIALISATION", gameController.board.getStatusMessage(), "Status message is not right");
 
