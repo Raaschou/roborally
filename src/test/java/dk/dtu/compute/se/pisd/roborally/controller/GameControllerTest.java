@@ -290,6 +290,36 @@ class GameControllerTest {
     }
 
     @Test
+    void chainBumpingWithWalls() {
+        Board board = gameController.board;
+        Player player0 = gameController.board.getPlayer(0);
+        Player player1 = gameController.board.getPlayer(1);
+        Player player2 = gameController.board.getPlayer(2);
+        player0.setHeading(Heading.NORTH);
+        player1.setHeading(Heading.NORTH);
+        player2.setHeading(Heading.NORTH);
+        Space space = gameController.board.getSpace(7,7);
+        player0.setSpace(space);
+        space = gameController.board.getSpace(7,6);
+        player1.setSpace(space);
+        space = gameController.board.getSpace(7,5);
+        player2.setSpace(space);
+        space = gameController.board.getSpace(7,4);
+        space.getWalls().add(Heading.NORTH);
+
+        // test chain bumping.
+        gameController.moveForward(player0);
+        Assertions.assertEquals(board.getSpace(7, 6).getPlayer(), player0,  "player 0 should be at space (7, 6)!");
+        Assertions.assertEquals(board.getSpace(7, 5).getPlayer(), player1,  "player 1 should be at space (7, 5)!");
+        Assertions.assertEquals(board.getSpace(7, 4).getPlayer(), player2,  "player 2 should be at space (7, 4)!");
+        // test chain bumping against wall
+        gameController.moveFastForward(player0); // trying t bumping against wall.
+        Assertions.assertEquals(board.getSpace(7, 6).getPlayer(), player0,  "player 0 should be at space (7, 6)!");
+        Assertions.assertEquals(board.getSpace(7, 5).getPlayer(), player1,  "player 1 should be at space (7, 5)!");
+        Assertions.assertEquals(board.getSpace(7, 4).getPlayer(), player2,  "player 2 should be at space (7, 4)!");
+    }
+
+    @Test
     void fastFastForwardWithWall() {
         //Setting Players space, heading and setting wall
         Board board = gameController.board;
