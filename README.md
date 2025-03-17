@@ -62,7 +62,18 @@ When a game i started the players are prompted to select a game board after they
 The 'advanced board' contains some walls, conveyor belts and check points.
 
 ## GUI update
-We have added the visual of walls, conveyor belts and check points to the GUI. TODO: "Den der har lavet dette beskriv gerne hvordan"
+We have added the visual of walls, conveyor belts and check points to the GUI. TODO: "Den der har lavet dette beskriv gerne hvordan".
+
+### Field actions
+We added two new methods to the SpaceView class for drawing the objects. 
+As the conveyor belts and checkpoints both inherited the FieldAction class, and are contained within a given space's
+list of field actions, we use this to draw the objects on the board. The belts are drawn as grey triangles, while the 
+checkpoints are drawn as yellow circles with their corresponding number in the center. Because the field action list is
+referring to an abstract class, we were not able to call the specific fields of the belts and checkpoints. This was 
+solved by checking the object using the instanceof operator before casting it to the given type. After this was done,
+we were able to use the specific fields, e.g. using conveyor belts heading to draw them pointing the correct direction.
+
+### Walls
 
 ## Documentation
 We have written JavaDocs for all the methods we have implemented and for the methods we have used.
