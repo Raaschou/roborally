@@ -1,6 +1,5 @@
 package dk.dtu.compute.se.pisd.roborally.controller;
 
-import com.sun.javafx.logging.jfr.JFRInputEvent;
 import dk.dtu.compute.se.pisd.roborally.model.*;
 import javafx.application.Platform;
 import org.junit.jupiter.api.*;
