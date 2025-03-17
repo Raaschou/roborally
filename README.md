@@ -236,6 +236,7 @@ We have written tests for all the implemented functionality. That includes:
 - Bumping other players with wall
 - Conveyor belt movement 
 - Check point incrementing is correct
+- Checking if "Again" command card works accordingly 
 
 Besides the tests is checked, they all passed we have tested the new game functionality manually.
 
