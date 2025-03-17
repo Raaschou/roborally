@@ -616,6 +616,8 @@ class GameControllerTest {
     @Test
     void assertStatementInExecuteNextStepWrongStep() {
         gameController.board.setStep(-10); // sets the step to make no sense for executeNextStep
+      //  Player player = gameController.board.getCurrentPlayer();
+        gameController.board.setPhase(Phase.ACTIVATION);
 
         Assertions.assertThrows(AssertionError.class, () -> {
             gameController.executeStep();  // We call executeStep since we can't call executeNextStep (private)
