@@ -382,7 +382,7 @@ public class GameController {
         // resets the interactive player phase
         board.setPhase(Phase.ACTIVATION);
         continueNextStep(player);  // continue execution of the game loop
-        if (!board.isStepMode()) {
+        if (!board.isStepMode()) {  // resumes the stepMode the game was in
             continuePrograms();
         }
     }

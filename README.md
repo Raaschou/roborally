@@ -67,6 +67,7 @@ We have added the visual of walls, conveyor belts and check points to the GUI. T
 ## Documentation
 We have written JavaDocs for all the methods we have implemented and for the methods we have used.
 
+
 # Assignment 4c)
 - [ ] implemented the existing command cards
   - [ ] moveForward
@@ -160,9 +161,24 @@ We have written tests for all the implemented functionality. That includes:
 
 Besides the tests is checked, they all passed we have tested the new game functionality manually.
 
+
 # Assignment 4e) 
 - [ ] implemented winning conditions
-- [ ] added (interactive) command card "Turn Left or Right"                            <- Rune skriver denne 
-- [ ] implemented interactive command cards functionality - interrupts the 'game loop' <- Rune skriver denne 
+- [x] added (interactive) command card "Turn Left or Right" 
+- [x] implemented interactive command cards functionality - interrupts the 'game loop' 
 - [ ] written javaDocs for implementations and uses
 - [ ] added tests for new functionality 
+
+## Interactive card
+We have implemented the card "Turn Left or Right" that is an interactive card where the current player is prompted to 
+chose to turn in one of the two directions. 
+We first added the command card "Turn Left or Right" to the enum model.Command.
+We then implemented the functionality by switching the game phase to INTERACTIVE_PLAYER within the 
+controller.GameController.executeCommand() method's switch statement. 
+In the view.PlayerView this clears the programPane and add the buttons: "Left" and "Right". Besides we pause the 
+"game loop" by returning from the executeNextStep method which we have split in two (executeNextStep() and
+continueNextStep()) methods within the GameController. After the player has done the interaction - picked a direction. 
+The newly implemented method controller.GameController.turnLeftOrRight() resets the game phase to Activation and resumes
+the game by calling continueNextStep. After this the turnLeftOrRight() method check if the game was in stepMode and 
+resumes the mode the game was in before the interactive card interrupted the "game loop".
+
