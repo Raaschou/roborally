@@ -186,11 +186,19 @@ Besides the tests is checked, they all passed we have tested the new game functi
 
 
 # Assignment 4e) 
-- [ ] implemented winning conditions
+- [x] implemented winning conditions
 - [x] added (interactive) command card "Turn Left or Right" 
 - [x] implemented interactive command cards functionality - interrupts the 'game loop' 
 - [ ] written javaDocs for implementations and uses
 - [ ] added tests for new functionality 
+
+## Winning conditions
+For the win conditions, we chose add the noOfCheckpoints attribute to the board class. This is compared to the
+players nextCheckpoint to see if the player potentially is a winner. This was done by comparing the nextCheckpoint to 
+noOfCheckpoints + 1 in the helper method isPlayerAWinner(). This condition was added to the doAction of the checkpoints.
+If this condition is true the startWinning() method is used to set the phase is set to FINISHED, as to not continue
+the game after having a winner. A popup window is displayed with the name of the player who has won, and the final state
+of the game is viewable. 
 
 ## Interactive card
 We have implemented the card "Turn Left or Right" that is an interactive card where the current player is prompted to 
