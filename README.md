@@ -86,10 +86,10 @@ We have written JavaDocs for all the methods we have implemented and for the met
   - [ ] turnRight
   - [ ] turnLeft
 - [ ] implemented walls blocking player movement
-- [ ] implemented buttons in playerView
-  - [ ] Finish Programming
-  - [ ] Execute Program
-  - [ ] Execute Current Register
+- [x] implemented buttons in playerView TODO: Er det nok/for meget? De havde trods alt skrevet det meste af koden.
+  - [x] Finish Programming
+  - [x] Execute Program
+  - [x] Execute Current Register
 - [ ] added command cards
   - [ ] uTurn
   - [ ] moveBackwards
@@ -164,6 +164,11 @@ This functionality is implemented it the helper method controller.GameController
 We have updated the controller.GameController.executeNextStep() method to call the implemented helper methods
 executeFieldActions() and processBlockedConveyorPlayers() which is called after the all the registers have been 
 executed.
+
+## Updated status label
+The status label made in 4a was only incrementing on moving the players with mouse clicks. We changed this to show 
+useful information pertaining to the current state of the game. It shows the current player and their next checkpoint,
+the current round and what register is current, and lastly the phase of the game.
 
 ## Documentation
 We have written JavaDocs for the implemented methods and for methods we have used that didn't already have JavaDocs.
