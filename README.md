@@ -121,7 +121,7 @@ Besides running (and passing) the implemented tests we have done manual testing 
 
 
 # Assignment 4d)
-- [ ] implemented bumping of other players
+- [x] implemented bumping of other players
 - [x] implemented field actions - executed after command card execution
   - [x] conveyor belt
   - [x] check points
@@ -129,6 +129,15 @@ Besides running (and passing) the implemented tests we have done manual testing 
 - [ ] added again commandCard
 - [ ] added status label with info of players current checkpoint
 - [x] written javaDocs for implementations and uses
+
+## Implementation of bumping other players
+For bumping other players the method moveToSpace() has been implemented. The method takes 
+a player, their heading and space. It then checks if the space it has to move to is free. 
+If the space is free the method simply moves the player to the new space. If the space is not free
+the method then recursively calls itself to check whether the neighbour is able to move or not. If the 
+neighbour has a space free next to it, it will then move in the direction of the pusher.
+The method throws an ImpossibleMoveException if the move is not able to be made in the case of a wall.
+
 
 ## Implementation of fieldActions
 We have implemented the doAction() in both controller.Checkpoint and controller.ConveyorBelt  
