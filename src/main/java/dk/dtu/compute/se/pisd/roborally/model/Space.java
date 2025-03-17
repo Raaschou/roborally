@@ -32,7 +32,6 @@ import java.util.List;
  * ...
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class Space extends Subject {
 
@@ -40,15 +39,9 @@ public class Space extends Subject {
 
     public final int x;
     public final int y;
-
-    private Player player;
-
-
-    // XXX A3
     private final List<Heading> walls = new ArrayList<>();
-
-    // XXX A3
     private final List<FieldAction> actions = new ArrayList<>();
+    private Player player;
 
     public Space(Board board, int x, int y) {
         this.board = board;
@@ -59,6 +52,7 @@ public class Space extends Subject {
 
     /**
      * Gets the player in this space
+     *
      * @return Player in this space
      */
     public Player getPlayer() {
@@ -67,12 +61,12 @@ public class Space extends Subject {
 
     /**
      * Sets the player in this space
+     *
      * @param player to set in this space
      */
     public void setPlayer(Player player) {
         Player oldPlayer = this.player;
-        if (player != oldPlayer &&
-                (player == null || board == player.board)) {
+        if (player != oldPlayer && (player == null || board == player.board)) {
             this.player = player;
             if (oldPlayer != null) {
                 // this should actually not happen
@@ -93,13 +87,13 @@ public class Space extends Subject {
      *
      * @return the list of walls on this space
      */
-    // XXX A3
     public List<Heading> getWalls() {
         return walls;
     }
 
     /**
      * Evaluates whether this space has a wall in a given direction
+     *
      * @param heading the direction to check
      * @return true if this space has a wall in the given direction, false otherwise
      */
@@ -115,24 +109,23 @@ public class Space extends Subject {
      *
      * @return the list of field actions on this space
      */
-    // XXX A3
     public List<FieldAction> getActions() {
         return actions;
     }
 
+    /**
+     * Check if the space has a conveyor belt
+     * @return true if the space has a conveyor belt, false otherwise
+     */
     public boolean hasConveyorBelt() {
-        for (FieldAction action : getActions()) {
-            if (action instanceof ConveyorBelt) {
-                return true;
-            }
-        }
-        return false;
+        return getConveyorBelt() != null;
     }
 
+    /**
+     * Get the conveyor belt on the space if there is one.
+     * @return the conveyor belt on the space if there is one, null otherwise
+     */
     public ConveyorBelt getConveyorBelt() {
-        if (!hasConveyorBelt()) {
-            return null;
-        }
         for (FieldAction action : getActions()) {
             if (action instanceof ConveyorBelt) {
                 return (ConveyorBelt) action;
@@ -150,6 +143,7 @@ public class Space extends Subject {
 
     /**
      * Get a string representation of this space
+     *
      * @return a string representation of this space
      */
     public String toString() {

@@ -160,6 +160,20 @@ class GameControllerTest {
     }
 
     @Test
+    void turnLeftOrRight() {
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+
+        gameController.turnRightOrLeft(current, "Left");
+        Assertions.assertEquals(Heading.EAST, current.getHeading(), "Player 0 should be heading EAST!");
+        Assertions.assertEquals(current, board.getSpace(0, 0).getPlayer(), "Player " + current.getName() + " should be on Space (0,0)!");
+
+        gameController.turnRightOrLeft(current, "Right");
+        Assertions.assertEquals(Heading.SOUTH, current.getHeading(), "Player 0 should be heading SOUTH!");
+        Assertions.assertEquals(current, board.getSpace(0, 0).getPlayer(), "Player " + current.getName() + " should be on Space (0,0)!");
+    }
+
+    @Test
     void uTurn() {
         Board board = gameController.board;
         Player current = board.getCurrentPlayer();
@@ -290,6 +304,36 @@ class GameControllerTest {
     }
 
     @Test
+    void chainBumpingWithWalls() {
+        Board board = gameController.board;
+        Player player0 = gameController.board.getPlayer(0);
+        Player player1 = gameController.board.getPlayer(1);
+        Player player2 = gameController.board.getPlayer(2);
+        player0.setHeading(Heading.NORTH);
+        player1.setHeading(Heading.NORTH);
+        player2.setHeading(Heading.NORTH);
+        Space space = gameController.board.getSpace(7,7);
+        player0.setSpace(space);
+        space = gameController.board.getSpace(7,6);
+        player1.setSpace(space);
+        space = gameController.board.getSpace(7,5);
+        player2.setSpace(space);
+        space = gameController.board.getSpace(7,4);
+        space.getWalls().add(Heading.NORTH);
+
+        // test chain bumping.
+        gameController.moveForward(player0);
+        Assertions.assertEquals(board.getSpace(7, 6).getPlayer(), player0,  "player 0 should be at space (7, 6)!");
+        Assertions.assertEquals(board.getSpace(7, 5).getPlayer(), player1,  "player 1 should be at space (7, 5)!");
+        Assertions.assertEquals(board.getSpace(7, 4).getPlayer(), player2,  "player 2 should be at space (7, 4)!");
+        // test chain bumping against wall
+        gameController.moveFastForward(player0); // trying t bumping against wall.
+        Assertions.assertEquals(board.getSpace(7, 6).getPlayer(), player0,  "player 0 should be at space (7, 6)!");
+        Assertions.assertEquals(board.getSpace(7, 5).getPlayer(), player1,  "player 1 should be at space (7, 5)!");
+        Assertions.assertEquals(board.getSpace(7, 4).getPlayer(), player2,  "player 2 should be at space (7, 4)!");
+    }
+
+    @Test
     void fastFastForwardWithWall() {
         //Setting Players space, heading and setting wall
         Board board = gameController.board;
@@ -373,7 +417,6 @@ class GameControllerTest {
         current.setSpace(board.getSpace(4, 4));
         current.setHeading(Heading.NORTH);
 
-
         //Creates checkpoint and does checkpoint action on the player,
         //which should increment nextCheckpoint attribute
         Space space = board.getSpace(4, 4);
@@ -384,6 +427,32 @@ class GameControllerTest {
         });
 
         Assertions.assertEquals(2, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 2");
+    }
+
+    @Test
+    void checkpointCheckpointBeforeConveyor() {
+        //Creates board with 1 checkpoint
+        Board board = gameController.board;
+        Player current = board.getCurrentPlayer();
+        current.setSpace(board.getSpace(4, 4));
+        current.setHeading(Heading.NORTH);
+
+        // creates a conveyor belt then a check point at the same space. execute doActions and check that check point
+        // is correct. Obviously it is since we use addFirst for to add the check point to the FieldActions..
+        Space space = board.getSpace(4, 4);
+        Checkpoint point = new Checkpoint(1);
+        ConveyorBelt belt = new ConveyorBelt();
+        belt.setHeading(Heading.EAST);
+        space.getActions().add(belt);
+        space.getActions().addFirst(point);
+        runWithInitializedJavaFX(() -> {
+            for (FieldAction action : space.getActions()) {
+                action.doAction(gameController, space);
+            }
+        });
+
+        Assertions.assertEquals(2, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 2");
+        Assertions.assertEquals(current, board.getSpace(5, 4).getPlayer(), " " + current.getName() + " should be at space (5, 4)" );
     }
 
     @Test
@@ -645,7 +714,6 @@ class GameControllerTest {
     //TODO Test for interactive card
     //TODO Test for retry queue if possible
 
-
     @Test
     void assertStatementsInExecuteNextStepWrongPhase() {
         gameController.board.setPhase(Phase.PROGRAMMING); // sets the phase to be wrong for executeNextStep.
@@ -665,10 +733,6 @@ class GameControllerTest {
             gameController.executeStep();  // We call executeStep since we can't call executeNextStep (private)
         });
     }
-
-
-    // TODO write tests for checkpoints. obs check points are checked before conveyor belt is executed.
-    //      - probably not relevant for our case.
 
     // TODO and there should be more tests added for the different assignments eventually
 
