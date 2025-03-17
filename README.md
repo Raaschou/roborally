@@ -51,8 +51,8 @@ We have tested the implemented move functionality using the already implemented 
 - [x] made the new game board selectable
 - [ ] updated gui
   - [ ] made gui for walls
-  - [ ] made gui for conveyor belts
-  - [ ] made gui for check points
+  - [x] made gui for conveyor belts
+  - [x] made gui for check points
 - [ ] implemented method view.SpaceView.updateView()
 - [x] written javaDocs for implementations and uses 
 
@@ -97,6 +97,13 @@ We have written JavaDocs for all the methods we have implemented and for the met
 - [ ] written javaDocs for implementations and uses
 - [x] added tests for new functionality
 - [x] tested implementations with tests and manually
+
+## Implementation of buttons in playerView
+We implemented the buttons, so the program is interactable and playable after laying the programming cards. The "Finish
+Programming" button initialises the activation phase, which then requires the press of "Execute Program" or "Execute 
+Current Register". The buttons respectively executes the entire program, going through all the cards sequentially, or 
+executes the program one player register at a time. At any point it is possible to execute the rest of the program using
+the "Execute Program" button.
 
 ## Added tests 
 We have added tests in GameControllerTest that tests the implementations of the new functionality:
