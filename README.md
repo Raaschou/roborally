@@ -94,7 +94,7 @@ We have written JavaDocs for all the methods we have implemented and for the met
   - [x] turnRight
   - [x] turnLeft
 - [x] implemented walls blocking player movement
-- [x] implemented buttons in playerView TODO: Er det nok/for meget? De havde trods alt skrevet det meste af koden.
+- [x] implemented buttons in playerView
   - [x] Finish Programming
   - [x] Execute Program
   - [x] Execute Current Register
