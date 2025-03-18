@@ -142,6 +142,10 @@ public class Player extends Subject {
         return space;
     }
 
+    /**
+     * Update the player's current space
+     * @param space space to set the player on
+     */
     public void setSpace(Space space) {
         Space oldSpace = this.space;
         if (space != oldSpace &&
