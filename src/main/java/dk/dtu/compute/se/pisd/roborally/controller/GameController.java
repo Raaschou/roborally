@@ -56,7 +56,6 @@ public class GameController {
         if (space.getPlayer() == null) {
             currentPlayer.getSpace().setPlayer(null);
             space.setPlayer(currentPlayer);
-            board.setCounter(board.getCounter() + 1);
             board.setCurrentPlayer(board.getNextPlayer());
         }
     }
@@ -501,6 +500,7 @@ public class GameController {
                 executeFieldActions();
                 processBlockedConveyorPlayers();
                 if (board.getPhase() != Phase.FINISHED) {
+                    board.setCounter(board.getCounter() + 1);
                     startProgrammingPhase();
                 }
             }

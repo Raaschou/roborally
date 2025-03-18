@@ -54,7 +54,7 @@ public class Board extends Subject {
 
     private boolean stepMode;
 
-    private int counter = 0;
+    private int counter = 1;
 
     private int noOfCheckpoints = 0;
 
