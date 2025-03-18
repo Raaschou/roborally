@@ -44,9 +44,10 @@ class GameControllerTest {
 
     /**
      * Execute a runnable in the JavaFX thread, which allows us to test cases where the player wins.
+     *
+     * @param runnable runnable to execute on the JavaFX thread
      * @apiNote if not for this, testing a situation where a player wins would cause an exception, because
      * the "You've won" alert could not be displayed on the main thread.
-     * @param runnable runnable to execute on the JavaFX thread
      */
     private void runWithInitializedJavaFX(Runnable runnable) {
         Platform.runLater(runnable);
@@ -307,25 +308,25 @@ class GameControllerTest {
         player0.setHeading(Heading.NORTH);
         player1.setHeading(Heading.NORTH);
         player2.setHeading(Heading.NORTH);
-        Space space = gameController.board.getSpace(7,7);
+        Space space = gameController.board.getSpace(7, 7);
         player0.setSpace(space);
-        space = gameController.board.getSpace(7,6);
+        space = gameController.board.getSpace(7, 6);
         player1.setSpace(space);
-        space = gameController.board.getSpace(7,5);
+        space = gameController.board.getSpace(7, 5);
         player2.setSpace(space);
-        space = gameController.board.getSpace(7,4);
+        space = gameController.board.getSpace(7, 4);
         space.getWalls().add(Heading.NORTH);
 
         // test chain bumping.
         gameController.moveForward(player0);
-        Assertions.assertEquals(board.getSpace(7, 6).getPlayer(), player0,  "player 0 should be at space (7, 6)!");
-        Assertions.assertEquals(board.getSpace(7, 5).getPlayer(), player1,  "player 1 should be at space (7, 5)!");
-        Assertions.assertEquals(board.getSpace(7, 4).getPlayer(), player2,  "player 2 should be at space (7, 4)!");
+        Assertions.assertEquals(board.getSpace(7, 6).getPlayer(), player0, "player 0 should be at space (7, 6)!");
+        Assertions.assertEquals(board.getSpace(7, 5).getPlayer(), player1, "player 1 should be at space (7, 5)!");
+        Assertions.assertEquals(board.getSpace(7, 4).getPlayer(), player2, "player 2 should be at space (7, 4)!");
         // test chain bumping against wall
         gameController.moveFastForward(player0); // trying t bumping against wall.
-        Assertions.assertEquals(board.getSpace(7, 6).getPlayer(), player0,  "player 0 should be at space (7, 6)!");
-        Assertions.assertEquals(board.getSpace(7, 5).getPlayer(), player1,  "player 1 should be at space (7, 5)!");
-        Assertions.assertEquals(board.getSpace(7, 4).getPlayer(), player2,  "player 2 should be at space (7, 4)!");
+        Assertions.assertEquals(board.getSpace(7, 6).getPlayer(), player0, "player 0 should be at space (7, 6)!");
+        Assertions.assertEquals(board.getSpace(7, 5).getPlayer(), player1, "player 1 should be at space (7, 5)!");
+        Assertions.assertEquals(board.getSpace(7, 4).getPlayer(), player2, "player 2 should be at space (7, 4)!");
     }
 
     @Test
@@ -447,7 +448,7 @@ class GameControllerTest {
         });
 
         Assertions.assertEquals(2, current.getNextCheckpoint(), current.getName() + "next checkpoint should be 2");
-        Assertions.assertEquals(current, board.getSpace(5, 4).getPlayer(), " " + current.getName() + " should be at space (5, 4)" );
+        Assertions.assertEquals(current, board.getSpace(5, 4).getPlayer(), " " + current.getName() + " should be at space (5, 4)");
     }
 
     @Test
@@ -636,7 +637,6 @@ class GameControllerTest {
     @Test
     void callRestOfTheExecuteCommand() {
         Board board = gameController.board;
-        board.setNoOfCheckpoints(999);
         Player current = board.getCurrentPlayer();
         current.setSpace(board.getSpace(0, 0));
         current.setHeading(Heading.SOUTH);
@@ -706,8 +706,6 @@ class GameControllerTest {
         Assertions.assertEquals(p3, board.getSpace(2, 0).getPlayer(), "Player 3 should be on (3,0)!");
         Assertions.assertEquals(p4, board.getSpace(0, 0).getPlayer(), "Player should be on (0,0)!");
     }
-    //TODO Test for interactive card
-    //TODO Test for retry queue if possible
 
     @Test
     void assertStatementsInExecuteNextStepWrongPhase() {
@@ -728,7 +726,4 @@ class GameControllerTest {
             gameController.executeStep();  // We call executeStep since we can't call executeNextStep (private)
         });
     }
-
-    // TODO and there should be more tests added for the different assignments eventually
-
 }
