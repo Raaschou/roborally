@@ -511,7 +511,7 @@ public class GameController {
      * Checks if the player is a winner
      *
      * @param player player who finished their register
-     * @return
+     * @return returns a comparison between player nextCheckpoint and board's noOfCheckpoints attributes
      */
     public boolean isPlayerAWinner(Player player) {
         return player.getNextCheckpoint() >= board.getNoOfCheckpoints() + 1;

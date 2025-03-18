@@ -213,6 +213,11 @@ public class BoardFactory {
         board.setNoOfCheckpoints(4);
     }
 
+    /**
+     * Set up board objects for the board used for testing the conflicting conveyor belt
+     * logic.
+     * @param board the board instance to modify
+     */
     private void setupConflictingConveyorsBoard(Board board) {
         Space s1 = board.getSpace(1, 0);
         Space s2 = board.getSpace(0, 1);
