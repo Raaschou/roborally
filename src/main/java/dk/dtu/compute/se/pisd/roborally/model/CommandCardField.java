@@ -47,6 +47,10 @@ public class CommandCardField extends Subject {
         return card;
     }
 
+    /**
+     * Set the card in the field
+     * @param card card to set
+     */
     public void setCard(CommandCard card) {
         if (card != this.card) {
             this.card = card;
@@ -54,10 +58,18 @@ public class CommandCardField extends Subject {
         }
     }
 
+    /**
+     * Check if the card field is visible
+     * @return true if the field is visible, false otherwise
+     */
     public boolean isVisible() {
         return visible;
     }
 
+    /**
+     * Set the visibility of the field
+     * @param visible field visibility
+     */
     public void setVisible(boolean visible) {
         if (visible != this.visible) {
             this.visible = visible;

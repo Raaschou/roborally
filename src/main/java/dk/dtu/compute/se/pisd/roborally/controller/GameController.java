@@ -384,7 +384,7 @@ public class GameController {
 
     /**
      * @param player the player for whom to excecute the card...
-     * @author ChRiStOfFeR
+     *
      * Excecutes the again command card, for a given player...
      */
     public void again(@NotNull Player player) {

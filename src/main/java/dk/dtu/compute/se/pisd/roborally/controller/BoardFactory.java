@@ -62,7 +62,7 @@ public class BoardFactory {
 
     /**
      * Creates a new board of given name of a board, which indicates
-     * which type of board should be created. For now the name is ignored.
+     * which type of board should be created.
      *
      * @param name the given name board
      * @return the new board corresponding to that name
@@ -100,7 +100,6 @@ public class BoardFactory {
      */
     private void setupSimpleBoard(Board board) {
         // Currently this is just an empty board.
-        // We might add some objects on the board later.
     }
 
     /**
