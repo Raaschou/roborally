@@ -131,7 +131,7 @@ public class PlayerView extends Tab implements ViewObserver {
     }
 
     /**
-     * Updates the player view
+     * Updates the player view of the player interaction interface
      *
      * @param subject the subject which changed
      */

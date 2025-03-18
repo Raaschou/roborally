@@ -150,6 +150,9 @@ public class SpaceView extends StackPane implements ViewObserver {
 
     }
 
+    /**
+     * Updates the view of the player
+     */
     private void updatePlayer() {
         Player player = space.getPlayer();
         if (player != null) {
@@ -165,10 +168,10 @@ public class SpaceView extends StackPane implements ViewObserver {
         }
     }
     /**
-     * Updates the view by drawimg elements of the board, the walls, checkpoints, and conveyor belts,
+     * Updates the view by drawing elements of the board, the walls, checkpoints, and conveyor belts,
      * and draws the players
      * .
-     * @param subject //TODO Nogen klogere hoveder skal lige forklare den her, evt. ændre hele den her doc
+     * @param subject the subject which is changed
      */
     @Override
     public void updateView(Subject subject) {
