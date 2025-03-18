@@ -196,11 +196,6 @@ class GameControllerTest {
     }
 
     @Test
-    void again() {
-        // needs implementation first.
-    }
-
-    @Test
     void bumpingMovingForward() {
         //Setting Players space and heading
         Board board = gameController.board;
