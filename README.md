@@ -38,13 +38,11 @@ public void moveCurrentPlayerToSpace(@NotNull Space space) {
 }
 ```
 
-
 ## Write documentation
 We have written JavaDocs for the implemented methods and for the methods we've used
 
 ## Test implementations
 We have tested the implemented move functionality using the already implemented test and tested manually
-
 
 # Assignment 4b)
 - [x] added game board 
@@ -104,7 +102,7 @@ We have written JavaDocs for all the methods we have implemented and for the met
   - [x] uTurn
   - [x] moveBackwards
 - [x] implemented uTurn and moveBackwards functionality
-- [ ] written javaDocs for implementations and uses 
+- [x] written javaDocs for implementations and uses 
 - [x] added tests for new functionality
 - [x] tested implementations with tests and manually
 
@@ -156,7 +154,6 @@ We have added tests in GameControllerTest that tests the implementations of the 
 ## Testing 
 Besides running (and passing) the implemented tests we have done manual testing of the newly implemented functionality.
 
-
 # Assignment 4d)
 - [x] implemented bumping of other players
 - [x] implemented field actions - executed after command card execution
@@ -174,7 +171,6 @@ If the space is free the method simply moves the player to the new space. If the
 the method then recursively calls itself to check whether the neighbour is able to move or not. If the
 neighbour has a space free next to it, it will then move in the direction of the pusher.
 The method throws an ImpossibleMoveException if the move is not able to be made in the case of a wall.
-
 
 ## Implementation of fieldActions
 We have implemented the doAction() in both controller.Checkpoint and controller.ConveyorBelt  
@@ -213,7 +209,8 @@ the last command the player executed, if any. We implemented a method, getLastCo
 for this purpose. We then retrieve the last executed command using player.getLastCommand().
 If no command exists (null), the method simply returns.
 Otherwise, it calls executeCommand(player, lastCommand) to reapply the last action.
-Before any action is executed, the executeCommand(), starts by setting the given command as the last command.
+Before any action is executed, the executeCommand(), starts by setting the given command as the last command (except
+of course with the "again"-card).
 
 ## Updated GameController
 We have updated the controller.GameController.executeNextStep() method to call the implemented helper methods
@@ -239,7 +236,6 @@ We have written tests for all the implemented functionality. That includes:
 - Checking if "Again" command card works accordingly 
 
 Besides the tests is checked, they all passed we have tested the new game functionality manually.
-
 
 # Assignment 4e) 
 - [x] implemented winning conditions
@@ -273,7 +269,55 @@ resumes the mode the game was in before the interactive card interrupted the "ga
 We have written JavaDocs for the methods we have implemented and the ones we have used plus a couple we had missed. 
 
 ## Testing
-We have implemented tests for all the classes, methods and lines in the controllers GameController ConveyorBelt and
-CheckPoint classes, and we have aimed to cover all the edge cases we could think of.
-We have also tested classes methods and lines in the models classes Board, Command, Phases, Player and Space WITH A FEW 
-EXEPTIONS?? TODO: figure this out <<<--
+We have added unit tests for the GameController and ConveyorBelt classes in the controller package as well as tests for
+the Board and Space classes in the model package. With our tests we achieve 100% line coverage in the following classes:
+
+controller package:
+- Checkpoint
+- ConveyorBelt
+- GameController
+
+model package:
+- Board
+- Command (enum)
+- Phase (enum)
+- Space
+
+... which covers the required test coverage and a bit extra.
+
+One thing to note about our unit tests is that during test execution a bunch of JavaFX Alert windows will pop up. This
+is because when a player wins the game, this alert is shown, and in some tests a player wins. Normally, initializing
+this alert would cause an exception to be thrown, because JavaFX is not initialized in the tests. To avoid this we have
+added the following to our GameController test:
+```
+    @BeforeAll
+    static void beforeAll() {
+        // start up java fx to allow unit tests for the "you've won" alert
+        Platform.startup(() -> {
+        });
+    }
+```
+This ensures that a JavaFX thread is set up. Using the following helper method
+```
+    /**
+     * Execute a runnable in the JavaFX thread, which allows us to test cases where the player wins.
+     * @apiNote if not for this, testing a situation where a player wins would cause an exception, because
+     * the "You've won" alert could not be displayed on the main thread.
+     * @param runnable runnable to execute on the JavaFX thread
+     */
+    private void runWithInitializedJavaFX(Runnable runnable) {
+        Platform.runLater(runnable);
+
+        // give JavaFX time to process the thing and then move on
+        // if not for this, the runnable will not be executed in time for the assertions
+        // and tests will fail
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+```
+we can now execute JavaFX-dependent code on the JavaFX thread without getting exceptions about missing initialization.
+Note that we sleep the thread for 0.5 seconds to allow JavaFX time to run the runnable, because without doing so, the
+runnable was not run before the following assertions in our testing.
