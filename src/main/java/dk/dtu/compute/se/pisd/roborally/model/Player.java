@@ -34,7 +34,7 @@ import static dk.dtu.compute.se.pisd.roborally.model.Heading.SOUTH;
  */
 public class Player extends Subject {
 
-    final public static int NO_REGISTERS = 5;
+    final public static int NUMBER_OF_REGISTERS = 5;
     final public static int NO_CARDS = 8;
 
     final public Board board;
@@ -49,6 +49,7 @@ public class Player extends Subject {
     private CommandCardField[] cards;
 
     private int nextCheckpoint;
+    private Command lastCommand;
 
     public Player(@NotNull Board board, String color, @NotNull String name) {
         this.board = board;
@@ -56,8 +57,9 @@ public class Player extends Subject {
         this.color = color;
         this.nextCheckpoint = 1;
         this.space = null;
+        this.lastCommand =null;
 
-        program = new CommandCardField[NO_REGISTERS];
+        program = new CommandCardField[NUMBER_OF_REGISTERS];
         for (int i = 0; i < program.length; i++) {
             program[i] = new CommandCardField(this);
         }
@@ -68,10 +70,38 @@ public class Player extends Subject {
         }
     }
 
+    /**
+     * Gets a player's last command
+     *
+     * @return the last command of the player
+     */
+    public Command getLastCommand() {
+        return lastCommand;
+    }
+
+    /**
+     * Sets the last command of a player
+     *
+     * @param command the last command of the player
+     */
+    public void setLastCommand(Command command){
+        this.lastCommand = command;
+    }
+
+    /**
+     * Get the player's name
+     *
+     * @return name of the player
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Set the name of a player
+     *
+     * @param name the name the player is set to
+     */
     public void setName(String name) {
         if (name != null && !name.equals(this.name)) {
             this.name = name;
@@ -82,10 +112,20 @@ public class Player extends Subject {
         }
     }
 
+    /**
+     * Gets the player's color
+     *
+     * @return the player color
+     */
     public String getColor() {
         return color;
     }
 
+    /**
+     * Sets the color of the player
+     *
+     * @param color the color the player color is set to
+     */
     public void setColor(String color) {
         this.color = color;
         notifyChange();
@@ -102,6 +142,10 @@ public class Player extends Subject {
         return space;
     }
 
+    /**
+     * Update the player's current space
+     * @param space space to set the player on
+     */
     public void setSpace(Space space) {
         Space oldSpace = this.space;
         if (space != oldSpace &&
@@ -117,6 +161,11 @@ public class Player extends Subject {
         }
     }
 
+    /**
+     * Gets the player's current heading
+     *
+     * @return Player's current heading
+     */
     public Heading getHeading() {
         return heading;
     }
@@ -131,18 +180,38 @@ public class Player extends Subject {
         }
     }
 
+    /**
+     * Get the programming field with a given index
+     *
+     * @param i index of the programming field
+     * @return the programming field with index i
+     */
     public CommandCardField getProgramField(int i) {
         return program[i];
     }
 
+    /**
+     * Get the card in a programming field
+     *
+     * @param i index of the programming field
+     * @return the card placed in the programming field with index i
+     */
     public CommandCardField getCardField(int i) {
         return cards[i];
     }
-
+    
+    /**
+     * Gets what checkpoint the player should move to
+     *
+     * @return nextCheckpoint attribute
+     */
     public int getNextCheckpoint() {
         return nextCheckpoint;
     }
 
+    /**
+     * Increments the nextCheckpoint attribute
+     */
     public void incrementNextCheckpoint() {
         this.nextCheckpoint++;
     }

@@ -23,10 +23,10 @@ package dk.dtu.compute.se.pisd.roborally.controller;
 
 import dk.dtu.compute.se.pisd.roborally.controller.exception.ImpossibleMoveException;
 import dk.dtu.compute.se.pisd.roborally.model.*;
+import javafx.scene.control.Alert;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ...
@@ -36,9 +36,8 @@ import java.util.List;
 public class GameController {
 
     final public Board board;
-
     // arrays containing players that are on conveyor belts but could not be moved right away
-    private List<Player> conveyorMovementRetryQueue = new ArrayList<>();
+    private final ArrayList<Player> conveyorMovementRetryQueue = new ArrayList<>();
     private ArrayList<Player> conveyorMovementRetryQueueCopy = new ArrayList<>();
 
     public GameController(@NotNull Board board) {
@@ -57,7 +56,6 @@ public class GameController {
         if (space.getPlayer() == null) {
             currentPlayer.getSpace().setPlayer(null);
             space.setPlayer(currentPlayer);
-            board.setCounter(board.getCounter() + 1);
             board.setCurrentPlayer(board.getNextPlayer());
         }
     }
@@ -65,8 +63,8 @@ public class GameController {
     /**
      * Move a player to a given space, recursively pushing other players if necessary.
      *
-     * @param pusher player that is moving
-     * @param space space where the player wants to be
+     * @param pusher  player that is moving
+     * @param space   space where the player wants to be
      * @param heading direction of movement
      * @throws ImpossibleMoveException
      */
@@ -98,7 +96,7 @@ public class GameController {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
             if (player != null) {
-                for (int j = 0; j < Player.NO_REGISTERS; j++) {
+                for (int j = 0; j < Player.NUMBER_OF_REGISTERS; j++) {
                     CommandCardField field = player.getProgramField(j);
                     field.setCard(null);
                     field.setVisible(true);
@@ -136,12 +134,25 @@ public class GameController {
     }
 
     /**
+     * Ends the game, creates a popup window showing the winner
+     *
+     * @param winner winner of the game
+     */
+    public void startWinning(Player winner) {
+        board.setPhase(Phase.FINISHED);
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText(winner.getName() + " is the winner!");
+        alert.show();
+    }
+
+    /**
      * Make program fields visible for the given register
      *
      * @param register the register in which to make program fields visible
      */
     private void makeProgramFieldsVisible(int register) {
-        if (register >= 0 && register < Player.NO_REGISTERS) {
+        if (register >= 0 && register < Player.NUMBER_OF_REGISTERS) {
             for (int i = 0; i < board.getPlayersNumber(); i++) {
                 Player player = board.getPlayer(i);
                 CommandCardField field = player.getProgramField(register);
@@ -156,7 +167,7 @@ public class GameController {
     private void makeProgramFieldsInvisible() {
         for (int i = 0; i < board.getPlayersNumber(); i++) {
             Player player = board.getPlayer(i);
-            for (int j = 0; j < Player.NO_REGISTERS; j++) {
+            for (int j = 0; j < Player.NUMBER_OF_REGISTERS; j++) {
                 CommandCardField field = player.getProgramField(j);
                 field.setVisible(false);
             }
@@ -164,7 +175,7 @@ public class GameController {
     }
 
     /**
-     *
+     * Execute all steps command cards in the command fields.
      */
     public void executePrograms() {
         board.setStepMode(false);
@@ -195,68 +206,19 @@ public class GameController {
         Player currentPlayer = board.getCurrentPlayer();
         if (board.getPhase() == Phase.ACTIVATION && currentPlayer != null) {
             int step = board.getStep();
-            if (step >= 0 && step < Player.NO_REGISTERS) {
+            if (step >= 0 && step < Player.NUMBER_OF_REGISTERS) {
                 CommandCard card = currentPlayer.getProgramField(step).getCard();
                 if (card != null) {
                     Command command = card.command;
-                    executeCommand(currentPlayer, command);
-                }
-                int nextPlayerNumber = board.getPlayerNumber(currentPlayer) + 1;
-                if (nextPlayerNumber < board.getPlayersNumber()) {
-                    board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
-                } else {
-                    step++;
-                    if (step < Player.NO_REGISTERS) {
-                        makeProgramFieldsVisible(step);
-                        board.setStep(step);
-                        board.setCurrentPlayer(board.getPlayer(0));
+                    if (command == Command.RIGHT_OR_LEFT) {
+                        // the Right or left case changes phase to interactive
+                        executeCommand(currentPlayer, command);
+                        return; // breaks the game loop execution till player interaction is done
                     } else {
-                        this.conveyorMovementRetryQueue.clear(); //
-                        this.conveyorMovementRetryQueueCopy.clear();
-                        // Looping through the players to get the actions of the space they are on.
-                        for (int i = 0; i < board.getPlayersNumber(); i++) {
-                            currentPlayer = board.getPlayer(i);
-                            Space space = currentPlayer.getSpace();
-                            // execute all the actions for the given space.
-                            for (FieldAction action : space.getActions()) {
-                                action.doAction(this, space);
-                            }
-                        }
-
-                        while (!this.conveyorMovementRetryQueue.isEmpty()) {
-                            /*
-                             * This loop makes sure that players that were initially blocked while conveyor belt tried
-                             * to move them get another chance to be moved.
-                             * The ConveyorBelt class creates a list of the players that couldn't be moved along with
-                             * a copy that is used to check loop conditions.
-                             * If the list of player that hasn't been moved is unchanged the loop terminates,
-                             * otherwise it keeps running till there is no more players on conveyor belts
-                             *
-                             * We should consider outsourcing to helper functions
-                             */
-
-                            boolean listUnchanged = this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy) && this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy);
-                            // if the list is of players is the same as in last iteration terminate loop.
-                            if (listUnchanged) {
-                                break;
-                            }
-
-                            this.conveyorMovementRetryQueueCopy = new ArrayList<>(this.conveyorMovementRetryQueue);
-                            this.conveyorMovementRetryQueue.clear();
-
-                            // loop through the list of player that have not performed conveyor belt action.
-                            for (int i = this.conveyorMovementRetryQueueCopy.size() - 1; i >= 0; i--) {
-                                Player player = this.conveyorMovementRetryQueueCopy.get(i);
-                                Space space = player.getSpace();
-
-                                for (FieldAction action : space.getActions()) {
-                                    action.doAction(this, space);
-                                }
-                            }
-                        }
-                        startProgrammingPhase();
+                        executeCommand(currentPlayer, command);
                     }
                 }
+                continueNextStep(currentPlayer);
             } else {
                 // this should not happen
                 assert false;
@@ -275,37 +237,45 @@ public class GameController {
      */
     private void executeCommand(@NotNull Player player, Command command) {
         if (player != null && player.board == board && command != null) {
-            // XXX This is a very simplistic way of dealing with some basic cards and
-            //     their execution. This should eventually be done in a more elegant way
-            //     (this concerns the way cards are modelled as well as the way they are executed).
-
             switch (command) {
                 case FORWARD:
+                    player.setLastCommand(Command.FORWARD);
                     this.moveForward(player);
                     break;
                 case RIGHT:
+                    player.setLastCommand(Command.RIGHT);
                     this.turnRight(player);
                     break;
                 case LEFT:
+                    player.setLastCommand(Command.LEFT);
                     this.turnLeft(player);
                     break;
                 case FAST_FORWARD:
+                    player.setLastCommand(Command.FAST_FORWARD);
                     this.moveFastForward(player);
                     break;
                 case FAST_FAST_FORWARD:
+                    player.setLastCommand(Command.FAST_FAST_FORWARD);
                     this.moveFastFastForward(player);
                     break;
                 case U_TURN:
+                    player.setLastCommand(Command.U_TURN);
                     this.uTurn(player);
                     break;
                 case BACKWARD:
+                    player.setLastCommand(Command.BACKWARD);
                     this.backward(player);
+                    break;
+                case Command.RIGHT_OR_LEFT:
+                    player.setLastCommand(Command.RIGHT_OR_LEFT);
+                    board.setPhase(Phase.PLAYER_INTERACTION);
                     break;
                 case AGAIN:
                     this.again(player);
                     break;
                 default:
                     // DO NOTHING (for now)
+                    break;
             }
         }
     }
@@ -322,8 +292,7 @@ public class GameController {
             if (neighbour != null) {
                 try {
                     moveToSpace(player, neighbour, heading);
-                } catch (ImpossibleMoveException e) {
-                    //empty... Overstående bliver implementeret om lidt...
+                } catch (ImpossibleMoveException ignored) {
                 }
             }
         }
@@ -334,9 +303,8 @@ public class GameController {
      *
      * @param player player to move
      */
-    public void moveFastForward (@NotNull Player player){
+    public void moveFastForward(@NotNull Player player) {
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
     }
 
@@ -345,11 +313,9 @@ public class GameController {
      *
      * @param player player to move
      */
-    public void moveFastFastForward (@NotNull Player player){
+    public void moveFastFastForward(@NotNull Player player) {
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
-        // bør vi tjekke om den første er null så vi ikke printer to gange, i tilfælde af en wall på første træk
         moveForward(player);
     }
 
@@ -358,7 +324,7 @@ public class GameController {
      *
      * @param player player to turn
      */
-    public void turnRight (@NotNull Player player){
+    public void turnRight(@NotNull Player player) {
         player.setHeading(player.getHeading().next());
     }
 
@@ -367,7 +333,7 @@ public class GameController {
      *
      * @param player player to turn
      */
-    public void turnLeft (@NotNull Player player){
+    public void turnLeft(@NotNull Player player) {
         player.setHeading(player.getHeading().prev());
     }
 
@@ -376,7 +342,7 @@ public class GameController {
      *
      * @param player player to turn
      */
-    public void uTurn (@NotNull Player player){
+    public void uTurn(@NotNull Player player) {
         player.setHeading(player.getHeading().opposite());
     }
 
@@ -385,54 +351,49 @@ public class GameController {
      *
      * @param player is moved backwards
      */
-    public void backward (@NotNull Player player) {
-        // august siger ok, jeg siger for dovent.
+    public void backward(@NotNull Player player) {
         Heading heading = player.getHeading().opposite();
         Space neighbour = board.getNeighbour(player.getSpace(), heading);
         if (neighbour != null) {
             try {
                 moveToSpace(player, neighbour, heading);
-            } catch (ImpossibleMoveException e) {
-                //empty
+            } catch (ImpossibleMoveException ignored) {
             }
         }
     }
-    // TODO slet min kommentar...
-    // Den her venter vi lige med...
 
     /**
-     * not yet implemented
-     */
-    public void again (@NotNull Player player){
-        // TODO implement this
-    }
-
-    /**
-     * Moves a command card from one command card field to another.
+     * Turns a player to right or left based on interactive choice
      *
-     * @param source command card field containing the card
-     * @param target command card field that the card is moved to
-     * @return true if successful, false otherwise
+     * @param player    the player to chose to turn right or left
+     * @param direction the chosen direction the player want to turn
      */
-    public boolean moveCards (@NotNull CommandCardField source, @NotNull CommandCardField target){
-        CommandCard sourceCard = source.getCard();
-        CommandCard targetCard = target.getCard();
-        if (sourceCard != null && targetCard == null) {
-            target.setCard(sourceCard);
-            source.setCard(null);
-            return true;
-        } else {
-            return false;
+    public void turnRightOrLeft(@NotNull Player player, String direction) {
+        if (direction.equals("Right")) {
+            turnRight(player);
+        } else if (direction.equals("Left")) {
+            turnLeft(player);
+        }
+        // resets the interactive player phase
+        board.setPhase(Phase.ACTIVATION);
+        continueNextStep(player);  // continue execution of the game loop
+        if (!board.isStepMode()) {  // resumes the stepMode the game was in
+            continuePrograms();
         }
     }
 
     /**
-     * A method called when no corresponding controller operation is implemented yet.
-     * This should eventually be removed.
+     * @param player the player for whom to excecute the card...
+     *
+     * Excecutes the again command card, for a given player...
      */
-    public void notImplemented () {
-        // XXX just for now to indicate that the actual method is not yet implemented
-        assert false;
+    public void again(@NotNull Player player) {
+        Command lastCommand = player.getLastCommand();
+
+        if (lastCommand == null) {
+            return;
+        }
+        executeCommand(player, lastCommand);
     }
 
     /**
@@ -443,7 +404,6 @@ public class GameController {
      * @return boolean true if moves was succes false otherwise
      */
     public boolean moveInDirection(@NotNull Player player, @NotNull Heading heading) {
-        // TODO needs testing. <- Is this done?
         Space neighbourSpace = board.getNeighbour(player.getSpace(), heading);
 
         //Checks if board.getNeighbour might return null, which is the case, if there is a wall in the direction of "heading"
@@ -460,8 +420,100 @@ public class GameController {
         }
     }
 
+    /**
+     * Helper method for conveyor logic, adds player to the retry queue.
+     *
+     * @param player player who might be moved by conveyor belt
+     */
     public void addToConveyorRetryQueue(Player player) {
         conveyorMovementRetryQueue.add(player);
     }
 
+    /**
+     * Execute field actions for the spaces that has a player
+     */
+    private void executeFieldActions() {
+        conveyorMovementRetryQueue.clear();
+        conveyorMovementRetryQueueCopy.clear();
+        // Looping through the players to get the actions of the space they are on.
+        for (int i = 0; i < board.getPlayersNumber(); i++) {
+            Player currentPlayer = board.getPlayer(i);
+            Space space = currentPlayer.getSpace();
+            // execute all the actions for the given space.
+            for (FieldAction action : space.getActions()) {
+                action.doAction(this, space);
+            }
+        }
+    }
+
+    /**
+     * if a player on the conveyor belt couldn't be moved right away they are checked again
+     */
+    private void processBlockedConveyorPlayers() {
+        while (!this.conveyorMovementRetryQueue.isEmpty()) {
+            /*
+             * This loop makes sure that players that were initially blocked while conveyor belt tried
+             * to move them get another chance to be moved.
+             * The GameController class creates a list of the players that couldn't be moved along with
+             * a copy that is used to check loop conditions.
+             * If the list of player that hasn't been moved is unchanged the loop terminates,
+             * otherwise it keeps running till there is no more players that should be moved by conveyor belt.
+             */
+
+            boolean listUnchanged = this.conveyorMovementRetryQueue.containsAll(this.conveyorMovementRetryQueueCopy) && this.conveyorMovementRetryQueueCopy.containsAll(this.conveyorMovementRetryQueue);
+            // if the list is of players is the same as in last iteration terminate loop.
+            if (listUnchanged) {
+                break;
+            }
+
+            this.conveyorMovementRetryQueueCopy = new ArrayList<>(this.conveyorMovementRetryQueue);
+            this.conveyorMovementRetryQueue.clear();
+
+            // loop through the list of player that have not performed conveyor belt action.
+            for (int i = conveyorMovementRetryQueueCopy.size() - 1; i >= 0; i--) {
+                Player player = conveyorMovementRetryQueueCopy.get(i);
+                Space space = player.getSpace();
+                for (FieldAction action : space.getActions()) {
+                    action.doAction(this, space);
+                }
+            }
+        }
+    }
+
+    /**
+     * Continues execution of the 'game loop'
+     *
+     * @param player the current player that is in action.
+     */
+    private void continueNextStep(Player player) {
+        int step = board.getStep();
+        int nextPlayerNumber = board.getPlayerNumber(player) + 1;
+        if (nextPlayerNumber < board.getPlayersNumber()) {
+            board.setCurrentPlayer(board.getPlayer(nextPlayerNumber));
+        } else {
+            step++;
+            if (step < Player.NUMBER_OF_REGISTERS) {
+                makeProgramFieldsVisible(step);
+                board.setStep(step);
+                board.setCurrentPlayer(board.getPlayer(0));
+            } else {
+                executeFieldActions();
+                processBlockedConveyorPlayers();
+                if (board.getPhase() != Phase.FINISHED) {
+                    board.setCounter(board.getCounter() + 1);
+                    startProgrammingPhase();
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if the player is a winner
+     *
+     * @param player player who finished their register
+     * @return returns a comparison between player nextCheckpoint and board's noOfCheckpoints attributes
+     */
+    public boolean isPlayerAWinner(Player player) {
+        return player.getNextCheckpoint() >= board.getNoOfCheckpoints() + 1;
+    }
 }

@@ -79,21 +79,14 @@ public class PlayerView extends Tab implements ViewObserver {
         programPane = new GridPane();
         programPane.setVgap(2.0);
         programPane.setHgap(2.0);
-        programCardViews = new CardFieldView[Player.NO_REGISTERS];
-        for (int i = 0; i < Player.NO_REGISTERS; i++) {
+        programCardViews = new CardFieldView[Player.NUMBER_OF_REGISTERS];
+        for (int i = 0; i < Player.NUMBER_OF_REGISTERS; i++) {
             CommandCardField cardField = player.getProgramField(i);
             if (cardField != null) {
                 programCardViews[i] = new CardFieldView(gameController, cardField);
                 programPane.add(programCardViews[i], i, 0);
             }
         }
-
-        // FIXME the following buttons should actually not be on the tabs of the individual
-        //       players, but on the PlayersView (view for all players). This should be
-        //       refactored.
-
-        // TODO V2: the following buttons should be associated with the proper methods
-        //          in the game controller
 
         finishButton = new Button("Finish Programming");
         finishButton.setOnAction( e -> gameController.finishProgrammingPhase());
@@ -130,8 +123,6 @@ public class PlayerView extends Tab implements ViewObserver {
         top.getChildren().add(cardsLabel);
         top.getChildren().add(cardsPane);
 
-        // TODO A3 add a label for the status of this player could be added here
-        //      ege showing the number of achieved chekpoints (etc).
 
         if (player.board != null) {
             player.board.attach(this);
@@ -139,11 +130,15 @@ public class PlayerView extends Tab implements ViewObserver {
         }
     }
 
+    /**
+     * Updates the player view of the player interaction interface
+     *
+     * @param subject the subject which changed
+     */
     @Override
     public void updateView(Subject subject) {
         if (subject == player.board) {
-            // TODO A3 update the status label for this player
-            for (int i = 0; i < Player.NO_REGISTERS; i++) {
+            for (int i = 0; i < Player.NUMBER_OF_REGISTERS; i++) {
                 CardFieldView cardFieldView = programCardViews[i];
                 if (cardFieldView != null) {
                     if (player.board.getPhase() == Phase.PROGRAMMING ) {
@@ -169,7 +164,7 @@ public class PlayerView extends Tab implements ViewObserver {
             if (player.board.getPhase() != Phase.PLAYER_INTERACTION) {
                 if (!programPane.getChildren().contains(buttonPanel)) {
                     programPane.getChildren().remove(playerInteractionPanel);
-                    programPane.add(buttonPanel, Player.NO_REGISTERS, 0);
+                    programPane.add(buttonPanel, Player.NUMBER_OF_REGISTERS, 0);
                 }
                 switch (player.board.getPhase()) {
                     case INITIALISATION:
@@ -200,22 +195,19 @@ public class PlayerView extends Tab implements ViewObserver {
             } else {
                 if (!programPane.getChildren().contains(playerInteractionPanel)) {
                     programPane.getChildren().remove(buttonPanel);
-                    programPane.add(playerInteractionPanel, Player.NO_REGISTERS, 0);
+                    programPane.add(playerInteractionPanel, Player.NUMBER_OF_REGISTERS, 0);
                 }
                 playerInteractionPanel.getChildren().clear();
 
-                if (player.board.getCurrentPlayer() == player) {
-                    // TODO V3: these buttons should be shown only when there is
-                    //      an interactive command card, and the buttons should represent
-                    //      the player's choices of the interactive command card. The
-                    //      following is just a mockup showing two options
-                    Button optionButton = new Button("Option1");
-                    optionButton.setOnAction( e -> gameController.notImplemented());
+                if (player.board.getCurrentPlayer() == player && player.board.getPhase() == Phase.PLAYER_INTERACTION) {
+                    // If Phase is in PLAYER_INTERACTION the player player are to choose a direction based on these buttons.
+                    Button optionButton = new Button("Turn Right!");
+                    optionButton.setOnAction( e -> gameController.turnRightOrLeft(player.board.getCurrentPlayer(), "Right"));
                     optionButton.setDisable(false);
                     playerInteractionPanel.getChildren().add(optionButton);
 
-                    optionButton = new Button("Option 2");
-                    optionButton.setOnAction( e -> gameController.notImplemented());
+                    optionButton = new Button("Turn Left!");
+                    optionButton.setOnAction( e -> gameController.turnRightOrLeft(player.board.getCurrentPlayer(), "Left"));
                     optionButton.setDisable(false);
                     playerInteractionPanel.getChildren().add(optionButton);
                 }

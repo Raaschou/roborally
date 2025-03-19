@@ -17,7 +17,8 @@ public class BoardFactory {
     private final static String SIMPLE_BOARD_NAME = "Simple board";
     private final static String ADVANCED_BOARD_NAME = "Advanced board";
     private final static String CONVEYOR_BOARD_NAME = "Belts belts belts board";
-    private final static List<String> boardNames = List.of(SIMPLE_BOARD_NAME, ADVANCED_BOARD_NAME, CONVEYOR_BOARD_NAME);
+    private final static String CONFLICTING_CONVEYORS_BOARD_NAME = "Conflicting conveyors board";
+    private final static List<String> boardNames = List.of(SIMPLE_BOARD_NAME, ADVANCED_BOARD_NAME, CONVEYOR_BOARD_NAME, CONFLICTING_CONVEYORS_BOARD_NAME);
     /**
      * The single instance of this class, which is lazily instantiated on demand.
      */
@@ -28,6 +29,8 @@ public class BoardFactory {
     private final int ADVANCED_BOARD_HEIGHT = 8;
     private final int CONVEYOR_BOARD_WIDTH = 12;
     private final int CONVEYOR_BOARD_HEIGHT = 8;
+    private final int CONFLICTING_CONVEYORS_BOARD_WIDTH = 15;
+    private final int CONFLICTING_CONVEYORS_BOARD_HEIGHT = 8;
 
     /**
      * Constructor for BoardFactory. It is private in order to make the factory a singleton.
@@ -59,7 +62,7 @@ public class BoardFactory {
 
     /**
      * Creates a new board of given name of a board, which indicates
-     * which type of board should be created. For now the name is ignored.
+     * which type of board should be created.
      *
      * @param name the given name board
      * @return the new board corresponding to that name
@@ -79,6 +82,10 @@ public class BoardFactory {
                 board = new Board(CONVEYOR_BOARD_WIDTH, CONVEYOR_BOARD_HEIGHT, CONVEYOR_BOARD_NAME);
                 setupBeltsBeltsBeltsBoard(board);
                 break;
+            case (CONFLICTING_CONVEYORS_BOARD_NAME):
+                board = new Board(CONFLICTING_CONVEYORS_BOARD_WIDTH, CONFLICTING_CONVEYORS_BOARD_HEIGHT, CONFLICTING_CONVEYORS_BOARD_NAME);
+                setupConflictingConveyorsBoard(board);
+                break;
             default:
                 throw new IllegalArgumentException("Unrecognized board name");
         }
@@ -93,7 +100,6 @@ public class BoardFactory {
      */
     private void setupSimpleBoard(Board board) {
         // Currently this is just an empty board.
-        // We might add some objects on the board later.
     }
 
     /**
@@ -143,6 +149,8 @@ public class BoardFactory {
         space = board.getSpace(4, 4);
         act = new Checkpoint(2);
         space.getActions().add(act);
+
+        board.setNoOfCheckpoints(2);
     }
 
     /**
@@ -201,5 +209,31 @@ public class BoardFactory {
         space.getWalls().add(Heading.WEST);
         space = board.getSpace(9, 4);
         space.getWalls().add(Heading.WEST);
+
+        board.setNoOfCheckpoints(4);
+    }
+
+    /**
+     * Set up board objects for the board used for testing the conflicting conveyor belt
+     * logic.
+     * @param board the board instance to modify
+     */
+    private void setupConflictingConveyorsBoard(Board board) {
+        Space s1 = board.getSpace(1, 0);
+        Space s2 = board.getSpace(0, 1);
+        Space s3 = board.getSpace(0, 4);
+        Space s4 = board.getSpace(14, 5);
+        ConveyorBelt c1 = new ConveyorBelt();
+        c1.setHeading(Heading.WEST);
+        ConveyorBelt c2 = new ConveyorBelt();
+        c2.setHeading(Heading.NORTH);
+        ConveyorBelt c3 = new ConveyorBelt();
+        c3.setHeading(Heading.WEST);
+        ConveyorBelt c4 = new ConveyorBelt();
+        c4.setHeading(Heading.NORTH);
+        s1.getActions().add(c1);
+        s2.getActions().add(c2);
+        s3.getActions().add(c3);
+        s4.getActions().add(c4);
     }
 }

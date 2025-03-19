@@ -40,6 +40,9 @@ public class Checkpoint extends FieldAction {
         Player currentPlayer = space.getPlayer();
         if (currentPlayer.getNextCheckpoint() == this.getSequence()) {
             currentPlayer.incrementNextCheckpoint();
+            if (gameController.isPlayerAWinner(currentPlayer)) {
+                gameController.startWinning(currentPlayer);
+            }
             return true;
         }
         return false;

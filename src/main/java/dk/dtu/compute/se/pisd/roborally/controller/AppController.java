@@ -164,7 +164,6 @@ public class AppController implements Observer {
         return gameController != null;
     }
 
-
     @Override
     public void update(Subject subject) {
         // XXX do nothing for now
